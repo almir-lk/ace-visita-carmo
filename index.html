@@ -17,18 +17,15 @@
 
         :root {
             --primary: #2563eb;
-            --primary-dark: #1d4ed8;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #3b82f6;
-            --purple: #8b5cf6;
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
             --text-light: #6b7280;
             --border: #e5e7eb;
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
 
         body {
@@ -38,7 +35,6 @@
             padding-bottom: 100px;
         }
 
-        /* Header */
         .header {
             background: var(--primary);
             color: white;
@@ -46,7 +42,6 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: var(--shadow);
         }
 
         .header-top {
@@ -55,42 +50,52 @@
             align-items: center;
         }
 
-        .header h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .header-date {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            margin-top: 4px;
-        }
-
-        .header-agent {
-            text-align: right;
-            font-size: 0.9rem;
-        }
-
-        .header-agent small {
-            display: block;
-            opacity: 0.8;
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-size: 0.75rem;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
         }
 
-        /* Container */
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .sync-dot.pending {
+            background: var(--warning);
+            animation: none;
+        }
+
+        .sync-dot.error {
+            background: var(--danger);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .container {
             padding: 16px;
             max-width: 600px;
             margin: 0 auto;
         }
 
-        /* Cards */
         .card {
             background: var(--card);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .card-header {
@@ -113,13 +118,6 @@
             font-size: 1.1rem;
         }
 
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        /* Form */
         .form-row {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -135,7 +133,6 @@
             display: block;
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--text);
             margin-bottom: 6px;
         }
 
@@ -149,251 +146,77 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 0.95rem;
-            background: white;
-            transition: all 0.2s;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        input::placeholder {
-            color: #9ca3af;
-        }
-
-        .input-icon {
-            position: relative;
-        }
-
-        .input-icon input {
-            padding-left: 40px;
-        }
-
-        .input-icon::before {
-            content: '';
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.1rem;
-        }
-
-        .icon-user::before { content: '👤'; }
-        .icon-id::before { content: '🆔'; }
-        .icon-team::before { content: '👥'; }
-
-        /* Tabela Depósitos */
-        .deposits-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .deposits-table th {
-            text-align: left;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-light);
-            text-transform: uppercase;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .deposits-table th:last-child,
-        .deposits-table td:last-child {
-            text-align: center;
-        }
-
-        .deposits-table td {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-
-        .deposits-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .checkbox-wrapper label {
-            margin: 0;
-            font-size: 0.75rem;
-            color: var(--text-light);
-            font-weight: 400;
-        }
-
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        /* Contagem */
-        .count-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .count-item {
-            text-align: center;
-        }
-
-        .count-item label {
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-        }
-
-        .count-input input {
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 600;
-            padding: 12px;
-        }
-
-        .count-total {
-            grid-column: 1 / -1;
-            background: #f9fafb;
-            padding: 16px;
+        .sync-queue {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 12px 16px;
             border-radius: 8px;
-            text-align: center;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .sync-queue.show {
+            display: block;
+        }
+
+        .sync-queue-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 4px;
+        }
+
+        .sync-queue-count {
+            font-size: 0.875rem;
+            color: #a16207;
+        }
+
+        .btn-sync-now {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
             margin-top: 8px;
         }
 
-        .count-total-label {
-            font-size: 0.875rem;
-            color: var(--text-light);
-            margin-bottom: 4px;
+        .pending-visits {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 12px;
         }
 
-        .count-total-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        /* Estatísticas - Dashboard Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
+        .pending-item {
             background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card.blue { background: #eff6ff; }
-        .stat-card.green { background: #f0fdf4; }
-        .stat-card.cyan { background: #ecfeff; }
-        .stat-card.purple { background: #faf5ff; }
-        .stat-card.red { background: #fef2f2; }
-        .stat-card.gray { background: #f9fafb; }
-        .stat-card.orange { background: #fff7ed; }
-        .stat-card.yellow { background: #fefce8; }
-
-        .stat-card-header {
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
-
-        .stat-card-title {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            font-weight: 500;
-            line-height: 1.2;
-        }
-
-        .stat-card-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            background: white;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        .stat-card-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-top: 4px;
-        }
-
-        /* Date Selector */
-        .date-selector {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .date-selector-icon {
-            font-size: 1.5rem;
-        }
-
-        /* Resumo do Dia */
-        .summary-card {
-            background: var(--primary);
+        .pending-status {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--warning);
             color: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 16px;
         }
 
-        .summary-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
+        .pending-status.synced {
+            background: var(--success);
         }
 
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .summary-item {
-            text-align: left;
-        }
-
-        .summary-label {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            margin-bottom: 4px;
-        }
-
-        .summary-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-        }
-
-        /* Botões */
         .btn-primary {
             background: var(--primary);
             color: white;
@@ -408,11 +231,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
         }
 
         .btn-export {
@@ -426,59 +244,8 @@
             cursor: pointer;
             width: 100%;
             margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-export:active {
-            transform: scale(0.98);
-        }
-
-        .btn-save-top {
-            background: white;
-            color: var(--primary);
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-        }
-
-        .btn-save-top:active {
-            transform: scale(0.95);
-        }
-
-        /* Configurações */
-        .success-message {
-            background: #dcfce7;
-            color: #166534;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .blocked-message {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .blocked-message-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
-
-        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -489,7 +256,6 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             padding: 8px 0;
-            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
             z-index: 1000;
         }
 
@@ -499,29 +265,21 @@
             align-items: center;
             gap: 4px;
             padding: 8px;
-            text-decoration: none;
             color: var(--text-light);
             font-size: 0.75rem;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
             background: none;
+            border: none;
+            cursor: pointer;
         }
 
         .nav-item.active {
             color: var(--primary);
         }
 
-        .nav-item:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .nav-item span {
             font-size: 1.25rem;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 20px;
@@ -530,14 +288,6 @@
             margin-bottom: 60px;
         }
 
-        .footer strong {
-            color: var(--text);
-            display: block;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
-        }
-
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 100px;
@@ -551,7 +301,6 @@
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 2000;
-            box-shadow: var(--shadow);
         }
 
         .toast.show {
@@ -559,36 +308,17 @@
             opacity: 1;
         }
 
-        /* GPS */
-        .gps-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #dcfce7;
-            color: #166534;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 16px;
-            width: 100%;
-            justify-content: center;
+        .hidden { display: none !important; }
+
+        .blocked-message {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 40px 0;
         }
 
-        .gps-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Tratamento Detalhado */
         .tratamento-detalhe {
             background: #f0fdf4;
             padding: 16px;
@@ -597,63 +327,51 @@
             border-left: 4px solid var(--success);
         }
 
-        /* Utilidades */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .mb-0 { margin-bottom: 0; }
-
-        /* Responsivo */
         @media (max-width: 380px) {
             .form-row { grid-template-columns: 1fr; }
-            .count-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
     <header class="header">
         <div class="header-top">
             <div>
                 <h1>ACE Visitas</h1>
-                <div class="header-date" id="currentDate">14 de fevereiro</div>
+                <div class="sync-status" id="syncStatus">
+                    <div class="sync-dot" id="syncDot"></div>
+                    <span id="syncText">Aguardando início...</span>
+                </div>
             </div>
             <div class="header-agent" id="headerAgent" style="display: none;">
                 <span id="headerAgentName">-</span>
-                <small id="headerAgentReg">-</small>
+                <small id="headerAgentInfo">-</small>
             </div>
         </div>
     </header>
 
-    <!-- ABA AJUSTES (INICIAL) -->
+    <!-- ABA AJUSTES -->
     <div id="tab-ajustes" class="tab-content">
         <div class="container">
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon">👤</div>
-                    <h2 class="card-title">Início do Dia - Dados do Agente</h2>
+                    <h2 class="card-title">Início do Dia</h2>
                 </div>
 
                 <div class="form-group">
                     <label>Nome Completo <span class="required">*</span></label>
-                    <div class="input-icon icon-user">
-                        <input type="text" id="configNome" placeholder="Nome do agente">
-                    </div>
+                    <input type="text" id="configNome" placeholder="Nome do agente">
                 </div>
 
                 <div class="form-group">
                     <label>Matrícula <span class="required">*</span></label>
-                    <div class="input-icon icon-id">
-                        <input type="text" id="configMatricula" placeholder="Número da matrícula">
-                    </div>
+                    <input type="text" id="configMatricula" placeholder="Número da matrícula">
                 </div>
 
                 <div class="form-group">
                     <label>Equipe <span class="required">*</span></label>
-                    <div class="input-icon icon-team">
-                        <input type="text" id="configEquipe" placeholder="Número da equipe">
-                    </div>
+                    <input type="text" id="configEquipe" placeholder="Número da equipe">
                 </div>
 
                 <div class="form-group">
@@ -665,12 +383,11 @@
                     🚀 Iniciar Dia de Trabalho
                 </button>
 
-                <div id="configSuccess" class="success-message hidden">
-                    ✅ Dia iniciado! Agora você pode registrar visitas.
+                <div id="configSuccess" class="hidden" style="background: #dcfce7; color: #166534; padding: 16px; border-radius: 8px; margin-top: 16px; text-align: center;">
+                    ✅ Dia iniciado! Sincronização automática ativada.
                 </div>
             </div>
 
-            <!-- Footer -->
             <div class="footer">
                 <strong>Prefeitura Municipal de Carmo</strong>
                 Coordenação de Combate às Endemias<br>
@@ -682,59 +399,55 @@
     <!-- ABA VISITAS -->
     <div id="tab-visitas" class="tab-content hidden">
         <div class="container">
-            <!-- Bloqueio se não configurado -->
             <div id="visitasBloqueio" class="blocked-message hidden">
-                <div class="blocked-message-icon">⚠️</div>
+                <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
                 <h3>Dia não iniciado</h3>
-                <p>Vá em "Ajustes" e preencha os dados do agente para começar.</p>
+                <p>Vá em "Ajustes" e preencha os dados do agente.</p>
             </div>
 
-            <!-- Conteúdo das Visitas -->
             <div id="visitasConteudo">
-                <!-- GPS -->
-                <div style="text-align: center;">
-                    <div class="gps-badge" id="gpsStatus">
-                        <div class="gps-dot"></div>
-                        <span>Aguardando GPS...</span>
-                    </div>
+                <!-- Fila de sincronização -->
+                <div class="sync-queue" id="syncQueue">
+                    <div class="sync-queue-title">⏳ Aguardando sincronização</div>
+                    <div class="sync-queue-count" id="syncQueueCount">0 visitas na fila</div>
+                    <button class="btn-sync-now" onclick="sincronizarManual()">Sincronizar Agora</button>
+                    <div class="pending-visits" id="pendingVisits"></div>
                 </div>
 
-                <!-- Endereço -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">📍</div>
                         <h2 class="card-title">Endereço</h2>
                     </div>
                     
+                    <div class="form-group">
+                        <label>Logradouro <span class="required">*</span></label>
+                        <input type="text" id="logradouro" placeholder="Rua, Avenida, etc.">
+                    </div>
+
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Logradouro <span class="required">*</span></label>
-                            <input type="text" id="logradouro" placeholder="Rua, Avenida, etc.">
-                        </div>
                         <div class="form-group">
                             <label>Número <span class="required">*</span></label>
                             <input type="text" id="numero" placeholder="123">
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Complemento</label>
-                        <input type="text" id="complemento" placeholder="Apto, Casa, etc.">
+                        <div class="form-group">
+                            <label>Complemento</label>
+                            <input type="text" id="complemento" placeholder="Apto">
+                        </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>quarteirao <span class="required">*</span></label>
-                            <input type="text" id="quarteirao" placeholder="quarteirao">
+                            <label>Microárea <span class="required">*</span></label>
+                            <input type="text" id="microarea" placeholder="Ex: M01">
                         </div>
                         <div class="form-group">
-                            <label>microarea <span class="required">*</span></label>
-                            <input type="text" id="microarea" value="Carmo" placeholder="microarea">
+                            <label>Quarteirão <span class="required">*</span></label>
+                            <input type="text" id="quarteirao" placeholder="Ex: Q05">
                         </div>
                     </div>
                 </div>
 
-                <!-- Imóvel -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">🏠</div>
@@ -764,38 +477,6 @@
                     </div>
                 </div>
 
-                <!-- Inspeção de Depósitos -->
-                <div class="card" id="cardDepositos">
-                    <div class="card-header">
-                        <div class="card-icon">💧</div>
-                        <h2 class="card-title">Inspeção de Depósitos</h2>
-                    </div>
-
-                    <table class="deposits-table">
-                        <thead>
-                            <tr>
-                                <th>Depósito</th>
-                                <th style="text-align: center;">Inspec.</th>
-                                <th style="text-align: center;">Posit.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Caixa d'Água</td><td><input type="checkbox" id="cxInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="cxPosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Piscina</td><td><input type="checkbox" id="piscinaInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="piscinaPosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Vaso Sanitário</td><td><input type="checkbox" id="vasoInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="vasoPosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Tanque</td><td><input type="checkbox" id="tanqueInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="tanquePosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Tonel</td><td><input type="checkbox" id="tonelInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="tonelPosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Pote</td><td><input type="checkbox" id="poteInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="potePosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Balde</td><td><input type="checkbox" id="baldeInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="baldePosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Garrafa</td><td><input type="checkbox" id="garrafaInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="garrafaPosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Pneu</td><td><input type="checkbox" id="pneuInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="pneuPosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Lixo</td><td><input type="checkbox" id="lixoInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="lixoPosit" onchange="calcularTotais()"></td></tr>
-                            <tr><td>Outros</td><td><input type="checkbox" id="outrosInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="outrosPosit" onchange="calcularTotais()"></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Tratamento -->
                 <div class="card" id="cardTratamento">
                     <div class="card-header">
                         <div class="card-icon">🔬</div>
@@ -812,18 +493,17 @@
                         </select>
                     </div>
 
-                    <!-- Detalhes do Produto -->
                     <div id="produtoDetalhe" class="tratamento-detalhe hidden">
-                        <div class="form-group mb-0">
-                            <label>Produto Utilizado <span class="required">*</span></label>
+                        <div class="form-group">
+                            <label>Produto <span class="required">*</span></label>
                             <select id="nomeProduto">
-                                <option value="">Selecione o produto...</option>
+                                <option value="">Selecione...</option>
                                 <optgroup label="Larvicidas">
-                                    <option value="BTI">BTI (Bacillus thuringiensis)</option>
+                                    <option value="BTI-Sache">BTI - Sachê</option>
+                                    <option value="BTI-Granulado">BTI - Granulado</option>
                                     <option value="Diflubenzuron">Diflubenzuron</option>
                                     <option value="Novaluron">Novaluron</option>
                                     <option value="Pyriproxyfen">Pyriproxyfen</option>
-                                    <option value="Spinosad">Spinosad</option>
                                 </optgroup>
                                 <optgroup label="Adulticidas">
                                     <option value="Deltametrina">Deltametrina</option>
@@ -831,73 +511,57 @@
                                     <option value="Malation">Malation</option>
                                     <option value="Lambdacialotrina">Lambdacialotrina</option>
                                 </optgroup>
-                                <optgroup label="Outros">
-                                    <option value="Peixe">Peixe (Controle Biológico)</option>
-                                    <option value="Remocao">Remoção Mecânica</option>
-                                </optgroup>
                             </select>
                         </div>
-                        <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
-                            <label>Quantidade Utilizada <span class="required">*</span></label>
-                            <div class="form-row" style="margin-bottom: 0;">
-                                <input type="number" id="quantidadeProduto" placeholder="Qtd" min="0" step="0.1" style="flex: 1;">
-                                <select id="unidadeProduto" style="flex: 1;">
-                                    <option value="gr">gramas (gr)</option>
-                                    <option value="ml">mililitros (ml)</option>
+                        <div class="form-row" style="margin-bottom: 0;">
+                            <div class="form-group">
+                                <label>Quantidade <span class="required">*</span></label>
+                                <input type="number" id="quantidadeProduto" placeholder="0" min="0" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Unidade <span class="required">*</span></label>
+                                <select id="unidadeProduto">
+                                    <option value="gr">gramas</option>
+                                    <option value="ml">ml</option>
                                     <option value="un">unidades</option>
-                                    <option value="kg">quilos (kg)</option>
-                                    <option value="L">litros (L)</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contagem -->
                 <div class="card" id="cardContagem">
                     <div class="card-header">
                         <div class="card-icon">📊</div>
                         <h2 class="card-title">Contagem de Depósitos</h2>
                     </div>
-                    <div class="count-grid">
-                        <div class="count-item">
-                            <label style="color: var(--success);">Eliminados</label>
-                            <div class="count-input">
-                                <input type="number" id="eliminados" min="0" value="0" onchange="calcularTotais()">
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Eliminados</label>
+                            <input type="number" id="eliminados" min="0" value="0">
                         </div>
-                        <div class="count-item">
-                            <label style="color: var(--purple);">Tratados</label>
-                            <div class="count-input">
-                                <input type="number" id="tratados" min="0" value="0" onchange="calcularTotais()">
-                            </div>
+                        <div class="form-group">
+                            <label>Tratados</label>
+                            <input type="number" id="tratados" min="0" value="0">
                         </div>
-                        <div class="count-item">
-                            <label style="color: var(--warning);">Protegidos</label>
-                            <div class="count-input">
-                                <input type="number" id="protegidos" min="0" value="0" onchange="calcularTotais()">
-                            </div>
+                    </div>
+                    <div class="form-row" style="margin-bottom: 0;">
+                        <div class="form-group">
+                            <label>Protegidos</label>
+                            <input type="number" id="protegidos" min="0" value="0">
                         </div>
-                        <div class="count-item">
-                            <label style="color: var(--danger);">Impraticáveis</label>
-                            <div class="count-input">
-                                <input type="number" id="impraticaveis" min="0" value="0" onchange="calcularTotais()">
-                            </div>
-                        </div>
-                        <div class="count-total">
-                            <div class="count-total-label">Total de Depósitos</div>
-                            <div class="count-total-value" id="totalDepositos">0</div>
+                        <div class="form-group">
+                            <label>Impraticáveis</label>
+                            <input type="number" id="impraticaveis" min="0" value="0">
                         </div>
                     </div>
                 </div>
 
-                <!-- Botão Salvar -->
                 <button class="btn-primary" onclick="saveVisit()" style="margin-bottom: 20px;">
-                    💾 Salvar Visita
+                    💾 Salvar e Sincronizar
                 </button>
             </div>
 
-            <!-- Footer -->
             <div class="footer">
                 <strong>Prefeitura Municipal de Carmo</strong>
                 Coordenação de Combate às Endemias<br>
@@ -909,103 +573,40 @@
     <!-- ABA ESTATÍSTICAS -->
     <div id="tab-estatisticas" class="tab-content hidden">
         <div class="container">
-            <!-- Bloqueio se não configurado -->
             <div id="statsBloqueio" class="blocked-message hidden">
-                <div class="blocked-message-icon">📊</div>
-                <h3>Nenhum dado para exibir</h3>
-                <p>Inicie o dia em "Ajustes" e registre visitas para ver estatísticas.</p>
+                <div style="font-size: 3rem; margin-bottom: 15px;">📊</div>
+                <h3>Sem dados</h3>
+                <p>Inicie o dia e registre visitas.</p>
             </div>
 
-            <!-- Conteúdo das Estatísticas -->
             <div id="statsConteudo">
-                <!-- Seletor de Data -->
-                <div class="date-selector">
-                    <span class="date-selector-icon">📅</span>
-                    <span id="statsDate">Sábado, 14 de Fevereiro</span>
-                </div>
-
-                <!-- Cards Principais -->
-                <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Total de Visitas</span>
-                            <div class="stat-card-icon">🏠</div>
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Resumo do Dia</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="background: #eff6ff; padding: 16px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 0.875rem; color: var(--text-light);">Total Visitas</div>
+                            <div style="font-size: 2rem; font-weight: 700;" id="statTotal">0</div>
                         </div>
-                        <div class="stat-card-value" id="statTotalVisitas">0</div>
-                    </div>
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Imóveis Trabalhados</span>
-                            <div class="stat-card-icon">📈</div>
+                        <div style="background: #f0fdf4; padding: 16px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 0.875rem; color: var(--text-light);">Sincronizadas</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success);" id="statSync">0</div>
                         </div>
-                        <div class="stat-card-value" id="statTrabalhados">0</div>
-                    </div>
-                    <div class="stat-card cyan">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Dep. Eliminados</span>
-                            <div class="stat-card-icon">💧</div>
+                        <div style="background: #fef2f2; padding: 16px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 0.875rem; color: var(--text-light);">Pendentes</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--danger);" id="statPending">0</div>
                         </div>
-                        <div class="stat-card-value" id="statEliminados">0</div>
-                    </div>
-                    <div class="stat-card purple">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Dep. Tratados</span>
-                            <div class="stat-card-icon">💊</div>
-                        </div>
-                        <div class="stat-card-value" id="statTratados">0</div>
-                    </div>
-                    <div class="stat-card red">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Dep. Positivos</span>
-                            <div class="stat-card-icon">🦟</div>
-                        </div>
-                        <div class="stat-card-value" id="statPositivos">0</div>
-                    </div>
-                    <div class="stat-card gray">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Imóveis Fechados</span>
-                            <div class="stat-card-icon">🔒</div>
-                        </div>
-                        <div class="stat-card-value" id="statFechados">0</div>
-                    </div>
-                    <div class="stat-card orange">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Imóveis Recusados</span>
-                            <div class="stat-card-icon">❌</div>
-                        </div>
-                        <div class="stat-card-value" id="statRecusados">0</div>
-                    </div>
-                    <div class="stat-card yellow">
-                        <div class="stat-card-header">
-                            <span class="stat-card-title">Desabitados</span>
-                            <div class="stat-card-icon">🏚️</div>
-                        </div>
-                        <div class="stat-card-value" id="statDesabitados">0</div>
-                    </div>
-                </div>
-
-                <!-- Resumo do Dia -->
-                <div class="summary-card">
-                    <div class="summary-title">Resumo do Dia</div>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <div class="summary-label">Taxa de Trabalho</div>
-                            <div class="summary-value" id="statTaxaTrabalho">0%</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">Depósitos/Visita</div>
-                            <div class="summary-value" id="statDepPorVisita">0.0</div>
+                        <div style="background: #faf5ff; padding: 16px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 0.875rem; color: var(--text-light);">Dep. Tratados</div>
+                            <div style="font-size: 2rem; font-weight: 700;" id="statDep">0</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Botão Exportar -->
                 <button class="btn-export" onclick="finalizarDia()">
-                    📊 Exportar e Finalizar Dia
+                    📊 Exportar Excel & Finalizar
                 </button>
             </div>
 
-            <!-- Footer -->
             <div class="footer">
                 <strong>Prefeitura Municipal de Carmo</strong>
                 Coordenação de Combate às Endemias<br>
@@ -1014,133 +615,101 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <button class="nav-item" id="nav-ajustes" onclick="showTab('ajustes')">
-            <span>⚙️</span>
-            Ajustes
+        <button class="nav-item active" id="nav-ajustes" onclick="showTab('ajustes')">
+            <span>⚙️</span>Ajustes
         </button>
         <button class="nav-item" id="nav-visitas" onclick="showTab('visitas')">
-            <span>🏠</span>
-            Visitas
+            <span>🏠</span>Visitas
         </button>
         <button class="nav-item" id="nav-estatisticas" onclick="showTab('estatisticas')">
-            <span>📊</span>
-            Estatísticas
+            <span>📊</span>Dados
         </button>
     </nav>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // Estado global
+        // ============================================
+        // CONFIGURAÇÃO - SUA URL DO GOOGLE APPS SCRIPT
+        // ============================================
+        const CONFIG = {
+            // URL do Google Apps Script (ATUALIZADA COM A SUA)
+            SYNC_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
+            
+            // Sincronizar a cada 30 segundos
+            SYNC_INTERVAL: 30
+        };
+
+        // ============================================
+        // VARIÁVEIS GLOBAIS
+        // ============================================
         let visits = [];
         let agentConfig = {};
         let currentPosition = null;
-        let watchId = null;
-        let currentTab = 'ajustes';
         let diaIniciado = false;
+        let isOnline = navigator.onLine;
 
-        // Inicialização
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             checkDiaIniciado();
             loadVisits();
-            updateDate();
             initGPS();
-            updateStats();
+            initSync();
             updateUI();
+            updateStats();
+            
+            // Monitorar conexão
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateSyncStatus('online');
+                tentarSincronizar();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateSyncStatus('offline');
+            });
         });
 
-        function updateDate() {
-            const options = { day: 'numeric', month: 'long' };
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('pt-BR', options);
-            
-            const optionsFull = { weekday: 'long', day: 'numeric', month: 'long' };
-            document.getElementById('statsDate').textContent = new Date().toLocaleDateString('pt-BR', optionsFull).replace('-feira', '');
-        }
-
-        // Verificar se dia já foi iniciado
-        function checkDiaIniciado() {
-            const hoje = getTodayKey();
-            const configHoje = localStorage.getItem('ace_config_' + hoje);
-            const savedVisits = localStorage.getItem('ace_visits_' + hoje);
-            
-            if (configHoje) {
-                agentConfig = JSON.parse(configHoje);
-                diaIniciado = true;
-                updateHeader();
-            }
-        }
-
-        // GPS
         function initGPS() {
-            if (!navigator.geolocation) {
-                document.getElementById('gpsStatus').innerHTML = '<span style="color: #dc2626;">❌ GPS não suportado</span>';
-                return;
-            }
-
-            watchId = navigator.geolocation.watchPosition(
-                (position) => {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.watchPosition(
+                (pos) => {
                     currentPosition = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                        accuracy: position.coords.accuracy,
-                        timestamp: new Date().toISOString()
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude,
+                        accuracy: pos.coords.accuracy
                     };
-                    document.getElementById('gpsStatus').innerHTML = `
-                        <div class="gps-dot"></div>
-                        <span>GPS Ativo • Precisão: ${Math.round(position.coords.accuracy)}m</span>
-                    `;
                 },
-                (error) => {
-                    document.getElementById('gpsStatus').innerHTML = '<span style="color: #dc2626;">❌ Erro no GPS</span>';
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                (err) => console.log('GPS erro:', err),
+                { enableHighAccuracy: true, timeout: 10000 }
             );
         }
 
-        // Navegação entre abas
         function showTab(tab) {
-            currentTab = tab;
-            
-            // Esconder todas as abas
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            // Mostrar aba selecionada
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
             document.getElementById(`nav-${tab}`).classList.add('active');
-            
-            if (tab === 'estatisticas') {
-                updateStats();
-            }
+            if (tab === 'estatisticas') updateStats();
+            if (tab === 'visitas') atualizarFilaSync();
         }
 
-        // Atualizar interface baseado no estado
-        function updateUI() {
-            if (diaIniciado) {
-                // Mostrar conteúdo das abas
-                document.getElementById('visitasConteudo').classList.remove('hidden');
-                document.getElementById('visitasBloqueio').classList.add('hidden');
-                document.getElementById('statsConteudo').classList.remove('hidden');
-                document.getElementById('statsBloqueio').classList.add('hidden');
+        function checkDiaIniciado() {
+            const hoje = getTodayKey();
+            const config = localStorage.getItem('ace_config_' + hoje);
+            if (config) {
+                agentConfig = JSON.parse(config);
+                diaIniciado = true;
+                document.getElementById('headerAgentName').textContent = agentConfig.nome;
+                document.getElementById('headerAgentInfo').textContent = `Eq. ${agentConfig.equipe} • ${agentConfig.matricula}`;
                 document.getElementById('headerAgent').style.display = 'block';
-                
-                // Aba ajustes mostra mensagem de dia iniciado
-                document.getElementById('configSuccess').classList.remove('hidden');
-                document.querySelector('#tab-ajustes .btn-primary').textContent = '🔄 Reiniciar Dia (Apaga dados atuais)';
-            } else {
-                // Bloquear visitas e estatísticas
-                document.getElementById('visitasConteudo').classList.add('hidden');
-                document.getElementById('visitasBloqueio').classList.remove('hidden');
-                document.getElementById('statsConteudo').classList.add('hidden');
-                document.getElementById('statsBloqueio').classList.remove('hidden');
-                document.getElementById('headerAgent').style.display = 'none';
             }
         }
 
-        // Iniciar o dia
         function iniciarDia() {
             const nome = document.getElementById('configNome').value.trim();
             const matricula = document.getElementById('configMatricula').value.trim();
@@ -1151,77 +720,30 @@
                 return;
             }
 
-            // Se já tem dados do dia, confirmar exclusão
-            if (visits.length > 0) {
-                if (!confirm('Isso apagará as visitas do dia atual. Deseja continuar?')) {
-                    return;
-                }
-                // Limpar dados antigos
-                visits = [];
-                localStorage.removeItem('ace_visits_' + getTodayKey());
-            }
-
             agentConfig = {
-                nome: nome,
-                matricula: matricula,
-                equipe: equipe,
+                nome, matricula, equipe,
                 supervisor: document.getElementById('configSupervisor').value.trim(),
                 dataInicio: new Date().toISOString()
             };
 
-            const hoje = getTodayKey();
-            localStorage.setItem('ace_config_' + hoje, JSON.stringify(agentConfig));
-            
+            localStorage.setItem('ace_config_' + getTodayKey(), JSON.stringify(agentConfig));
             diaIniciado = true;
-            updateHeader();
+            
+            document.getElementById('headerAgentName').textContent = nome;
+            document.getElementById('headerAgentInfo').textContent = `Eq. ${equipe} • ${matricula}`;
+            document.getElementById('headerAgent').style.display = 'block';
+            document.getElementById('configSuccess').classList.remove('hidden');
+            
             updateUI();
-            updateStats();
-            showToast('Dia iniciado! Agora você pode registrar visitas.', 'success');
-        }
-
-        function updateHeader() {
-            if (agentConfig.nome) {
-                document.getElementById('headerAgentName').textContent = agentConfig.nome;
-                document.getElementById('headerAgentReg').textContent = agentConfig.matricula;
-            }
-        }
-
-        // Toggle produto
-        function toggleProduto() {
-            const tratamento = document.getElementById('tipoTratamento').value;
-            const detalhe = document.getElementById('produtoDetalhe');
+            showToast('Dia iniciado! Sincronização ativada.', 'success');
             
-            if (tratamento !== 'nenhum' && tratamento !== 'mecanico') {
-                detalhe.classList.remove('hidden');
-            } else {
-                detalhe.classList.add('hidden');
-                document.getElementById('nomeProduto').value = '';
-                document.getElementById('quantidadeProduto').value = '';
-            }
+            // Iniciar sincronização automática
+            setInterval(() => {
+                if (diaIniciado && isOnline) tentarSincronizar();
+            }, CONFIG.SYNC_INTERVAL * 1000);
         }
 
-        // Manipular mudança de situação do imóvel
-        function handleSituacaoChange() {
-            const situacao = document.getElementById('situacaoImovel').value;
-            const isTrabalhado = situacao === 'normal';
-            
-            document.getElementById('cardDepositos').style.display = isTrabalhado ? 'block' : 'none';
-            document.getElementById('cardTratamento').style.display = isTrabalhado ? 'block' : 'none';
-            document.getElementById('cardContagem').style.display = isTrabalhado ? 'block' : 'none';
-        }
-
-        // Calcular totais
-        function calcularTotais() {
-            const eliminados = parseInt(document.getElementById('eliminados').value) || 0;
-            const tratados = parseInt(document.getElementById('tratados').value) || 0;
-            const protegidos = parseInt(document.getElementById('protegidos').value) || 0;
-            const impraticaveis = parseInt(document.getElementById('impraticaveis').value) || 0;
-            
-            document.getElementById('totalDepositos').textContent = eliminados + tratados + protegidos + impraticaveis;
-        }
-
-        // Salvar visita
-        function saveVisit() {
+        async function saveVisit() {
             if (!diaIniciado) {
                 showToast('Inicie o dia em Ajustes primeiro!', 'error');
                 return;
@@ -1229,31 +751,27 @@
 
             const logradouro = document.getElementById('logradouro').value.trim();
             const numero = document.getElementById('numero').value.trim();
+            const microarea = document.getElementById('microarea').value.trim();
             const quarteirao = document.getElementById('quarteirao').value.trim();
 
-            if (!logradouro || !numero || !quarteirao) {
-                showToast('Preencha os campos obrigatórios (*)', 'error');
+            if (!logradouro || !numero || !microarea || !quarteirao) {
+                showToast('Preencha Logradouro, Número, Microárea e Quarteirão', 'error');
                 return;
             }
 
-            const situacao = document.getElementById('situacaoImovel').value;
-            const isTrabalhado = situacao === 'normal';
             const tratamento = document.getElementById('tipoTratamento').value;
-
-            // Validar produto se houver tratamento químico
             let produtoInfo = {};
+
             if (tratamento !== 'nenhum' && tratamento !== 'mecanico') {
-                const nomeProduto = document.getElementById('nomeProduto').value;
-                const qtdProduto = document.getElementById('quantidadeProduto').value;
-                
-                if (!nomeProduto || !qtdProduto) {
-                    showToast('Informe o produto e quantidade utilizada', 'error');
+                const nomeProd = document.getElementById('nomeProduto').value;
+                const qtdProd = document.getElementById('quantidadeProduto').value;
+                if (!nomeProd || !qtdProd) {
+                    showToast('Informe o produto e quantidade', 'error');
                     return;
                 }
-                
                 produtoInfo = {
-                    nome: nomeProduto,
-                    quantidade: qtdProduto,
+                    nome: nomeProd,
+                    quantidade: qtdProd,
                     unidade: document.getElementById('unidadeProduto').value
                 };
             }
@@ -1262,197 +780,173 @@
                 id: Date.now(),
                 data: new Date().toLocaleDateString('pt-BR'),
                 hora: new Date().toLocaleTimeString('pt-BR'),
-                
-                // Dados do agente (vão para o Excel)
                 agente: agentConfig.nome,
                 matricula: agentConfig.matricula,
                 equipe: agentConfig.equipe,
                 supervisor: agentConfig.supervisor || '',
-                
-                endereco: {
-                    logradouro: logradouro,
-                    numero: numero,
-                    complemento: document.getElementById('complemento').value,
-                    quarteirao: quarteirao,
-                    microarea: document.getElementById('microarea').value
-                },
-                
-                imovel: {
-                    tipo: document.getElementById('tipoImovel').value,
-                    situacao: situacao
-                },
-
-                depositos: isTrabalhado ? [
-                    { nome: 'Caixa d\'Água', inspec: document.getElementById('cxInspec').checked, posit: document.getElementById('cxPosit').checked },
-                    { nome: 'Piscina', inspec: document.getElementById('piscinaInspec').checked, posit: document.getElementById('piscinaPosit').checked },
-                    { nome: 'Vaso Sanitário', inspec: document.getElementById('vasoInspec').checked, posit: document.getElementById('vasoPosit').checked },
-                    { nome: 'Tanque', inspec: document.getElementById('tanqueInspec').checked, posit: document.getElementById('tanquePosit').checked },
-                    { nome: 'Tonel', inspec: document.getElementById('tonelInspec').checked, posit: document.getElementById('tonelPosit').checked },
-                    { nome: 'Pote', inspec: document.getElementById('poteInspec').checked, posit: document.getElementById('potePosit').checked },
-                    { nome: 'Balde', inspec: document.getElementById('baldeInspec').checked, posit: document.getElementById('baldePosit').checked },
-                    { nome: 'Garrafa', inspec: document.getElementById('garrafaInspec').checked, posit: document.getElementById('garrafaPosit').checked },
-                    { nome: 'Pneu', inspec: document.getElementById('pneuInspec').checked, posit: document.getElementById('pneuPosit').checked },
-                    { nome: 'Lixo', inspec: document.getElementById('lixoInspec').checked, posit: document.getElementById('lixoPosit').checked },
-                    { nome: 'Outros', inspec: document.getElementById('outrosInspec').checked, posit: document.getElementById('outrosPosit').checked }
-                ] : [],
-
-                tratamento: {
-                    tipo: tratamento,
-                    produto: produtoInfo.nome || '',
-                    quantidade: produtoInfo.quantidade || '',
-                    unidade: produtoInfo.unidade || ''
-                },
-                
-                contagem: isTrabalhado ? {
-                    eliminados: parseInt(document.getElementById('eliminados').value) || 0,
-                    tratados: parseInt(document.getElementById('tratados').value) || 0,
-                    protegidos: parseInt(document.getElementById('protegidos').value) || 0,
-                    impraticaveis: parseInt(document.getElementById('impraticaveis').value) || 0
-                } : { eliminados: 0, tratados: 0, protegidos: 0, impraticaveis: 0 },
-
-                localizacao: currentPosition || { lat: null, lng: null, accuracy: null }
+                logradouro: logradouro,
+                numero: numero,
+                complemento: document.getElementById('complemento').value,
+                microarea: microarea,
+                quarteirao: quarteirao,
+                tipoImovel: document.getElementById('tipoImovel').value,
+                situacao: document.getElementById('situacaoImovel').value,
+                latitude: currentPosition?.lat || '',
+                longitude: currentPosition?.lng || '',
+                precisao: currentPosition?.accuracy || '',
+                tipoTratamento: tratamento,
+                produto: produtoInfo.nome || '',
+                qtdProduto: produtoInfo.quantidade || '',
+                unidade: produtoInfo.unidade || '',
+                depEliminados: parseInt(document.getElementById('eliminados').value) || 0,
+                depTratados: parseInt(document.getElementById('tratados').value) || 0,
+                depProtegidos: parseInt(document.getElementById('protegidos').value) || 0,
+                depImpraticaveis: parseInt(document.getElementById('impraticaveis').value) || 0,
+                depositosInspecionados: '',
+                depositosPositivos: '',
+                sincronizado: false,
+                tentativas: 0
             };
 
             visits.push(visit);
-            saveVisits();
+            salvarVisitsLocal();
             clearForm();
-            showToast('Visita salva com sucesso!', 'success');
+            showToast('Visita salva! Sincronizando...', 'success');
+            
+            // Tentar sincronizar imediatamente
+            await sincronizarVisita(visit);
+            atualizarFilaSync();
             updateStats();
         }
 
-        function clearForm() {
-            document.getElementById('logradouro').value = '';
-            document.getElementById('numero').value = '';
-            document.getElementById('complemento').value = '';
-            document.getElementById('quarteirao').value = '';
-            document.getElementById('microarea').value = 'Carmo';
-            document.getElementById('tipoImovel').value = 'residencial';
-            document.getElementById('situacaoImovel').value = 'normal';
-            document.getElementById('tipoTratamento').value = 'nenhum';
-            document.getElementById('eliminados').value = '0';
-            document.getElementById('tratados').value = '0';
-            document.getElementById('protegidos').value = '0';
-            document.getElementById('impraticaveis').value = '0';
-            document.getElementById('totalDepositos').textContent = '0';
-            document.getElementById('nomeProduto').value = '';
-            document.getElementById('quantidadeProduto').value = '';
-            
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            toggleProduto();
-            handleSituacaoChange();
-        }
-
-        // Estatísticas
-        function updateStats() {
-            const total = visits.length;
-            const trabalhados = visits.filter(v => v.imovel.situacao === 'normal').length;
-            const fechados = visits.filter(v => v.imovel.situacao === 'fechado').length;
-            const recusados = visits.filter(v => v.imovel.situacao === 'recusado').length;
-            const desabitados = visits.filter(v => v.imovel.situacao === 'desabitado').length;
-            
-            let eliminados = 0, tratados = 0, positivos = 0;
-            
-            visits.forEach(v => {
-                eliminados += v.contagem.eliminados;
-                tratados += v.contagem.tratados;
-                positivos += v.depositos.filter(d => d.posit).length;
-            });
-
-            document.getElementById('statTotalVisitas').textContent = total;
-            document.getElementById('statTrabalhados').textContent = trabalhados;
-            document.getElementById('statEliminados').textContent = eliminados;
-            document.getElementById('statTratados').textContent = tratados;
-            document.getElementById('statPositivos').textContent = positivos;
-            document.getElementById('statFechados').textContent = fechados;
-            document.getElementById('statRecusados').textContent = recusados;
-            document.getElementById('statDesabitados').textContent = desabitados;
-
-            const taxaTrabalho = total > 0 ? Math.round((trabalhados / total) * 100) : 0;
-            const depPorVisita = total > 0 ? ((eliminados + tratados) / total).toFixed(1) : '0.0';
-            
-            document.getElementById('statTaxaTrabalho').textContent = taxaTrabalho + '%';
-            document.getElementById('statDepPorVisita').textContent = depPorVisita;
-        }
-
-        // Finalizar dia e exportar
-        function finalizarDia() {
-            if (visits.length === 0) {
-                showToast('Nenhuma visita para exportar', 'error');
-                return;
+        async function sincronizarVisita(visit) {
+            if (!isOnline) {
+                visit.status = 'offline';
+                atualizarFilaSync();
+                return false;
             }
 
-            if (!confirm('Ao exportar, todos os dados do dia serão apagados do aplicativo. Deseja continuar?')) {
-                return;
-            }
+            try {
+                // Preparar dados
+                const dados = { ...visit };
+                delete dados.id;
+                delete dados.sincronizado;
+                delete dados.tentativas;
+                delete dados.status;
 
-            exportToExcel();
-            
-            // Limpar tudo para novo dia
-            const hoje = getTodayKey();
-            localStorage.removeItem('ace_visits_' + hoje);
-            localStorage.removeItem('ace_config_' + hoje);
-            
-            visits = [];
-            agentConfig = {};
-            diaIniciado = false;
-            
-            // Limpar formulário de config
-            document.getElementById('configNome').value = '';
-            document.getElementById('configMatricula').value = '';
-            document.getElementById('configEquipe').value = '';
-            document.getElementById('configSupervisor').value = '';
-            document.getElementById('configSuccess').classList.add('hidden');
-            document.querySelector('#tab-ajustes .btn-primary').textContent = '🚀 Iniciar Dia de Trabalho';
-            
-            updateUI();
-            updateStats();
-            showTab('ajustes');
-            showToast('Dia finalizado! Configure o próximo dia.', 'success');
-        }
+                // Criar formulário para envio (melhor compatibilidade com Google Apps Script)
+                const formData = new FormData();
+                Object.keys(dados).forEach(key => {
+                    formData.append(key, dados[key]);
+                });
 
-        // Exportar Excel
-        function exportToExcel() {
-            const headers = [
-                'Data', 'Hora', 'Agente', 'Matrícula', 'Equipe', 'Supervisor',
-                'Logradouro', 'Número', 'Complemento', 'quarteirao', 'microarea',
-                'Tipo Imóvel', 'Situação', 'Latitude', 'Longitude', 'Precisão_GPS',
-                'Tipo_Tratamento', 'Produto_Utilizado', 'Quantidade_Produto', 'Unidade_Produto',
-                'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 'Dep_Impraticáveis',
-                'Depósitos_Inspecionados', 'Depósitos_Positivos'
-            ];
+                // Enviar usando fetch com no-cors
+                await fetch(CONFIG.SYNC_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                });
 
-            const rows = visits.map(v => {
-                const depsInspec = v.depositos.filter(d => d.inspec).map(d => d.nome).join('; ');
-                const depsPosit = v.depositos.filter(d => d.posit).map(d => d.nome).join('; ');
+                // Como é no-cors, consideramos sucesso se não deu erro
+                visit.sincronizado = true;
+                visit.status = 'synced';
+                visit.dataSync = new Date().toISOString();
                 
-                return [
-                    v.data, v.hora, v.agente, v.matricula, v.equipe, v.supervisor,
-                    v.endereco.logradouro, v.endereco.numero, v.endereco.complemento, v.endereco.quarteirao, v.endereco.microarea,
-                    v.imovel.tipo, v.imovel.situacao,
-                    v.localizacao?.lat || '', v.localizacao?.lng || '', v.localizacao?.accuracy || '',
-                    v.tratamento.tipo, v.tratamento.produto, v.tratamento.quantidade, v.tratamento.unidade,
-                    v.contagem.eliminados, v.contagem.tratados, v.contagem.protegidos, v.contagem.impraticaveis,
-                    depsInspec, depsPosit
-                ];
-            });
+                salvarVisitsLocal();
+                atualizarFilaSync();
+                updateSyncStatus('synced');
+                
+                return true;
 
-            const csv = [
-                headers.join(';'),
-                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
-            ].join('\n');
-
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const dateStr = new Date().toISOString().split('T')[0];
-            const fileName = `ACE_Carmo_${agentConfig.nome}_${dateStr}.csv`;
-            
-            link.href = URL.createObjectURL(blob);
-            link.download = fileName;
-            link.click();
+            } catch (error) {
+                console.error('Erro sincronização:', error);
+                visit.tentativas++;
+                visit.status = 'error';
+                salvarVisitsLocal();
+                atualizarFilaSync();
+                updateSyncStatus('error');
+                return false;
+            }
         }
 
-        // Persistência
-        function saveVisits() {
+        async function tentarSincronizar() {
+            const pendentes = visits.filter(v => !v.sincronizado);
+            
+            if (pendentes.length === 0) {
+                updateSyncStatus('synced');
+                return;
+            }
+
+            updateSyncStatus('syncing');
+
+            for (const visit of pendentes) {
+                await sincronizarVisita(visit);
+                await new Promise(r => setTimeout(r, 1000)); // Delay entre requisições
+            }
+
+            atualizarFilaSync();
+            updateStats();
+        }
+
+        function sincronizarManual() {
+            if (!isOnline) {
+                showToast('Sem conexão com internet', 'error');
+                return;
+            }
+            tentarSincronizar();
+        }
+
+        function updateSyncStatus(status) {
+            const dot = document.getElementById('syncDot');
+            const text = document.getElementById('syncText');
+            
+            dot.className = 'sync-dot';
+            
+            switch(status) {
+                case 'synced':
+                    dot.classList.add('synced');
+                    text.textContent = 'Sincronizado';
+                    break;
+                case 'syncing':
+                    text.textContent = 'Sincronizando...';
+                    break;
+                case 'offline':
+                    dot.classList.add('pending');
+                    text.textContent = 'Sem internet - Modo offline';
+                    break;
+                case 'error':
+                    dot.classList.add('error');
+                    text.textContent = 'Erro de sincronização';
+                    break;
+                default:
+                    text.textContent = 'Aguardando início...';
+            }
+        }
+
+        function atualizarFilaSync() {
+            const pendentes = visits.filter(v => !v.sincronizado);
+            const filaDiv = document.getElementById('syncQueue');
+            const countDiv = document.getElementById('syncQueueCount');
+            const listaDiv = document.getElementById('pendingVisits');
+
+            if (pendentes.length > 0) {
+                filaDiv.classList.add('show');
+                countDiv.textContent = `${pendentes.length} visita(s) aguardando sincronização`;
+                
+                listaDiv.innerHTML = visits.slice(-5).map(v => `
+                    <div class="pending-item">
+                        <span>${v.logradouro}, ${v.numero}</span>
+                        <span class="pending-status ${v.sincronizado ? 'synced' : ''}">
+                            ${v.sincronizado ? '✓' : '⏳'}
+                        </span>
+                    </div>
+                `).join('');
+            } else {
+                filaDiv.classList.remove('show');
+            }
+        }
+
+        function salvarVisitsLocal() {
             localStorage.setItem('ace_visits_' + getTodayKey(), JSON.stringify(visits));
         }
 
@@ -1461,27 +955,107 @@
             if (saved) visits = JSON.parse(saved);
         }
 
+        function updateUI() {
+            const bloqueado = !diaIniciado;
+            document.getElementById('visitasConteudo').classList.toggle('hidden', bloqueado);
+            document.getElementById('visitasBloqueio').classList.toggle('hidden', !bloqueado);
+            document.getElementById('statsConteudo').classList.toggle('hidden', bloqueado);
+            document.getElementById('statsBloqueio').classList.toggle('hidden', !bloqueado);
+        }
+
+        function updateStats() {
+            const syncCount = visits.filter(v => v.sincronizado).length;
+            const pendingCount = visits.filter(v => !v.sincronizado).length;
+            const totalDep = visits.reduce((sum, v) => sum + v.depTratados + v.depEliminados, 0);
+
+            document.getElementById('statTotal').textContent = visits.length;
+            document.getElementById('statSync').textContent = syncCount;
+            document.getElementById('statPending').textContent = pendingCount;
+            document.getElementById('statDep').textContent = totalDep;
+        }
+
+        function clearForm() {
+            ['logradouro', 'numero', 'complemento', 'microarea', 'quarteirao'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('tipoImovel').value = 'residencial';
+            document.getElementById('situacaoImovel').value = 'normal';
+            document.getElementById('tipoTratamento').value = 'nenhum';
+            ['eliminados', 'tratados', 'protegidos', 'impraticaveis'].forEach(id => {
+                document.getElementById(id).value = '0';
+            });
+            toggleProduto();
+        }
+
+        function toggleProduto() {
+            const tipo = document.getElementById('tipoTratamento').value;
+            document.getElementById('produtoDetalhe').classList.toggle('hidden', 
+                tipo === 'nenhum' || tipo === 'mecanico');
+        }
+
+        function handleSituacaoChange() {
+            const situacao = document.getElementById('situacaoImovel').value;
+            const isNormal = situacao === 'normal';
+            document.getElementById('cardTratamento').style.display = isNormal ? 'block' : 'none';
+            document.getElementById('cardContagem').style.display = isNormal ? 'block' : 'none';
+        }
+
+        function finalizarDia() {
+            if (visits.length === 0) {
+                showToast('Nenhuma visita para exportar', 'error');
+                return;
+            }
+
+            const pendentes = visits.filter(v => !v.sincronizado).length;
+            if (pendentes > 0) {
+                if (!confirm(`Ainda há ${pendentes} visitas não sincronizadas. Deseja exportar mesmo assim?`)) {
+                    return;
+                }
+            }
+
+            // Exportar CSV
+            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Logradouro','Numero','Complemento','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis'];
+            
+            const csv = [
+                headers.join(';'),
+                ...visits.map(v => headers.map(h => `"${(v[h] || '').toString().replace(/"/g, '""')}"`).join(';'))
+            ].join('\n');
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ACE_Carmo_${agentConfig.nome}_${getTodayKey()}.csv`;
+            link.click();
+
+            // Limpar
+            localStorage.removeItem('ace_visits_' + getTodayKey());
+            localStorage.removeItem('ace_config_' + getTodayKey());
+            visits = [];
+            diaIniciado = false;
+            
+            showToast('Dia finalizado! Dados exportados.', 'success');
+            setTimeout(() => location.reload(), 1500);
+        }
+
         function getTodayKey() {
             return new Date().toISOString().split('T')[0];
         }
 
-        // Toast
-        function showToast(message, type = 'success') {
+        function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            toast.textContent = msg;
             toast.style.background = type === 'error' ? '#dc2626' : '#1f2937';
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Prevenir fechamento acidental
-        window.onbeforeunload = function(e) {
-            if (visits.length > 0 && !confirm('Deseja realmente sair? Os dados não exportados serão perdidos.')) {
+        window.onbeforeunload = (e) => {
+            const pendentes = visits.filter(v => !v.sincronizado).length;
+            if (pendentes > 0) {
                 e.preventDefault();
-                e.returnValue = '';
+                e.returnValue = `${pendentes} visitas não sincronizadas. Deseja sair?`;
             }
         };
     </script>
 </body>
 </html>
-
