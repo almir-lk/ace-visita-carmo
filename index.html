@@ -21,6 +21,8 @@
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #3b82f6;
+            --purple: #8b5cf6;
+            --orange: #f97316;
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
@@ -69,15 +71,8 @@
             animation: pulse 2s infinite;
         }
 
-        .sync-dot.pending {
-            background: var(--warning);
-            animation: none;
-        }
-
-        .sync-dot.error {
-            background: var(--danger);
-            animation: none;
-        }
+        .sync-dot.pending { background: var(--warning); animation: none; }
+        .sync-dot.error { background: var(--danger); animation: none; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -153,6 +148,237 @@
             border-color: var(--primary);
         }
 
+        /* TABELA DE DEPÓSITOS - 5 COLUNAS */
+        .deposits-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .deposits-table th {
+            text-align: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            padding: 8px 2px;
+            border-bottom: 2px solid var(--border);
+            background: #f9fafb;
+        }
+
+        .deposits-table th:first-child {
+            text-align: left;
+            font-size: 0.75rem;
+            width: auto;
+        }
+
+        .deposits-table th {
+            width: 50px;
+        }
+
+        .deposits-table td {
+            padding: 10px 2px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .deposits-table td:first-child {
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .deposits-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .checkbox-wrapper label {
+            font-size: 0.6rem;
+            color: var(--text-light);
+            margin: 0;
+            font-weight: 400;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* Contagem automática destacada */
+        .contagem-automatica {
+            background: #eff6ff;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .contagem-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .contagem-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .contagem-item {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .contagem-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .contagem-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* ESTATÍSTICAS DETALHADAS */
+        .stats-section {
+            margin-bottom: 20px;
+        }
+
+        .stats-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stats-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-box.blue { background: #eff6ff; }
+        .stat-box.green { background: #f0fdf4; }
+        .stat-box.red { background: #fef2f2; }
+        .stat-box.yellow { background: #fefce8; }
+        .stat-box.purple { background: #faf5ff; }
+        .stat-box.orange { background: #fff7ed; }
+        .stat-box.cyan { background: #ecfeff; }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-value.small {
+            font-size: 1.25rem;
+        }
+
+        /* Resumo geral */
+        .resumo-geral {
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .resumo-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .resumo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .resumo-item {
+            text-align: center;
+        }
+
+        .resumo-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .resumo-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Produtos usados */
+        .produtos-card {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .produtos-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 8px;
+        }
+
+        .produto-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #bbf7d0;
+            font-size: 0.875rem;
+        }
+
+        .produto-item:last-child {
+            border-bottom: none;
+        }
+
         .sync-queue {
             background: #fef3c7;
             border-left: 4px solid var(--warning);
@@ -162,60 +388,7 @@
             display: none;
         }
 
-        .sync-queue.show {
-            display: block;
-        }
-
-        .sync-queue-title {
-            font-weight: 600;
-            color: #92400e;
-            margin-bottom: 4px;
-        }
-
-        .sync-queue-count {
-            font-size: 0.875rem;
-            color: #a16207;
-        }
-
-        .btn-sync-now {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .pending-visits {
-            max-height: 150px;
-            overflow-y: auto;
-            margin-top: 12px;
-        }
-
-        .pending-item {
-            background: white;
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-            font-size: 0.8rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .pending-status {
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: var(--warning);
-            color: white;
-        }
-
-        .pending-status.synced {
-            background: var(--success);
-        }
+        .sync-queue.show { display: block; }
 
         .btn-primary {
             background: var(--primary);
@@ -288,6 +461,15 @@
             margin-bottom: 60px;
         }
 
+        .footer-dev {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
         .toast {
             position: fixed;
             bottom: 100px;
@@ -329,6 +511,8 @@
 
         @media (max-width: 380px) {
             .form-row { grid-template-columns: 1fr; }
+            .contagem-grid { grid-template-columns: repeat(2, 1fr); }
+            .resumo-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -350,8 +534,8 @@
         </div>
     </header>
 
-    <!-- ABA AJUSTES -->
-    <div id="tab-ajustes" class="tab-content">
+    <!-- ABA INÍCIO -->
+    <div id="tab-inicio" class="tab-content">
         <div class="container">
             <div class="card">
                 <div class="card-header">
@@ -390,8 +574,7 @@
 
             <div class="footer">
                 <strong>Prefeitura Municipal de Carmo</strong>
-                Coordenação de Combate às Endemias<br>
-                Desenvolvido por almir.lk
+                Coordenação de Combate às Endemias
             </div>
         </div>
     </div>
@@ -402,18 +585,17 @@
             <div id="visitasBloqueio" class="blocked-message hidden">
                 <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
                 <h3>Dia não iniciado</h3>
-                <p>Vá em "Ajustes" e preencha os dados do agente.</p>
+                <p>Vá em "Início" e preencha os dados do agente.</p>
             </div>
 
             <div id="visitasConteudo">
-                <!-- Fila de sincronização -->
                 <div class="sync-queue" id="syncQueue">
-                    <div class="sync-queue-title">⏳ Aguardando sincronização</div>
-                    <div class="sync-queue-count" id="syncQueueCount">0 visitas na fila</div>
-                    <button class="btn-sync-now" onclick="sincronizarManual()">Sincronizar Agora</button>
-                    <div class="pending-visits" id="pendingVisits"></div>
+                    <div style="font-weight: 600; color: #92400e; margin-bottom: 4px;">⏳ Aguardando sincronização</div>
+                    <div style="font-size: 0.875rem; color: #a16207;" id="syncQueueCount">0 visitas na fila</div>
+                    <button style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-top: 8px; cursor: pointer;" onclick="sincronizarManual()">Sincronizar Agora</button>
                 </div>
 
+                <!-- ENDEREÇO -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">📍</div>
@@ -448,6 +630,7 @@
                     </div>
                 </div>
 
+                <!-- IMÓVEL -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">🏠</div>
@@ -477,6 +660,157 @@
                     </div>
                 </div>
 
+                <!-- INSPEÇÃO DE DEPÓSITOS - 5 COLUNAS -->
+                <div class="card" id="cardDepositos">
+                    <div class="card-header">
+                        <div class="card-icon">💧</div>
+                        <h2 class="card-title">Inspeção de Depósitos</h2>
+                    </div>
+
+                    <table class="deposits-table">
+                        <thead>
+                            <tr>
+                                <th>Depósito</th>
+                                <th>Inspec</th>
+                                <th>Elimin</th>
+                                <th>Posit</th>
+                                <th>Prot</th>
+                                <th>Impr</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>💧 Caixa d'Água</td>
+                                <td><input type="checkbox" id="cx_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🏊 Piscina</td>
+                                <td><input type="checkbox" id="piscina_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🚽 Vaso/Banheiro</td>
+                                <td><input type="checkbox" id="vaso_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🛁 Tanque</td>
+                                <td><input type="checkbox" id="tanque_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🛢️ Tonel</td>
+                                <td><input type="checkbox" id="tonel_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🏺 Barrica</td>
+                                <td><input type="checkbox" id="barrica_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🪴 Vaso Planta</td>
+                                <td><input type="checkbox" id="pote_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🪣 Balde</td>
+                                <td><input type="checkbox" id="balde_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🍾 Garrafa/Lata</td>
+                                <td><input type="checkbox" id="garrafa_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🛞 Pneu</td>
+                                <td><input type="checkbox" id="pneu_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🗑️ Lixo/Entulho</td>
+                                <td><input type="checkbox" id="lixo_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>❓ Outros</td>
+                                <td><input type="checkbox" id="outros_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- CONTAGEM AUTOMÁTICA -->
+                    <div class="contagem-automatica">
+                        <div class="contagem-title">📊 Contagem Automática de Depósitos</div>
+                        <div class="contagem-grid">
+                            <div class="contagem-item">
+                                <div class="contagem-label">Inspecionados</div>
+                                <div class="contagem-value" id="total_inspec">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Eliminados</div>
+                                <div class="contagem-value" id="total_elim" style="color: var(--success);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Positivos</div>
+                                <div class="contagem-value" id="total_posit" style="color: var(--danger);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Protegidos</div>
+                                <div class="contagem-value" id="total_prot" style="color: var(--warning);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Impraticáveis</div>
+                                <div class="contagem-value" id="total_impr" style="color: var(--purple);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Total Geral</div>
+                                <div class="contagem-value" id="total_geral" style="color: var(--orange);">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRATAMENTO -->
                 <div class="card" id="cardTratamento">
                     <div class="card-header">
                         <div class="card-icon">🔬</div>
@@ -530,33 +864,6 @@
                     </div>
                 </div>
 
-                <div class="card" id="cardContagem">
-                    <div class="card-header">
-                        <div class="card-icon">📊</div>
-                        <h2 class="card-title">Contagem de Depósitos</h2>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Eliminados</label>
-                            <input type="number" id="eliminados" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Tratados</label>
-                            <input type="number" id="tratados" min="0" value="0">
-                        </div>
-                    </div>
-                    <div class="form-row" style="margin-bottom: 0;">
-                        <div class="form-group">
-                            <label>Protegidos</label>
-                            <input type="number" id="protegidos" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Impraticáveis</label>
-                            <input type="number" id="impraticaveis" min="0" value="0">
-                        </div>
-                    </div>
-                </div>
-
                 <button class="btn-primary" onclick="saveVisit()" style="margin-bottom: 20px;">
                     💾 Salvar e Sincronizar
                 </button>
@@ -564,65 +871,154 @@
 
             <div class="footer">
                 <strong>Prefeitura Municipal de Carmo</strong>
-                Coordenação de Combate às Endemias<br>
-                Desenvolvido por almir.lk
+                Coordenação de Combate às Endemias
             </div>
         </div>
     </div>
 
-    <!-- ABA ESTATÍSTICAS -->
-    <div id="tab-estatisticas" class="tab-content hidden">
+    <!-- ABA DADOS (ESTATÍSTICAS COMPLETAS) -->
+    <div id="tab-dados" class="tab-content hidden">
         <div class="container">
             <div id="statsBloqueio" class="blocked-message hidden">
                 <div style="font-size: 3rem; margin-bottom: 15px;">📊</div>
                 <h3>Sem dados</h3>
-                <p>Inicie o dia e registre visitas.</p>
+                <p>Inicie o dia em "Início" e registre visitas.</p>
             </div>
 
             <div id="statsConteudo">
-                <div class="card">
-                    <h3 style="margin-bottom: 16px;">Resumo do Dia</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="background: #eff6ff; padding: 16px; border-radius: 8px; text-align: center;">
-                            <div style="font-size: 0.875rem; color: var(--text-light);">Total Visitas</div>
-                            <div style="font-size: 2rem; font-weight: 700;" id="statTotal">0</div>
+                <!-- RESUMO GERAL -->
+                <div class="resumo-geral">
+                    <div class="resumo-title">📈 Resumo Geral do Dia</div>
+                    <div class="resumo-grid">
+                        <div class="resumo-item">
+                            <div class="resumo-label">Total Visitas</div>
+                            <div class="resumo-value" id="resumoTotal">0</div>
                         </div>
-                        <div style="background: #f0fdf4; padding: 16px; border-radius: 8px; text-align: center;">
-                            <div style="font-size: 0.875rem; color: var(--text-light);">Sincronizadas</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: var(--success);" id="statSync">0</div>
+                        <div class="resumo-item">
+                            <div class="resumo-label">Tempo Médio</div>
+                            <div class="resumo-value" id="resumoTempo">0min</div>
                         </div>
-                        <div style="background: #fef2f2; padding: 16px; border-radius: 8px; text-align: center;">
-                            <div style="font-size: 0.875rem; color: var(--text-light);">Pendentes</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: var(--danger);" id="statPending">0</div>
+                        <div class="resumo-item">
+                            <div class="resumo-label">Taxa Trabalho</div>
+                            <div class="resumo-value" id="resumoTaxa">0%</div>
                         </div>
-                        <div style="background: #faf5ff; padding: 16px; border-radius: 8px; text-align: center;">
-                            <div style="font-size: 0.875rem; color: var(--text-light);">Dep. Tratados</div>
-                            <div style="font-size: 2rem; font-weight: 700;" id="statDep">0</div>
+                    </div>
+                </div>
+
+                <!-- PRODUTOS USADOS -->
+                <div id="produtosCard" class="produtos-card hidden">
+                    <div class="produtos-title">💊 Produtos Utilizados no Dia</div>
+                    <div id="listaProdutos"></div>
+                </div>
+
+                <!-- ESTATÍSTICAS DE VISITAS -->
+                <div class="stats-section">
+                    <div class="stats-title">🏠 Situação dos Imóveis</div>
+                    <div class="stats-grid">
+                        <div class="stat-box blue">
+                            <div class="stat-label">Trabalhados</div>
+                            <div class="stat-value" id="statTrabalhados">0</div>
+                        </div>
+                        <div class="stat-box green">
+                            <div class="stat-label">Visitas Realizadas</div>
+                            <div class="stat-value" id="statRealizadas">0</div>
+                        </div>
+                        <div class="stat-box gray">
+                            <div class="stat-label">Fechados</div>
+                            <div class="stat-value" id="statFechados">0</div>
+                        </div>
+                        <div class="stat-box orange">
+                            <div class="stat-label">Recusados</div>
+                            <div class="stat-value" id="statRecusados">0</div>
+                        </div>
+                        <div class="stat-box yellow">
+                            <div class="stat-label">Desabitados</div>
+                            <div class="stat-value" id="statDesabitados">0</div>
+                        </div>
+                        <div class="stat-box purple">
+                            <div class="stat-label">Demolidos</div>
+                            <div class="stat-value" id="statDemolidos">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTATÍSTICAS DE DEPÓSITOS -->
+                <div class="stats-section">
+                    <div class="stats-title">💧 Controle de Depósitos</div>
+                    <div class="stats-grid-3">
+                        <div class="stat-box cyan">
+                            <div class="stat-label">Inspecionados</div>
+                            <div class="stat-value" id="statInspecionados">0</div>
+                        </div>
+                        <div class="stat-box green">
+                            <div class="stat-label">Eliminados</div>
+                            <div class="stat-value" id="statEliminados">0</div>
+                        </div>
+                        <div class="stat-box red">
+                            <div class="stat-label">Positivos</div>
+                            <div class="stat-value" id="statPositivos">0</div>
+                        </div>
+                        <div class="stat-box yellow">
+                            <div class="stat-label">Protegidos</div>
+                            <div class="stat-value" id="statProtegidos">0</div>
+                        </div>
+                        <div class="stat-box purple">
+                            <div class="stat-label">Impraticáveis</div>
+                            <div class="stat-value" id="statImpraticaveis">0</div>
+                        </div>
+                        <div class="stat-box blue">
+                            <div class="stat-label">Total Geral</div>
+                            <div class="stat-value" id="statTotalDepositos">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ÍNDICES -->
+                <div class="stats-section">
+                    <div class="stats-title">📊 Índices de Produtividade</div>
+                    <div class="stats-grid">
+                        <div class="stat-box blue">
+                            <div class="stat-label">Depósitos/Visita</div>
+                            <div class="stat-value small" id="statDepPorVisita">0.0</div>
+                        </div>
+                        <div class="stat-box green">
+                            <div class="stat-label">Positivos/Inspec</div>
+                            <div class="stat-value small" id="statPositividade">0%</div>
+                        </div>
+                        <div class="stat-box cyan">
+                            <div class="stat-label">Sincronizadas</div>
+                            <div class="stat-value" id="statSync">0</div>
+                        </div>
+                        <div class="stat-box orange">
+                            <div class="stat-label">Pendentes</div>
+                            <div class="stat-value" id="statPending">0</div>
                         </div>
                     </div>
                 </div>
 
                 <button class="btn-export" onclick="finalizarDia()">
-                    📊 Exportar Excel & Finalizar
+                    📊 Exportar Excel & Finalizar Dia
                 </button>
-            </div>
 
-            <div class="footer">
-                <strong>Prefeitura Municipal de Carmo</strong>
-                Coordenação de Combate às Endemias<br>
-                Desenvolvido por almir.lk
+                <!-- CRÉDITOS SOMENTE NA ABA DADOS -->
+                <div class="footer-dev">
+                    <strong>Prefeitura Municipal de Carmo</strong><br>
+                    Coordenação de Combate às Endemias<br>
+                    <span style="color: var(--primary);">Desenvolvido por almir.lk</span>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
-        <button class="nav-item active" id="nav-ajustes" onclick="showTab('ajustes')">
-            <span>⚙️</span>Ajustes
+        <button class="nav-item active" id="nav-inicio" onclick="showTab('inicio')">
+            <span>🏁</span>Início
         </button>
         <button class="nav-item" id="nav-visitas" onclick="showTab('visitas')">
             <span>🏠</span>Visitas
         </button>
-        <button class="nav-item" id="nav-estatisticas" onclick="showTab('estatisticas')">
+        <button class="nav-item" id="nav-dados" onclick="showTab('dados')">
             <span>📊</span>Dados
         </button>
     </nav>
@@ -631,28 +1027,26 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO - SUA URL DO GOOGLE APPS SCRIPT
+        // CONFIGURAÇÃO
         // ============================================
         const CONFIG = {
-            // URL do Google Apps Script (ATUALIZADA COM A SUA)
             SYNC_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
-            
-            // Sincronizar a cada 30 segundos
             SYNC_INTERVAL: 30
         };
 
-        // ============================================
-        // VARIÁVEIS GLOBAIS
-        // ============================================
+        // Lista de depósitos para controle
+        const DEPOSITOS = [
+            'cx', 'piscina', 'vaso', 'tanque', 'tonel', 'barrica', 
+            'pote', 'balde', 'garrafa', 'pneu', 'lixo', 'outros'
+        ];
+
         let visits = [];
         let agentConfig = {};
         let currentPosition = null;
         let diaIniciado = false;
         let isOnline = navigator.onLine;
+        let horaInicio = null;
 
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             checkDiaIniciado();
             loadVisits();
@@ -661,7 +1055,6 @@
             updateUI();
             updateStats();
             
-            // Monitorar conexão
             window.addEventListener('online', () => {
                 isOnline = true;
                 updateSyncStatus('online');
@@ -694,7 +1087,7 @@
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
             document.getElementById(`nav-${tab}`).classList.add('active');
-            if (tab === 'estatisticas') updateStats();
+            if (tab === 'dados') updateStats();
             if (tab === 'visitas') atualizarFilaSync();
         }
 
@@ -704,6 +1097,7 @@
             if (config) {
                 agentConfig = JSON.parse(config);
                 diaIniciado = true;
+                horaInicio = agentConfig.dataInicio;
                 document.getElementById('headerAgentName').textContent = agentConfig.nome;
                 document.getElementById('headerAgentInfo').textContent = `Eq. ${agentConfig.equipe} • ${agentConfig.matricula}`;
                 document.getElementById('headerAgent').style.display = 'block';
@@ -728,6 +1122,7 @@
 
             localStorage.setItem('ace_config_' + getTodayKey(), JSON.stringify(agentConfig));
             diaIniciado = true;
+            horaInicio = agentConfig.dataInicio;
             
             document.getElementById('headerAgentName').textContent = nome;
             document.getElementById('headerAgentInfo').textContent = `Eq. ${equipe} • ${matricula}`;
@@ -737,15 +1132,41 @@
             updateUI();
             showToast('Dia iniciado! Sincronização ativada.', 'success');
             
-            // Iniciar sincronização automática
             setInterval(() => {
                 if (diaIniciado && isOnline) tentarSincronizar();
             }, CONFIG.SYNC_INTERVAL * 1000);
         }
 
+        // CONTAGEM AUTOMÁTICA DOS DEPÓSITOS
+        function calcularContagem() {
+            let contagem = {
+                inspec: 0,
+                elim: 0,
+                posit: 0,
+                prot: 0,
+                impr: 0
+            };
+
+            DEPOSITOS.forEach(dep => {
+                if (document.getElementById(dep + '_inspec')?.checked) contagem.inspec++;
+                if (document.getElementById(dep + '_elim')?.checked) contagem.elim++;
+                if (document.getElementById(dep + '_posit')?.checked) contagem.posit++;
+                if (document.getElementById(dep + '_prot')?.checked) contagem.prot++;
+                if (document.getElementById(dep + '_impr')?.checked) contagem.impr++;
+            });
+
+            // Atualizar display
+            document.getElementById('total_inspec').textContent = contagem.inspec;
+            document.getElementById('total_elim').textContent = contagem.elim;
+            document.getElementById('total_posit').textContent = contagem.posit;
+            document.getElementById('total_prot').textContent = contagem.prot;
+            document.getElementById('total_impr').textContent = contagem.impr;
+            document.getElementById('total_geral').textContent = contagem.inspec + contagem.elim + contagem.posit + contagem.prot + contagem.impr;
+        }
+
         async function saveVisit() {
             if (!diaIniciado) {
-                showToast('Inicie o dia em Ajustes primeiro!', 'error');
+                showToast('Inicie o dia em Início primeiro!', 'error');
                 return;
             }
 
@@ -771,24 +1192,47 @@
                 }
                 produtoInfo = {
                     nome: nomeProd,
-                    quantidade: qtdProd,
+                    quantidade: parseFloat(qtdProd),
                     unidade: document.getElementById('unidadeProduto').value
                 };
             }
+
+            // Coletar dados dos depósitos
+            const depositosDetalhados = {};
+            DEPOSITOS.forEach(dep => {
+                depositosDetalhados[dep] = {
+                    inspec: document.getElementById(dep + '_inspec')?.checked || false,
+                    elim: document.getElementById(dep + '_elim')?.checked || false,
+                    posit: document.getElementById(dep + '_posit')?.checked || false,
+                    prot: document.getElementById(dep + '_prot')?.checked || false,
+                    impr: document.getElementById(dep + '_impr')?.checked || false
+                };
+            });
+
+            // Calcular totais
+            const totais = {
+                inspec: 0, elim: 0, posit: 0, prot: 0, impr: 0
+            };
+            Object.values(depositosDetalhados).forEach(d => {
+                if (d.inspec) totais.inspec++;
+                if (d.elim) totais.elim++;
+                if (d.posit) totais.posit++;
+                if (d.prot) totais.prot++;
+                if (d.impr) totais.impr++;
+            });
 
             const visit = {
                 id: Date.now(),
                 data: new Date().toLocaleDateString('pt-BR'),
                 hora: new Date().toLocaleTimeString('pt-BR'),
+                timestamp: Date.now(),
                 agente: agentConfig.nome,
                 matricula: agentConfig.matricula,
                 equipe: agentConfig.equipe,
                 supervisor: agentConfig.supervisor || '',
-                logradouro: logradouro,
-                numero: numero,
+                logradouro, numero,
                 complemento: document.getElementById('complemento').value,
-                microarea: microarea,
-                quarteirao: quarteirao,
+                microarea, quarteirao,
                 tipoImovel: document.getElementById('tipoImovel').value,
                 situacao: document.getElementById('situacaoImovel').value,
                 latitude: currentPosition?.lat || '',
@@ -798,12 +1242,12 @@
                 produto: produtoInfo.nome || '',
                 qtdProduto: produtoInfo.quantidade || '',
                 unidade: produtoInfo.unidade || '',
-                depEliminados: parseInt(document.getElementById('eliminados').value) || 0,
-                depTratados: parseInt(document.getElementById('tratados').value) || 0,
-                depProtegidos: parseInt(document.getElementById('protegidos').value) || 0,
-                depImpraticaveis: parseInt(document.getElementById('impraticaveis').value) || 0,
-                depositosInspecionados: '',
-                depositosPositivos: '',
+                depEliminados: totais.elim,
+                depTratados: totais.inspec,
+                depProtegidos: totais.prot,
+                depImpraticaveis: totais.impr,
+                depositosPositivos: totais.posit,
+                depositosDetalhados: depositosDetalhados,
                 sincronizado: false,
                 tentativas: 0
             };
@@ -813,7 +1257,6 @@
             clearForm();
             showToast('Visita salva! Sincronizando...', 'success');
             
-            // Tentar sincronizar imediatamente
             await sincronizarVisita(visit);
             atualizarFilaSync();
             updateStats();
@@ -827,27 +1270,25 @@
             }
 
             try {
-                // Preparar dados
                 const dados = { ...visit };
                 delete dados.id;
                 delete dados.sincronizado;
                 delete dados.tentativas;
                 delete dados.status;
+                delete dados.depositosDetalhados;
+                delete dados.timestamp;
 
-                // Criar formulário para envio (melhor compatibilidade com Google Apps Script)
                 const formData = new FormData();
                 Object.keys(dados).forEach(key => {
                     formData.append(key, dados[key]);
                 });
 
-                // Enviar usando fetch com no-cors
                 await fetch(CONFIG.SYNC_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: formData
                 });
 
-                // Como é no-cors, consideramos sucesso se não deu erro
                 visit.sincronizado = true;
                 visit.status = 'synced';
                 visit.dataSync = new Date().toISOString();
@@ -881,7 +1322,7 @@
 
             for (const visit of pendentes) {
                 await sincronizarVisita(visit);
-                await new Promise(r => setTimeout(r, 1000)); // Delay entre requisições
+                await new Promise(r => setTimeout(r, 1000));
             }
 
             atualizarFilaSync();
@@ -927,22 +1368,109 @@
             const pendentes = visits.filter(v => !v.sincronizado);
             const filaDiv = document.getElementById('syncQueue');
             const countDiv = document.getElementById('syncQueueCount');
-            const listaDiv = document.getElementById('pendingVisits');
 
             if (pendentes.length > 0) {
                 filaDiv.classList.add('show');
                 countDiv.textContent = `${pendentes.length} visita(s) aguardando sincronização`;
-                
-                listaDiv.innerHTML = visits.slice(-5).map(v => `
-                    <div class="pending-item">
-                        <span>${v.logradouro}, ${v.numero}</span>
-                        <span class="pending-status ${v.sincronizado ? 'synced' : ''}">
-                            ${v.sincronizado ? '✓' : '⏳'}
-                        </span>
-                    </div>
-                `).join('');
             } else {
                 filaDiv.classList.remove('show');
+            }
+        }
+
+        // ESTATÍSTICAS COMPLETAS
+        function updateStats() {
+            if (visits.length === 0) {
+                document.getElementById('resumoTotal').textContent = '0';
+                document.getElementById('resumoTempo').textContent = '0min';
+                document.getElementById('resumoTaxa').textContent = '0%';
+                return;
+            }
+
+            // Contagens básicas
+            const total = visits.length;
+            const trabalhados = visits.filter(v => v.situacao === 'normal').length;
+            const fechados = visits.filter(v => v.situacao === 'fechado').length;
+            const recusados = visits.filter(v => v.situacao === 'recusado').length;
+            const desabitados = visits.filter(v => v.situacao === 'desabitado').length;
+            const demolidos = visits.filter(v => v.situacao === 'demolido').length;
+            const realizadas = visits.filter(v => v.situacao !== 'fechado' && v.situacao !== 'recusado').length;
+
+            // Depósitos
+            let totalInspec = 0, totalElim = 0, totalPosit = 0, totalProt = 0, totalImpr = 0;
+            visits.forEach(v => {
+                totalInspec += v.depTratados || 0;
+                totalElim += v.depEliminados || 0;
+                totalPosit += v.depositosPositivos || 0;
+                totalProt += v.depProtegidos || 0;
+                totalImpr += v.depImpraticaveis || 0;
+            });
+
+            // Sincronização
+            const syncCount = visits.filter(v => v.sincronizado).length;
+            const pendingCount = visits.filter(v => !v.sincronizado).length;
+
+            // Tempo médio
+            let tempoMedio = 0;
+            if (horaInicio && visits.length > 0) {
+                const inicio = new Date(horaInicio).getTime();
+                const agora = Date.now();
+                const diffMinutos = Math.floor((agora - inicio) / 60000);
+                tempoMedio = Math.floor(diffMinutos / visits.length);
+            }
+
+            // Taxa de trabalho
+            const taxaTrabalho = total > 0 ? Math.round((trabalhados / total) * 100) : 0;
+
+            // Índices
+            const depPorVisita = total > 0 ? (totalInspec / total).toFixed(1) : '0.0';
+            const taxaPositividade = totalInspec > 0 ? Math.round((totalPosit / totalInspec) * 100) : 0;
+
+            // Atualizar Resumo Geral
+            document.getElementById('resumoTotal').textContent = total;
+            document.getElementById('resumoTempo').textContent = tempoMedio + 'min';
+            document.getElementById('resumoTaxa').textContent = taxaTrabalho + '%';
+
+            // Atualizar Situação dos Imóveis
+            document.getElementById('statTrabalhados').textContent = trabalhados;
+            document.getElementById('statRealizadas').textContent = realizadas;
+            document.getElementById('statFechados').textContent = fechados;
+            document.getElementById('statRecusados').textContent = recusados;
+            document.getElementById('statDesabitados').textContent = desabitados;
+            document.getElementById('statDemolidos').textContent = demolidos;
+
+            // Atualizar Depósitos
+            document.getElementById('statInspecionados').textContent = totalInspec;
+            document.getElementById('statEliminados').textContent = totalElim;
+            document.getElementById('statPositivos').textContent = totalPosit;
+            document.getElementById('statProtegidos').textContent = totalProt;
+            document.getElementById('statImpraticaveis').textContent = totalImpr;
+            document.getElementById('statTotalDepositos').textContent = totalInspec + totalElim + totalProt + totalImpr;
+
+            // Atualizar Índices
+            document.getElementById('statDepPorVisita').textContent = depPorVisita;
+            document.getElementById('statPositividade').textContent = taxaPositividade + '%';
+            document.getElementById('statSync').textContent = syncCount;
+            document.getElementById('statPending').textContent = pendingCount;
+
+            // Produtos usados
+            const produtos = {};
+            visits.forEach(v => {
+                if (v.produto) {
+                    const key = `${v.produto} (${v.unidade})`;
+                    produtos[key] = (produtos[key] || 0) + (v.qtdProduto || 0);
+                }
+            });
+
+            const produtosDiv = document.getElementById('listaProdutos');
+            const produtosCard = document.getElementById('produtosCard');
+            
+            if (Object.keys(produtos).length > 0) {
+                produtosDiv.innerHTML = Object.entries(produtos)
+                    .map(([nome, qtd]) => `<div class="produto-item"><span>${nome}</span><strong>${qtd.toFixed(2)}</strong></div>`)
+                    .join('');
+                produtosCard.classList.remove('hidden');
+            } else {
+                produtosCard.classList.add('hidden');
             }
         }
 
@@ -963,17 +1491,6 @@
             document.getElementById('statsBloqueio').classList.toggle('hidden', !bloqueado);
         }
 
-        function updateStats() {
-            const syncCount = visits.filter(v => v.sincronizado).length;
-            const pendingCount = visits.filter(v => !v.sincronizado).length;
-            const totalDep = visits.reduce((sum, v) => sum + v.depTratados + v.depEliminados, 0);
-
-            document.getElementById('statTotal').textContent = visits.length;
-            document.getElementById('statSync').textContent = syncCount;
-            document.getElementById('statPending').textContent = pendingCount;
-            document.getElementById('statDep').textContent = totalDep;
-        }
-
         function clearForm() {
             ['logradouro', 'numero', 'complemento', 'microarea', 'quarteirao'].forEach(id => {
                 document.getElementById(id).value = '';
@@ -981,9 +1498,17 @@
             document.getElementById('tipoImovel').value = 'residencial';
             document.getElementById('situacaoImovel').value = 'normal';
             document.getElementById('tipoTratamento').value = 'nenhum';
-            ['eliminados', 'tratados', 'protegidos', 'impraticaveis'].forEach(id => {
-                document.getElementById(id).value = '0';
+            
+            // Limpar todos os checkboxes
+            DEPOSITOS.forEach(dep => {
+                ['inspec', 'elim', 'posit', 'prot', 'impr'].forEach(tipo => {
+                    const el = document.getElementById(dep + '_' + tipo);
+                    if (el) el.checked = false;
+                });
             });
+            
+            // Resetar contagem
+            calcularContagem();
             toggleProduto();
         }
 
@@ -996,8 +1521,8 @@
         function handleSituacaoChange() {
             const situacao = document.getElementById('situacaoImovel').value;
             const isNormal = situacao === 'normal';
+            document.getElementById('cardDepositos').style.display = isNormal ? 'block' : 'none';
             document.getElementById('cardTratamento').style.display = isNormal ? 'block' : 'none';
-            document.getElementById('cardContagem').style.display = isNormal ? 'block' : 'none';
         }
 
         function finalizarDia() {
@@ -1013,8 +1538,7 @@
                 }
             }
 
-            // Exportar CSV
-            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Logradouro','Numero','Complemento','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis'];
+            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Logradouro','Numero','Complemento','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis','Depositos_Positivos'];
             
             const csv = [
                 headers.join(';'),
@@ -1027,7 +1551,6 @@
             link.download = `ACE_Carmo_${agentConfig.nome}_${getTodayKey()}.csv`;
             link.click();
 
-            // Limpar
             localStorage.removeItem('ace_visits_' + getTodayKey());
             localStorage.removeItem('ace_config_' + getTodayKey());
             visits = [];
