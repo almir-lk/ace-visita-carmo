@@ -77,22 +77,6 @@
             font-size: 0.75rem;
         }
 
-        .btn-save-top {
-            background: white;
-            color: var(--primary);
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-        }
-
-        .btn-save-top:active {
-            transform: scale(0.95);
-        }
-
         /* Container */
         .container {
             padding: 16px;
@@ -409,7 +393,28 @@
             font-weight: 700;
         }
 
-        /* Botão Exportar */
+        /* Botões */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
         .btn-export {
             background: var(--success);
             color: white;
@@ -432,37 +437,45 @@
             transform: scale(0.98);
         }
 
-        /* Configurações */
-        .btn-config {
-            background: var(--primary);
-            color: white;
+        .btn-save-top {
+            background: white;
+            color: var(--primary);
             border: none;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 8px 20px;
+            border-radius: 6px;
             font-weight: 600;
+            font-size: 0.875rem;
             cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            box-shadow: var(--shadow);
         }
 
+        .btn-save-top:active {
+            transform: scale(0.95);
+        }
+
+        /* Configurações */
         .success-message {
             background: #dcfce7;
             color: #166534;
-            padding: 12px;
+            padding: 16px;
             border-radius: 8px;
             margin-top: 16px;
             text-align: center;
             font-weight: 500;
-            display: none;
         }
 
-        .success-message.show {
-            display: block;
+        .blocked-message {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .blocked-message-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
         }
 
         /* Bottom Navigation */
@@ -497,6 +510,11 @@
 
         .nav-item.active {
             color: var(--primary);
+        }
+
+        .nav-item:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .nav-item span {
@@ -570,9 +588,19 @@
             50% { opacity: 0.5; }
         }
 
+        /* Tratamento Detalhado */
+        .tratamento-detalhe {
+            background: #f0fdf4;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 4px solid var(--success);
+        }
+
         /* Utilidades */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
+        .mb-0 { margin-bottom: 0; }
 
         /* Responsivo */
         @media (max-width: 380px) {
@@ -591,295 +619,20 @@
                 <h1>ACE Visitas</h1>
                 <div class="header-date" id="currentDate">14 de fevereiro</div>
             </div>
-            <div class="header-agent">
-                <span id="headerAgentName">Almir</span>
-                <small id="headerAgentReg">1234</small>
+            <div class="header-agent" id="headerAgent" style="display: none;">
+                <span id="headerAgentName">-</span>
+                <small id="headerAgentReg">-</small>
             </div>
         </div>
     </header>
 
-    <!-- ABA VISITAS -->
-    <div id="tab-visitas" class="tab-content">
-        <div class="container">
-            <!-- GPS -->
-            <div style="text-align: center;">
-                <div class="gps-badge" id="gpsStatus">
-                    <div class="gps-dot"></div>
-                    <span>Aguardando GPS...</span>
-                </div>
-            </div>
-
-            <!-- Endereço -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">📍</div>
-                    <h2 class="card-title">Endereço</h2>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Logradouro <span class="required">*</span></label>
-                        <input type="text" id="logradouro" placeholder="Rua, Avenida, etc.">
-                    </div>
-                    <div class="form-group">
-                        <label>Número <span class="required">*</span></label>
-                        <input type="text" id="numero" placeholder="123">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Complemento</label>
-                    <input type="text" id="complemento" placeholder="Apto, Casa, etc.">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Microárea <span class="required">*</span></label>
-                        <input type="text" id="microarea" placeholder="Microárea">
-                    </div>
-                    <div class="form-group">
-                        <label>Quarteirão <span class="required">*</span></label>
-                        <input type="text" id="quarteirao" value="Carmo" placeholder="Quarteirão">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Imóvel -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">🏠</div>
-                    <h2 class="card-title">Imóvel</h2>
-                </div>
-
-                <div class="form-group">
-                    <label>Tipo de Imóvel</label>
-                    <select id="tipoImovel">
-                        <option value="residencial">Residencial</option>
-                        <option value="comercial">Comercial</option>
-                        <option value="terreno">Terreno Baldio</option>
-                        <option value="publico">Órgão Público</option>
-                        <option value="outros">Outros</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Situação do Imóvel</label>
-                    <select id="situacaoImovel" onchange="handleSituacaoChange()">
-                        <option value="normal">Normal (Trabalhado)</option>
-                        <option value="fechado">Fechado</option>
-                        <option value="recusado">Recusa de Acesso</option>
-                        <option value="desabitado">Desabitado</option>
-                        <option value="demolido">Demolido</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Inspeção de Depósitos -->
-            <div class="card" id="cardDepositos">
-                <div class="card-header">
-                    <div class="card-icon">💧</div>
-                    <h2 class="card-title">Inspeção de Depósitos</h2>
-                </div>
-
-                <table class="deposits-table">
-                    <thead>
-                        <tr>
-                            <th>Depósito</th>
-                            <th style="text-align: center;">Inspec.</th>
-                            <th style="text-align: center;">Posit.</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Caixa d'Água</td><td><input type="checkbox" id="cxInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="cxPosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Piscina</td><td><input type="checkbox" id="piscinaInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="piscinaPosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Vaso Sanitário</td><td><input type="checkbox" id="vasoInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="vasoPosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Tanque</td><td><input type="checkbox" id="tanqueInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="tanquePosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Tonel</td><td><input type="checkbox" id="tonelInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="tonelPosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Pote</td><td><input type="checkbox" id="poteInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="potePosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Balde</td><td><input type="checkbox" id="baldeInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="baldePosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Garrafa</td><td><input type="checkbox" id="garrafaInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="garrafaPosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Pneu</td><td><input type="checkbox" id="pneuInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="pneuPosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Lixo</td><td><input type="checkbox" id="lixoInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="lixoPosit" onchange="calcularTotais()"></td></tr>
-                        <tr><td>Outros</td><td><input type="checkbox" id="outrosInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="outrosPosit" onchange="calcularTotais()"></td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Tratamento -->
-            <div class="card" id="cardTratamento">
-                <div class="card-header">
-                    <div class="card-icon">🔬</div>
-                    <h2 class="card-title">Tratamento</h2>
-                </div>
-                <div class="form-group">
-                    <label>Tipo de Tratamento</label>
-                    <select id="tipoTratamento">
-                        <option value="nenhum">Nenhum</option>
-                        <option value="larvicida">Larvicida</option>
-                        <option value="adulticida">Adulticida</option>
-                        <option value="mecanico">Controle Mecânico</option>
-                        <option value="biologico">Controle Biológico</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Contagem -->
-            <div class="card" id="cardContagem">
-                <div class="card-header">
-                    <div class="card-icon">📊</div>
-                    <h2 class="card-title">Contagem de Depósitos</h2>
-                </div>
-                <div class="count-grid">
-                    <div class="count-item">
-                        <label style="color: var(--success);">Eliminados</label>
-                        <div class="count-input">
-                            <input type="number" id="eliminados" min="0" value="0" onchange="calcularTotais()">
-                        </div>
-                    </div>
-                    <div class="count-item">
-                        <label style="color: var(--purple);">Tratados</label>
-                        <div class="count-input">
-                            <input type="number" id="tratados" min="0" value="0" onchange="calcularTotais()">
-                        </div>
-                    </div>
-                    <div class="count-item">
-                        <label style="color: var(--warning);">Protegidos</label>
-                        <div class="count-input">
-                            <input type="number" id="protegidos" min="0" value="0" onchange="calcularTotais()">
-                        </div>
-                    </div>
-                    <div class="count-item">
-                        <label style="color: var(--danger);">Impraticáveis</label>
-                        <div class="count-input">
-                            <input type="number" id="impraticaveis" min="0" value="0" onchange="calcularTotais()">
-                        </div>
-                    </div>
-                    <div class="count-total">
-                        <div class="count-total-label">Total de Depósitos</div>
-                        <div class="count-total-value" id="totalDepositos">0</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Botão Salvar -->
-            <button class="btn-save-top" onclick="saveVisit()" style="width: 100%; margin-bottom: 20px; padding: 16px; font-size: 1rem;">
-                💾 Salvar Visita
-            </button>
-
-            <!-- Footer -->
-            <div class="footer">
-                <strong>Prefeitura Municipal de Carmo</strong>
-                Coordenação de Combate às Endemias<br>
-                Desenvolvido por almir.lk
-            </div>
-        </div>
-    </div>
-
-    <!-- ABA ESTATÍSTICAS -->
-    <div id="tab-estatisticas" class="tab-content hidden">
-        <div class="container">
-            <!-- Seletor de Data -->
-            <div class="date-selector">
-                <span class="date-selector-icon">📅</span>
-                <span id="statsDate">Sábado, 14 de Fevereiro</span>
-            </div>
-
-            <!-- Cards Principais -->
-            <div class="stats-grid">
-                <div class="stat-card blue">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Total de Visitas</span>
-                        <div class="stat-card-icon">🏠</div>
-                    </div>
-                    <div class="stat-card-value" id="statTotalVisitas">0</div>
-                </div>
-                <div class="stat-card green">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Imóveis Trabalhados</span>
-                        <div class="stat-card-icon">📈</div>
-                    </div>
-                    <div class="stat-card-value" id="statTrabalhados">0</div>
-                </div>
-                <div class="stat-card cyan">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Dep. Eliminados</span>
-                        <div class="stat-card-icon">💧</div>
-                    </div>
-                    <div class="stat-card-value" id="statEliminados">0</div>
-                </div>
-                <div class="stat-card purple">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Dep. Tratados</span>
-                        <div class="stat-card-icon">💊</div>
-                    </div>
-                    <div class="stat-card-value" id="statTratados">0</div>
-                </div>
-                <div class="stat-card red">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Dep. Positivos</span>
-                        <div class="stat-card-icon">🦟</div>
-                    </div>
-                    <div class="stat-card-value" id="statPositivos">0</div>
-                </div>
-                <div class="stat-card gray">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Imóveis Fechados</span>
-                        <div class="stat-card-icon">🔒</div>
-                    </div>
-                    <div class="stat-card-value" id="statFechados">0</div>
-                </div>
-                <div class="stat-card orange">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Imóveis Recusados</span>
-                        <div class="stat-card-icon">❌</div>
-                    </div>
-                    <div class="stat-card-value" id="statRecusados">0</div>
-                </div>
-                <div class="stat-card yellow">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Desabitados</span>
-                        <div class="stat-card-icon">🏚️</div>
-                    </div>
-                    <div class="stat-card-value" id="statDesabitados">0</div>
-                </div>
-            </div>
-
-            <!-- Resumo do Dia -->
-            <div class="summary-card">
-                <div class="summary-title">Resumo do Dia</div>
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <div class="summary-label">Taxa de Trabalho</div>
-                        <div class="summary-value" id="statTaxaTrabalho">0%</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Depósitos/Visita</div>
-                        <div class="summary-value" id="statDepPorVisita">0.0</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Botão Exportar -->
-            <button class="btn-export" onclick="exportToExcel()">
-                📊 Exportar para Excel
-            </button>
-
-            <!-- Footer -->
-            <div class="footer">
-                <strong>Prefeitura Municipal de Carmo</strong>
-                Coordenação de Combate às Endemias<br>
-                Desenvolvido por almir.lk
-            </div>
-        </div>
-    </div>
-
-    <!-- ABA AJUSTES -->
-    <div id="tab-ajustes" class="tab-content hidden">
+    <!-- ABA AJUSTES (INICIAL) -->
+    <div id="tab-ajustes" class="tab-content">
         <div class="container">
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon">👤</div>
-                    <h2 class="card-title">Dados do Agente</h2>
+                    <h2 class="card-title">Início do Dia - Dados do Agente</h2>
                 </div>
 
                 <div class="form-group">
@@ -908,13 +661,348 @@
                     <input type="text" id="configSupervisor" placeholder="Nome do supervisor (opcional)">
                 </div>
 
-                <button class="btn-config" onclick="saveConfig()">
-                    💾 Salvar Configurações
+                <button class="btn-primary" onclick="iniciarDia()">
+                    🚀 Iniciar Dia de Trabalho
                 </button>
 
-                <div class="success-message" id="configSuccess">
-                    Agente configurado: <span id="configSuccessText"></span>
+                <div id="configSuccess" class="success-message hidden">
+                    ✅ Dia iniciado! Agora você pode registrar visitas.
                 </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <strong>Prefeitura Municipal de Carmo</strong>
+                Coordenação de Combate às Endemias<br>
+                Desenvolvido por almir.lk
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA VISITAS -->
+    <div id="tab-visitas" class="tab-content hidden">
+        <div class="container">
+            <!-- Bloqueio se não configurado -->
+            <div id="visitasBloqueio" class="blocked-message hidden">
+                <div class="blocked-message-icon">⚠️</div>
+                <h3>Dia não iniciado</h3>
+                <p>Vá em "Ajustes" e preencha os dados do agente para começar.</p>
+            </div>
+
+            <!-- Conteúdo das Visitas -->
+            <div id="visitasConteudo">
+                <!-- GPS -->
+                <div style="text-align: center;">
+                    <div class="gps-badge" id="gpsStatus">
+                        <div class="gps-dot"></div>
+                        <span>Aguardando GPS...</span>
+                    </div>
+                </div>
+
+                <!-- Endereço -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📍</div>
+                        <h2 class="card-title">Endereço</h2>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Logradouro <span class="required">*</span></label>
+                            <input type="text" id="logradouro" placeholder="Rua, Avenida, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Número <span class="required">*</span></label>
+                            <input type="text" id="numero" placeholder="123">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Complemento</label>
+                        <input type="text" id="complemento" placeholder="Apto, Casa, etc.">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bairro <span class="required">*</span></label>
+                            <input type="text" id="bairro" placeholder="Bairro">
+                        </div>
+                        <div class="form-group">
+                            <label>Cidade <span class="required">*</span></label>
+                            <input type="text" id="cidade" value="Carmo" placeholder="Cidade">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Imóvel -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏠</div>
+                        <h2 class="card-title">Imóvel</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Imóvel</label>
+                        <select id="tipoImovel">
+                            <option value="residencial">Residencial</option>
+                            <option value="comercial">Comercial</option>
+                            <option value="terreno">Terreno Baldio</option>
+                            <option value="publico">Órgão Público</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Situação do Imóvel</label>
+                        <select id="situacaoImovel" onchange="handleSituacaoChange()">
+                            <option value="normal">Normal (Trabalhado)</option>
+                            <option value="fechado">Fechado</option>
+                            <option value="recusado">Recusa de Acesso</option>
+                            <option value="desabitado">Desabitado</option>
+                            <option value="demolido">Demolido</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Inspeção de Depósitos -->
+                <div class="card" id="cardDepositos">
+                    <div class="card-header">
+                        <div class="card-icon">💧</div>
+                        <h2 class="card-title">Inspeção de Depósitos</h2>
+                    </div>
+
+                    <table class="deposits-table">
+                        <thead>
+                            <tr>
+                                <th>Depósito</th>
+                                <th style="text-align: center;">Inspec.</th>
+                                <th style="text-align: center;">Posit.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Caixa d'Água</td><td><input type="checkbox" id="cxInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="cxPosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Piscina</td><td><input type="checkbox" id="piscinaInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="piscinaPosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Vaso Sanitário</td><td><input type="checkbox" id="vasoInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="vasoPosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Tanque</td><td><input type="checkbox" id="tanqueInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="tanquePosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Tonel</td><td><input type="checkbox" id="tonelInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="tonelPosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Pote</td><td><input type="checkbox" id="poteInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="potePosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Balde</td><td><input type="checkbox" id="baldeInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="baldePosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Garrafa</td><td><input type="checkbox" id="garrafaInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="garrafaPosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Pneu</td><td><input type="checkbox" id="pneuInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="pneuPosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Lixo</td><td><input type="checkbox" id="lixoInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="lixoPosit" onchange="calcularTotais()"></td></tr>
+                            <tr><td>Outros</td><td><input type="checkbox" id="outrosInspec" onchange="calcularTotais()"></td><td><input type="checkbox" id="outrosPosit" onchange="calcularTotais()"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tratamento -->
+                <div class="card" id="cardTratamento">
+                    <div class="card-header">
+                        <div class="card-icon">🔬</div>
+                        <h2 class="card-title">Tratamento</h2>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Tratamento</label>
+                        <select id="tipoTratamento" onchange="toggleProduto()">
+                            <option value="nenhum">Nenhum</option>
+                            <option value="larvicida">Larvicida</option>
+                            <option value="adulticida">Adulticida</option>
+                            <option value="mecanico">Controle Mecânico</option>
+                            <option value="biologico">Controle Biológico</option>
+                        </select>
+                    </div>
+
+                    <!-- Detalhes do Produto -->
+                    <div id="produtoDetalhe" class="tratamento-detalhe hidden">
+                        <div class="form-group mb-0">
+                            <label>Produto Utilizado <span class="required">*</span></label>
+                            <select id="nomeProduto">
+                                <option value="">Selecione o produto...</option>
+                                <optgroup label="Larvicidas">
+                                    <option value="BTI">BTI (Bacillus thuringiensis)</option>
+                                    <option value="Diflubenzuron">Diflubenzuron</option>
+                                    <option value="Novaluron">Novaluron</option>
+                                    <option value="Pyriproxyfen">Pyriproxyfen</option>
+                                    <option value="Spinosad">Spinosad</option>
+                                </optgroup>
+                                <optgroup label="Adulticidas">
+                                    <option value="Deltametrina">Deltametrina</option>
+                                    <option value="Cipermetrina">Cipermetrina</option>
+                                    <option value="Malation">Malation</option>
+                                    <option value="Lambdacialotrina">Lambdacialotrina</option>
+                                </optgroup>
+                                <optgroup label="Outros">
+                                    <option value="Peixe">Peixe (Controle Biológico)</option>
+                                    <option value="Remocao">Remoção Mecânica</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+                            <label>Quantidade Utilizada <span class="required">*</span></label>
+                            <div class="form-row" style="margin-bottom: 0;">
+                                <input type="number" id="quantidadeProduto" placeholder="Qtd" min="0" step="0.1" style="flex: 1;">
+                                <select id="unidadeProduto" style="flex: 1;">
+                                    <option value="gr">gramas (gr)</option>
+                                    <option value="ml">mililitros (ml)</option>
+                                    <option value="un">unidades</option>
+                                    <option value="kg">quilos (kg)</option>
+                                    <option value="L">litros (L)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contagem -->
+                <div class="card" id="cardContagem">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <h2 class="card-title">Contagem de Depósitos</h2>
+                    </div>
+                    <div class="count-grid">
+                        <div class="count-item">
+                            <label style="color: var(--success);">Eliminados</label>
+                            <div class="count-input">
+                                <input type="number" id="eliminados" min="0" value="0" onchange="calcularTotais()">
+                            </div>
+                        </div>
+                        <div class="count-item">
+                            <label style="color: var(--purple);">Tratados</label>
+                            <div class="count-input">
+                                <input type="number" id="tratados" min="0" value="0" onchange="calcularTotais()">
+                            </div>
+                        </div>
+                        <div class="count-item">
+                            <label style="color: var(--warning);">Protegidos</label>
+                            <div class="count-input">
+                                <input type="number" id="protegidos" min="0" value="0" onchange="calcularTotais()">
+                            </div>
+                        </div>
+                        <div class="count-item">
+                            <label style="color: var(--danger);">Impraticáveis</label>
+                            <div class="count-input">
+                                <input type="number" id="impraticaveis" min="0" value="0" onchange="calcularTotais()">
+                            </div>
+                        </div>
+                        <div class="count-total">
+                            <div class="count-total-label">Total de Depósitos</div>
+                            <div class="count-total-value" id="totalDepositos">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Salvar -->
+                <button class="btn-primary" onclick="saveVisit()" style="margin-bottom: 20px;">
+                    💾 Salvar Visita
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <strong>Prefeitura Municipal de Carmo</strong>
+                Coordenação de Combate às Endemias<br>
+                Desenvolvido por almir.lk
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA ESTATÍSTICAS -->
+    <div id="tab-estatisticas" class="tab-content hidden">
+        <div class="container">
+            <!-- Bloqueio se não configurado -->
+            <div id="statsBloqueio" class="blocked-message hidden">
+                <div class="blocked-message-icon">📊</div>
+                <h3>Nenhum dado para exibir</h3>
+                <p>Inicie o dia em "Ajustes" e registre visitas para ver estatísticas.</p>
+            </div>
+
+            <!-- Conteúdo das Estatísticas -->
+            <div id="statsConteudo">
+                <!-- Seletor de Data -->
+                <div class="date-selector">
+                    <span class="date-selector-icon">📅</span>
+                    <span id="statsDate">Sábado, 14 de Fevereiro</span>
+                </div>
+
+                <!-- Cards Principais -->
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Total de Visitas</span>
+                            <div class="stat-card-icon">🏠</div>
+                        </div>
+                        <div class="stat-card-value" id="statTotalVisitas">0</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Imóveis Trabalhados</span>
+                            <div class="stat-card-icon">📈</div>
+                        </div>
+                        <div class="stat-card-value" id="statTrabalhados">0</div>
+                    </div>
+                    <div class="stat-card cyan">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Dep. Eliminados</span>
+                            <div class="stat-card-icon">💧</div>
+                        </div>
+                        <div class="stat-card-value" id="statEliminados">0</div>
+                    </div>
+                    <div class="stat-card purple">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Dep. Tratados</span>
+                            <div class="stat-card-icon">💊</div>
+                        </div>
+                        <div class="stat-card-value" id="statTratados">0</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Dep. Positivos</span>
+                            <div class="stat-card-icon">🦟</div>
+                        </div>
+                        <div class="stat-card-value" id="statPositivos">0</div>
+                    </div>
+                    <div class="stat-card gray">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Imóveis Fechados</span>
+                            <div class="stat-card-icon">🔒</div>
+                        </div>
+                        <div class="stat-card-value" id="statFechados">0</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Imóveis Recusados</span>
+                            <div class="stat-card-icon">❌</div>
+                        </div>
+                        <div class="stat-card-value" id="statRecusados">0</div>
+                    </div>
+                    <div class="stat-card yellow">
+                        <div class="stat-card-header">
+                            <span class="stat-card-title">Desabitados</span>
+                            <div class="stat-card-icon">🏚️</div>
+                        </div>
+                        <div class="stat-card-value" id="statDesabitados">0</div>
+                    </div>
+                </div>
+
+                <!-- Resumo do Dia -->
+                <div class="summary-card">
+                    <div class="summary-title">Resumo do Dia</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-label">Taxa de Trabalho</div>
+                            <div class="summary-value" id="statTaxaTrabalho">0%</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Depósitos/Visita</div>
+                            <div class="summary-value" id="statDepPorVisita">0.0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Exportar -->
+                <button class="btn-export" onclick="finalizarDia()">
+                    📊 Exportar e Finalizar Dia
+                </button>
             </div>
 
             <!-- Footer -->
@@ -928,17 +1016,17 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="showTab('visitas')">
+        <button class="nav-item" id="nav-ajustes" onclick="showTab('ajustes')">
+            <span>⚙️</span>
+            Ajustes
+        </button>
+        <button class="nav-item" id="nav-visitas" onclick="showTab('visitas')">
             <span>🏠</span>
             Visitas
         </button>
-        <button class="nav-item" onclick="showTab('estatisticas')">
+        <button class="nav-item" id="nav-estatisticas" onclick="showTab('estatisticas')">
             <span>📊</span>
             Estatísticas
-        </button>
-        <button class="nav-item" onclick="showTab('ajustes')">
-            <span>⚙️</span>
-            Ajustes
         </button>
     </nav>
 
@@ -951,15 +1039,17 @@
         let agentConfig = {};
         let currentPosition = null;
         let watchId = null;
-        let currentTab = 'visitas';
+        let currentTab = 'ajustes';
+        let diaIniciado = false;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
-            loadConfig();
+            checkDiaIniciado();
             loadVisits();
             updateDate();
             initGPS();
             updateStats();
+            updateUI();
         });
 
         function updateDate() {
@@ -968,6 +1058,19 @@
             
             const optionsFull = { weekday: 'long', day: 'numeric', month: 'long' };
             document.getElementById('statsDate').textContent = new Date().toLocaleDateString('pt-BR', optionsFull).replace('-feira', '');
+        }
+
+        // Verificar se dia já foi iniciado
+        function checkDiaIniciado() {
+            const hoje = getTodayKey();
+            const configHoje = localStorage.getItem('ace_config_' + hoje);
+            const savedVisits = localStorage.getItem('ace_visits_' + hoje);
+            
+            if (configHoje) {
+                agentConfig = JSON.parse(configHoje);
+                diaIniciado = true;
+                updateHeader();
+            }
         }
 
         // GPS
@@ -1007,10 +1110,93 @@
             
             // Mostrar aba selecionada
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            event.target.closest('.nav-item').classList.add('active');
+            document.getElementById(`nav-${tab}`).classList.add('active');
             
             if (tab === 'estatisticas') {
                 updateStats();
+            }
+        }
+
+        // Atualizar interface baseado no estado
+        function updateUI() {
+            if (diaIniciado) {
+                // Mostrar conteúdo das abas
+                document.getElementById('visitasConteudo').classList.remove('hidden');
+                document.getElementById('visitasBloqueio').classList.add('hidden');
+                document.getElementById('statsConteudo').classList.remove('hidden');
+                document.getElementById('statsBloqueio').classList.add('hidden');
+                document.getElementById('headerAgent').style.display = 'block';
+                
+                // Aba ajustes mostra mensagem de dia iniciado
+                document.getElementById('configSuccess').classList.remove('hidden');
+                document.querySelector('#tab-ajustes .btn-primary').textContent = '🔄 Reiniciar Dia (Apaga dados atuais)';
+            } else {
+                // Bloquear visitas e estatísticas
+                document.getElementById('visitasConteudo').classList.add('hidden');
+                document.getElementById('visitasBloqueio').classList.remove('hidden');
+                document.getElementById('statsConteudo').classList.add('hidden');
+                document.getElementById('statsBloqueio').classList.remove('hidden');
+                document.getElementById('headerAgent').style.display = 'none';
+            }
+        }
+
+        // Iniciar o dia
+        function iniciarDia() {
+            const nome = document.getElementById('configNome').value.trim();
+            const matricula = document.getElementById('configMatricula').value.trim();
+            const equipe = document.getElementById('configEquipe').value.trim();
+
+            if (!nome || !matricula || !equipe) {
+                showToast('Preencha todos os campos obrigatórios', 'error');
+                return;
+            }
+
+            // Se já tem dados do dia, confirmar exclusão
+            if (visits.length > 0) {
+                if (!confirm('Isso apagará as visitas do dia atual. Deseja continuar?')) {
+                    return;
+                }
+                // Limpar dados antigos
+                visits = [];
+                localStorage.removeItem('ace_visits_' + getTodayKey());
+            }
+
+            agentConfig = {
+                nome: nome,
+                matricula: matricula,
+                equipe: equipe,
+                supervisor: document.getElementById('configSupervisor').value.trim(),
+                dataInicio: new Date().toISOString()
+            };
+
+            const hoje = getTodayKey();
+            localStorage.setItem('ace_config_' + hoje, JSON.stringify(agentConfig));
+            
+            diaIniciado = true;
+            updateHeader();
+            updateUI();
+            updateStats();
+            showToast('Dia iniciado! Agora você pode registrar visitas.', 'success');
+        }
+
+        function updateHeader() {
+            if (agentConfig.nome) {
+                document.getElementById('headerAgentName').textContent = agentConfig.nome;
+                document.getElementById('headerAgentReg').textContent = agentConfig.matricula;
+            }
+        }
+
+        // Toggle produto
+        function toggleProduto() {
+            const tratamento = document.getElementById('tipoTratamento').value;
+            const detalhe = document.getElementById('produtoDetalhe');
+            
+            if (tratamento !== 'nenhum' && tratamento !== 'mecanico') {
+                detalhe.classList.remove('hidden');
+            } else {
+                detalhe.classList.add('hidden');
+                document.getElementById('nomeProduto').value = '';
+                document.getElementById('quantidadeProduto').value = '';
             }
         }
 
@@ -1036,32 +1222,59 @@
 
         // Salvar visita
         function saveVisit() {
+            if (!diaIniciado) {
+                showToast('Inicie o dia em Ajustes primeiro!', 'error');
+                return;
+            }
+
             const logradouro = document.getElementById('logradouro').value.trim();
             const numero = document.getElementById('numero').value.trim();
-            const microarea = document.getElementById('microarea').value.trim();
+            const bairro = document.getElementById('bairro').value.trim();
 
-            if (!logradouro || !numero || !microarea) {
+            if (!logradouro || !numero || !bairro) {
                 showToast('Preencha os campos obrigatórios (*)', 'error');
                 return;
             }
 
             const situacao = document.getElementById('situacaoImovel').value;
             const isTrabalhado = situacao === 'normal';
+            const tratamento = document.getElementById('tipoTratamento').value;
+
+            // Validar produto se houver tratamento químico
+            let produtoInfo = {};
+            if (tratamento !== 'nenhum' && tratamento !== 'mecanico') {
+                const nomeProduto = document.getElementById('nomeProduto').value;
+                const qtdProduto = document.getElementById('quantidadeProduto').value;
+                
+                if (!nomeProduto || !qtdProduto) {
+                    showToast('Informe o produto e quantidade utilizada', 'error');
+                    return;
+                }
+                
+                produtoInfo = {
+                    nome: nomeProduto,
+                    quantidade: qtdProduto,
+                    unidade: document.getElementById('unidadeProduto').value
+                };
+            }
 
             const visit = {
                 id: Date.now(),
                 data: new Date().toLocaleDateString('pt-BR'),
                 hora: new Date().toLocaleTimeString('pt-BR'),
-                agente: agentConfig.nome || 'Não configurado',
-                matricula: agentConfig.matricula || '',
-                equipe: agentConfig.equipe || '',
+                
+                // Dados do agente (vão para o Excel)
+                agente: agentConfig.nome,
+                matricula: agentConfig.matricula,
+                equipe: agentConfig.equipe,
+                supervisor: agentConfig.supervisor || '',
                 
                 endereco: {
                     logradouro: logradouro,
                     numero: numero,
                     complemento: document.getElementById('complemento').value,
-                    microarea: microarea,
-                    quarteirao: document.getElementById('quarteirao').value
+                    bairro: bairro,
+                    cidade: document.getElementById('cidade').value
                 },
                 
                 imovel: {
@@ -1083,7 +1296,12 @@
                     { nome: 'Outros', inspec: document.getElementById('outrosInspec').checked, posit: document.getElementById('outrosPosit').checked }
                 ] : [],
 
-                tratamento: isTrabalhado ? document.getElementById('tipoTratamento').value : 'nenhum',
+                tratamento: {
+                    tipo: tratamento,
+                    produto: produtoInfo.nome || '',
+                    quantidade: produtoInfo.quantidade || '',
+                    unidade: produtoInfo.unidade || ''
+                },
                 
                 contagem: isTrabalhado ? {
                     eliminados: parseInt(document.getElementById('eliminados').value) || 0,
@@ -1106,8 +1324,8 @@
             document.getElementById('logradouro').value = '';
             document.getElementById('numero').value = '';
             document.getElementById('complemento').value = '';
-            document.getElementById('microarea').value = '';
-            document.getElementById('quarteirao').value = 'Carmo';
+            document.getElementById('bairro').value = '';
+            document.getElementById('cidade').value = 'Carmo';
             document.getElementById('tipoImovel').value = 'residencial';
             document.getElementById('situacaoImovel').value = 'normal';
             document.getElementById('tipoTratamento').value = 'nenhum';
@@ -1116,54 +1334,12 @@
             document.getElementById('protegidos').value = '0';
             document.getElementById('impraticaveis').value = '0';
             document.getElementById('totalDepositos').textContent = '0';
+            document.getElementById('nomeProduto').value = '';
+            document.getElementById('quantidadeProduto').value = '';
             
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            toggleProduto();
             handleSituacaoChange();
-        }
-
-        // Configurações
-        function saveConfig() {
-            const nome = document.getElementById('configNome').value.trim();
-            const matricula = document.getElementById('configMatricula').value.trim();
-            const equipe = document.getElementById('configEquipe').value.trim();
-
-            if (!nome || !matricula || !equipe) {
-                showToast('Preencha todos os campos obrigatórios', 'error');
-                return;
-            }
-
-            agentConfig = {
-                nome: nome,
-                matricula: matricula,
-                equipe: equipe,
-                supervisor: document.getElementById('configSupervisor').value.trim()
-            };
-
-            localStorage.setItem('ace_config', JSON.stringify(agentConfig));
-            updateHeader();
-            
-            document.getElementById('configSuccessText').textContent = `${nome} - Matrícula: ${matricula}`;
-            document.getElementById('configSuccess').classList.add('show');
-            showToast('Configurações salvas!', 'success');
-        }
-
-        function loadConfig() {
-            const saved = localStorage.getItem('ace_config');
-            if (saved) {
-                agentConfig = JSON.parse(saved);
-                document.getElementById('configNome').value = agentConfig.nome || '';
-                document.getElementById('configMatricula').value = agentConfig.matricula || '';
-                document.getElementById('configEquipe').value = agentConfig.equipe || '';
-                document.getElementById('configSupervisor').value = agentConfig.supervisor || '';
-                updateHeader();
-            }
-        }
-
-        function updateHeader() {
-            if (agentConfig.nome) {
-                document.getElementById('headerAgentName').textContent = agentConfig.nome;
-                document.getElementById('headerAgentReg').textContent = agentConfig.matricula;
-            }
         }
 
         // Estatísticas
@@ -1191,7 +1367,6 @@
             document.getElementById('statRecusados').textContent = recusados;
             document.getElementById('statDesabitados').textContent = desabitados;
 
-            // Cálculos
             const taxaTrabalho = total > 0 ? Math.round((trabalhados / total) * 100) : 0;
             const depPorVisita = total > 0 ? ((eliminados + tratados) / total).toFixed(1) : '0.0';
             
@@ -1199,18 +1374,50 @@
             document.getElementById('statDepPorVisita').textContent = depPorVisita;
         }
 
-        // Exportar Excel
-        function exportToExcel() {
+        // Finalizar dia e exportar
+        function finalizarDia() {
             if (visits.length === 0) {
                 showToast('Nenhuma visita para exportar', 'error');
                 return;
             }
 
+            if (!confirm('Ao exportar, todos os dados do dia serão apagados do aplicativo. Deseja continuar?')) {
+                return;
+            }
+
+            exportToExcel();
+            
+            // Limpar tudo para novo dia
+            const hoje = getTodayKey();
+            localStorage.removeItem('ace_visits_' + hoje);
+            localStorage.removeItem('ace_config_' + hoje);
+            
+            visits = [];
+            agentConfig = {};
+            diaIniciado = false;
+            
+            // Limpar formulário de config
+            document.getElementById('configNome').value = '';
+            document.getElementById('configMatricula').value = '';
+            document.getElementById('configEquipe').value = '';
+            document.getElementById('configSupervisor').value = '';
+            document.getElementById('configSuccess').classList.add('hidden');
+            document.querySelector('#tab-ajustes .btn-primary').textContent = '🚀 Iniciar Dia de Trabalho';
+            
+            updateUI();
+            updateStats();
+            showTab('ajustes');
+            showToast('Dia finalizado! Configure o próximo dia.', 'success');
+        }
+
+        // Exportar Excel
+        function exportToExcel() {
             const headers = [
                 'Data', 'Hora', 'Agente', 'Matrícula', 'Equipe', 'Supervisor',
-                'Logradouro', 'Número', 'Complemento', 'Microárea', 'Quarteirão',
+                'Logradouro', 'Número', 'Complemento', 'Bairro', 'Cidade',
                 'Tipo Imóvel', 'Situação', 'Latitude', 'Longitude', 'Precisão_GPS',
-                'Tratamento', 'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 'Dep_Impraticáveis',
+                'Tipo_Tratamento', 'Produto_Utilizado', 'Quantidade_Produto', 'Unidade_Produto',
+                'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 'Dep_Impraticáveis',
                 'Depósitos_Inspecionados', 'Depósitos_Positivos'
             ];
 
@@ -1219,11 +1426,12 @@
                 const depsPosit = v.depositos.filter(d => d.posit).map(d => d.nome).join('; ');
                 
                 return [
-                    v.data, v.hora, v.agente, v.matricula, v.equipe, agentConfig.supervisor || '',
-                    v.endereco.logradouro, v.endereco.numero, v.endereco.complemento, v.endereco.microarea, v.endereco.quarteirao,
+                    v.data, v.hora, v.agente, v.matricula, v.equipe, v.supervisor,
+                    v.endereco.logradouro, v.endereco.numero, v.endereco.complemento, v.endereco.bairro, v.endereco.cidade,
                     v.imovel.tipo, v.imovel.situacao,
                     v.localizacao?.lat || '', v.localizacao?.lng || '', v.localizacao?.accuracy || '',
-                    v.tratamento, v.contagem.eliminados, v.contagem.tratados, v.contagem.protegidos, v.contagem.impraticaveis,
+                    v.tratamento.tipo, v.tratamento.produto, v.tratamento.quantidade, v.tratamento.unidade,
+                    v.contagem.eliminados, v.contagem.tratados, v.contagem.protegidos, v.contagem.impraticaveis,
                     depsInspec, depsPosit
                 ];
             });
@@ -1236,13 +1444,11 @@
             const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const dateStr = new Date().toISOString().split('T')[0];
-            const fileName = `ACE_Carmo_${agentConfig.nome || 'Agente'}_${dateStr}.csv`;
+            const fileName = `ACE_Carmo_${agentConfig.nome}_${dateStr}.csv`;
             
             link.href = URL.createObjectURL(blob);
             link.download = fileName;
             link.click();
-
-            showToast(`Arquivo ${fileName} exportado!`, 'success');
         }
 
         // Persistência
@@ -1270,12 +1476,11 @@
 
         // Prevenir fechamento acidental
         window.onbeforeunload = function(e) {
-            if (visits.length > 0 && currentTab === 'visitas') {
+            if (visits.length > 0 && !confirm('Deseja realmente sair? Os dados não exportados serão perdidos.')) {
                 e.preventDefault();
                 e.returnValue = '';
             }
         };
     </script>
 </body>
-
 </html>
