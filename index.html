@@ -724,12 +724,12 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Bairro <span class="required">*</span></label>
-                            <input type="text" id="bairro" placeholder="Bairro">
+                            <label>quarteirao <span class="required">*</span></label>
+                            <input type="text" id="quarteirao" placeholder="quarteirao">
                         </div>
                         <div class="form-group">
-                            <label>Cidade <span class="required">*</span></label>
-                            <input type="text" id="cidade" value="Carmo" placeholder="Cidade">
+                            <label>microarea <span class="required">*</span></label>
+                            <input type="text" id="microarea" value="Carmo" placeholder="microarea">
                         </div>
                     </div>
                 </div>
@@ -1229,9 +1229,9 @@
 
             const logradouro = document.getElementById('logradouro').value.trim();
             const numero = document.getElementById('numero').value.trim();
-            const bairro = document.getElementById('bairro').value.trim();
+            const quarteirao = document.getElementById('quarteirao').value.trim();
 
-            if (!logradouro || !numero || !bairro) {
+            if (!logradouro || !numero || !quarteirao) {
                 showToast('Preencha os campos obrigatórios (*)', 'error');
                 return;
             }
@@ -1273,8 +1273,8 @@
                     logradouro: logradouro,
                     numero: numero,
                     complemento: document.getElementById('complemento').value,
-                    bairro: bairro,
-                    cidade: document.getElementById('cidade').value
+                    quarteirao: quarteirao,
+                    microarea: document.getElementById('microarea').value
                 },
                 
                 imovel: {
@@ -1324,8 +1324,8 @@
             document.getElementById('logradouro').value = '';
             document.getElementById('numero').value = '';
             document.getElementById('complemento').value = '';
-            document.getElementById('bairro').value = '';
-            document.getElementById('cidade').value = 'Carmo';
+            document.getElementById('quarteirao').value = '';
+            document.getElementById('microarea').value = 'Carmo';
             document.getElementById('tipoImovel').value = 'residencial';
             document.getElementById('situacaoImovel').value = 'normal';
             document.getElementById('tipoTratamento').value = 'nenhum';
@@ -1414,7 +1414,7 @@
         function exportToExcel() {
             const headers = [
                 'Data', 'Hora', 'Agente', 'Matrícula', 'Equipe', 'Supervisor',
-                'Logradouro', 'Número', 'Complemento', 'Bairro', 'Cidade',
+                'Logradouro', 'Número', 'Complemento', 'quarteirao', 'microarea',
                 'Tipo Imóvel', 'Situação', 'Latitude', 'Longitude', 'Precisão_GPS',
                 'Tipo_Tratamento', 'Produto_Utilizado', 'Quantidade_Produto', 'Unidade_Produto',
                 'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 'Dep_Impraticáveis',
@@ -1427,7 +1427,7 @@
                 
                 return [
                     v.data, v.hora, v.agente, v.matricula, v.equipe, v.supervisor,
-                    v.endereco.logradouro, v.endereco.numero, v.endereco.complemento, v.endereco.bairro, v.endereco.cidade,
+                    v.endereco.logradouro, v.endereco.numero, v.endereco.complemento, v.endereco.quarteirao, v.endereco.microarea,
                     v.imovel.tipo, v.imovel.situacao,
                     v.localizacao?.lat || '', v.localizacao?.lng || '', v.localizacao?.accuracy || '',
                     v.tratamento.tipo, v.tratamento.produto, v.tratamento.quantidade, v.tratamento.unidade,
@@ -1484,3 +1484,4 @@
     </script>
 </body>
 </html>
+
