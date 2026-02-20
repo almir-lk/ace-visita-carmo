@@ -515,6 +515,7 @@
             .resumo-grid { grid-template-columns: 1fr; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -618,6 +619,11 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label>Nome do Morador</label>
+                        <input type="text" id="nomeMorador" placeholder="Nome completo do morador">
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label>Microárea <span class="required">*</span></label>
@@ -656,6 +662,7 @@
                             <option value="recusado">Recusa de Acesso</option>
                             <option value="desabitado">Desabitado</option>
                             <option value="demolido">Demolido</option>
+                            <option value="recuperacao">Recuperação</option>
                         </select>
                     </div>
                 </div>
@@ -720,12 +727,12 @@
                                 <td><input type="checkbox" id="tonel_impr" onchange="calcularContagem()"></td>
                             </tr>
                             <tr>
-                                <td>🏺 ralo</td>
-                                <td><input type="checkbox" id="ralo_inspec" onchange="calcularContagem()"></td>
-                                <td><input type="checkbox" id="ralo_elim" onchange="calcularContagem()"></td>
-                                <td><input type="checkbox" id="ralo_posit" onchange="calcularContagem()"></td>
-                                <td><input type="checkbox" id="ralo_prot" onchange="calcularContagem()"></td>
-                                <td><input type="checkbox" id="ralo_impr" onchange="calcularContagem()"></td>
+                                <td>🏺 Barrica</td>
+                                <td><input type="checkbox" id="barrica_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_impr" onchange="calcularContagem()"></td>
                             </tr>
                             <tr>
                                 <td>🪴 Vaso Planta</td>
@@ -1030,13 +1037,13 @@
         // CONFIGURAÇÃO
         // ============================================
         const CONFIG = {
-            SYNC_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
+            SYNC_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec ',
             SYNC_INTERVAL: 30
         };
 
         // Lista de depósitos para controle
         const DEPOSITOS = [
-            'cx', 'piscina', 'vaso', 'tanque', 'tonel', 'ralo', 
+            'cx', 'piscina', 'vaso', 'tanque', 'tonel', 'barrica', 
             'pote', 'balde', 'garrafa', 'pneu', 'lixo', 'outros'
         ];
 
@@ -1232,6 +1239,7 @@
                 supervisor: agentConfig.supervisor || '',
                 logradouro, numero,
                 complemento: document.getElementById('complemento').value,
+                nomeMorador: document.getElementById('nomeMorador').value.trim(),
                 microarea, quarteirao,
                 tipoImovel: document.getElementById('tipoImovel').value,
                 situacao: document.getElementById('situacaoImovel').value,
@@ -1492,7 +1500,7 @@
         }
 
         function clearForm() {
-            ['logradouro', 'numero', 'complemento', 'microarea', 'quarteirao'].forEach(id => {
+            ['logradouro', 'numero', 'complemento', 'nomeMorador', 'microarea', 'quarteirao'].forEach(id => {
                 document.getElementById(id).value = '';
             });
             document.getElementById('tipoImovel').value = 'residencial';
@@ -1520,7 +1528,7 @@
 
         function handleSituacaoChange() {
             const situacao = document.getElementById('situacaoImovel').value;
-            const isNormal = situacao === 'normal';
+            const isNormal = situacao === 'normal' || situacao === 'recuperacao';
             document.getElementById('cardDepositos').style.display = isNormal ? 'block' : 'none';
             document.getElementById('cardTratamento').style.display = isNormal ? 'block' : 'none';
         }
@@ -1538,7 +1546,7 @@
                 }
             }
 
-            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Logradouro','Numero','Complemento','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis','Depositos_Positivos'];
+            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Logradouro','Numero','Complemento','Nome_Morador','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis','Depositos_Positivos'];
             
             const csv = [
                 headers.join(';'),
@@ -1582,4 +1590,3 @@
     </script>
 </body>
 </html>
-
