@@ -1270,53 +1270,85 @@
             updateStats();
         }
 
-        async function sincronizarVisita(visit) {
-            if (!isOnline) {
-                visit.status = 'offline';
-                atualizarFilaSync();
-                return false;
-            }
+     async function sincronizarVisita(visit) {
+    if (!isOnline) {
+        visit.status = 'offline';
+        atualizarFilaSync();
+        return false;
+    }
 
-            try {
-                const dados = { ...visit };
-                delete dados.id;
-                delete dados.sincronizado;
-                delete dados.tentativas;
-                delete dados.status;
-                delete dados.depositosDetalhados;
-                delete dados.timestamp;
+    try {
+        // ✅ USAR URLSearchParams em vez de FormData
+        const params = new URLSearchParams();
+        
+        // ✅ Enviar os dados com as chaves exatas que a API espera
+        params.append('Data', visit.data);
+        params.append('Hora', visit.hora);
+        params.append('Agente', visit.agente);
+        params.append('Matricula', visit.matricula);
+        params.append('Equipe', visit.equipe);
+        params.append('Supervisor', visit.supervisor || '');
+        params.append('Logradouro', visit.logradouro);
+        params.append('Numero', visit.numero);
+        params.append('Complemento', visit.complemento || '');
+        params.append('Microarea', visit.microarea);
+        params.append('Quarteirao', visit.quarteirao);
+        params.append('Tipo_Imovel', visit.tipoImovel);
+        params.append('Situacao', visit.situacao);
+        params.append('Latitude', visit.latitude || '');
+        params.append('Longitude', visit.longitude || '');
+        params.append('Precisao', visit.precisao || '');
+        params.append('Tipo_Tratamento', visit.tipoTratamento);
+        params.append('Produto', visit.produto || '');
+        params.append('Qtd_Produto', visit.qtdProduto || '0');
+        params.append('Unidade', visit.unidade || '');
+        params.append('Dep_Eliminados', visit.depEliminados || '0');
+        params.append('Dep_Tratados', visit.depTratados || '0');
+        params.append('Dep_Protegidos', visit.depProtegidos || '0');
+        params.append('Dep_Impraticaveis', visit.depImpraticaveis || '0');
+        params.append('Depositos_Positivos', visit.depositosPositivos || '0');
 
-                const formData = new FormData();
-                Object.keys(dados).forEach(key => {
-                    formData.append(key, dados[key]);
-                });
+        console.log('Enviando:', params.toString());
 
-                await fetch(CONFIG.SYNC_URL, {
-                    method: 'POST',
-                  //  mode: 'no-cors',
-                    body: formData
-                });
+        // ✅ REMOVER mode: 'no-cors' - agora funciona com CORS!
+        const response = await fetch(CONFIG.SYNC_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString()
+        });
 
-                visit.sincronizado = true;
-                visit.status = 'synced';
-                visit.dataSync = new Date().toISOString();
-                
-                salvarVisitsLocal();
-                atualizarFilaSync();
-                updateSyncStatus('synced');
-                
-                return true;
-
-            } catch (error) {
-                console.error('Erro sincronização:', error);
-                visit.tentativas++;
-                visit.status = 'error';
-                salvarVisitsLocal();
-                atualizarFilaSync();
-                updateSyncStatus('error');
-                return false;
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
         }
+
+        const result = await response.json();
+        console.log('Resposta:', result);
+
+        if (result.success) {
+            visit.sincronizado = true;
+            visit.status = 'synced';
+            visit.dataSync = new Date().toISOString();
+            
+            salvarVisitsLocal();
+            atualizarFilaSync();
+            updateSyncStatus('synced');
+            return true;
+        } else {
+            throw new Error(result.message || 'Erro no servidor');
+        }
+
+    } catch (error) {
+        console.error('Erro:', error);
+        visit.tentativas++;
+        visit.status = 'error';
+        salvarVisitsLocal();
+        atualizarFilaSync();
+        updateSyncStatus('error');
+        return false;
+    }
+}
 
         async function tentarSincronizar() {
             const pendentes = visits.filter(v => !v.sincronizado);
@@ -1590,6 +1622,7 @@
     </script>
 </body>
 </html>
+
 
 
 
