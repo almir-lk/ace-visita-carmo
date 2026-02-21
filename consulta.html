@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#10b981">
     <title>ACE Consulta - Prefeitura Municipal de Carmo</title>
     <style>
         * {
@@ -37,7 +37,7 @@
         }
 
         .header {
-            background: var(--primary);
+            background: var(--success);
             color: white;
             padding: 16px;
             position: sticky;
@@ -61,7 +61,6 @@
             margin: 0 auto;
         }
 
-        /* FILTROS */
         .filters-card {
             background: var(--card);
             border-radius: 12px;
@@ -146,7 +145,6 @@
             color: white;
         }
 
-        /* RESUMO ESTATÍSTICO */
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -180,7 +178,48 @@
             margin-top: 4px;
         }
 
-        /* TABELA DE DADOS */
+        .chart-container {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-label {
+            width: 100px;
+            font-size: 0.875rem;
+        }
+
+        .chart-progress {
+            flex: 1;
+            height: 24px;
+            background: var(--bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .chart-value {
+            width: 50px;
+            text-align: right;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
         .data-card {
             background: var(--card);
             border-radius: 12px;
@@ -263,11 +302,6 @@
         .badge-desabitado { background: #fef3c7; color: #92400e; }
         .badge-demolido { background: #f3e8ff; color: #6b21a8; }
 
-        .badge-synced { background: #dcfce7; color: #166534; }
-        .badge-pending { background: #fef3c7; color: #92400e; }
-        .badge-error { background: #fee2e2; color: #991b1b; }
-
-        /* PAGINAÇÃO */
         .pagination {
             display: flex;
             justify-content: center;
@@ -302,7 +336,6 @@
             color: var(--text-light);
         }
 
-        /* LOADING */
         .loading {
             text-align: center;
             padding: 40px;
@@ -322,7 +355,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* EMPTY STATE */
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -334,7 +366,6 @@
             margin-bottom: 16px;
         }
 
-        /* MODAL DETALHES */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -405,50 +436,6 @@
             font-weight: 500;
         }
 
-        /* GRÁFICO SIMPLEs */
-        .chart-container {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .chart-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .chart-label {
-            width: 100px;
-            font-size: 0.875rem;
-        }
-
-        .chart-progress {
-            flex: 1;
-            height: 24px;
-            background: var(--bg);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0 10px;
-        }
-
-        .chart-fill {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
-
-        .chart-value {
-            width: 50px;
-            text-align: right;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        /* RESPONSIVO */
         @media (max-width: 768px) {
             .filters-grid {
                 grid-template-columns: 1fr;
@@ -610,7 +597,6 @@
                             <th onclick="ordenarPor('microarea')">Microárea</th>
                             <th onclick="ordenarPor('situacao')">Situação</th>
                             <th onclick="ordenarPor('depositosPositivos')">Positivos</th>
-                            <th onclick="ordenarPor('sincronizado')">Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -641,17 +627,11 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO
+        // CONFIGURAÇÃO - SUBSTITUA PELA SUA URL!
         // ============================================
         
         const CONFIG = {
-            // URL da API do Google Apps Script (mesma do app de coleta)
-            API_URL: 'https://script.google.com/macros/s/AKfycbxkDR76zJiCr18ElaiyhlHEmLduIiwskQDaOkVrf0xptxmOWkwvyl6lIJRBs1XBR4Im/exec',
-            
-            // ID da planilha (para leitura direta se necessário)
-            SPREADSHEET_ID: '1g_mGT3Ci8aCHJn4qYnMVPl4PvsUApfEBEqXxKZTPbw8',
-            
-            // Paginação
+            API_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
             ITENS_POR_PAGINA: 50
         };
 
@@ -659,8 +639,8 @@
         // VARIÁVEIS GLOBAIS
         // ============================================
         
-        let todosOsDados = [];        // Todos os dados carregados
-        let dadosFiltrados = [];      // Dados após filtros
+        let todosOsDados = [];
+        let dadosFiltrados = [];
         let paginaAtual = 1;
         let ordenacao = { campo: 'data', direcao: 'desc' };
         
@@ -669,14 +649,12 @@
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Definir datas padrão (últimos 7 dias)
             const hoje = new Date();
             const seteDiasAtras = new Date(hoje.getTime() - (7 * 24 * 60 * 60 * 1000));
             
             document.getElementById('filtroDataFim').valueAsDate = hoje;
             document.getElementById('filtroDataInicio').valueAsDate = seteDiasAtras;
             
-            // Carregar dados
             carregarDados();
         });
 
@@ -688,7 +666,6 @@
             mostrarLoading(true);
             
             try {
-                // Tentar carregar via API primeiro
                 const response = await fetch(CONFIG.API_URL + '?action=getData', {
                     method: 'GET',
                     headers: {
@@ -707,32 +684,16 @@
                 }
                 
             } catch (error) {
-                console.error('Erro ao carregar via API:', error);
-                showToast('Erro ao carregar dados. Tente novamente.', 'error');
+                console.error('Erro ao carregar:', error);
+                showToast('Erro ao carregar dados. Usando dados locais.', 'error');
                 todosOsDados = [];
             }
             
-            // Popular filtros de agente e equipe
             popularFiltrosDinamicos();
-            
-            // Aplicar filtros iniciais
             aplicarFiltros();
-            
             mostrarLoading(false);
         }
 
-        // API alternativa direto na planilha (CORS pode bloquear)
-        async function carregarDadosAlternativo() {
-            // Esta função pode ser implementada com JSONP ou backend proxy
-            // Por enquanto, usamos dados de exemplo para demonstração
-            showToast('Usando modo offline - dados podem estar desatualizados', 'warning');
-            return [];
-        }
-
-        // ============================================
-        // FILTROS
-        // ============================================
-        
         function popularFiltrosDinamicos() {
             const agentes = [...new Set(todosOsDados.map(d => d.Agente).filter(Boolean))].sort();
             const equipes = [...new Set(todosOsDados.map(d => d.Equipe).filter(Boolean))].sort();
@@ -755,6 +716,10 @@
             });
         }
 
+        // ============================================
+        // FILTROS
+        // ============================================
+        
         function aplicarFiltros() {
             const filtros = {
                 dataInicio: document.getElementById('filtroDataInicio').value,
@@ -768,7 +733,6 @@
             };
             
             dadosFiltrados = todosOsDados.filter(item => {
-                // Filtro de data
                 if (filtros.dataInicio) {
                     const dataItem = parseDataBR(item.Data);
                     const dataInicio = new Date(filtros.dataInicio);
@@ -782,12 +746,10 @@
                     if (dataItem > dataFim) return false;
                 }
                 
-                // Filtros de texto exato
                 if (filtros.agente && item.Agente !== filtros.agente) return false;
                 if (filtros.equipe && item.Equipe !== filtros.equipe) return false;
                 if (filtros.situacao && item.Situacao !== filtros.situacao) return false;
                 
-                // Filtros de texto parcial
                 if (filtros.microarea && !item.Microarea?.toLowerCase().includes(filtros.microarea)) return false;
                 if (filtros.quarteirao && !item.Quarteirao?.toLowerCase().includes(filtros.quarteirao)) return false;
                 if (filtros.logradouro && !item.Logradouro?.toLowerCase().includes(filtros.logradouro)) return false;
@@ -795,13 +757,9 @@
                 return true;
             });
             
-            // Ordenar
             ordenarDados();
-            
-            // Resetar para primeira página
             paginaAtual = 1;
             
-            // Atualizar UI
             atualizarEstatisticas();
             atualizarGrafico();
             renderizarTabela();
@@ -833,7 +791,6 @@
                 ordenacao.direcao = 'asc';
             }
             
-            // Atualizar indicadores visuais
             document.querySelectorAll('th').forEach(th => {
                 th.classList.remove('sort-asc', 'sort-desc');
             });
@@ -857,8 +814,7 @@
                 'numero': 'Numero',
                 'microarea': 'Microarea',
                 'situacao': 'Situacao',
-                'depositosPositivos': 'Depositos_Positivos',
-                'sincronizado': 'sincronizado'
+                'depositosPositivos': 'Depositos_Positivos'
             };
             
             const campoReal = campoMap[ordenacao.campo] || ordenacao.campo;
@@ -867,13 +823,11 @@
                 let valA = a[campoReal] || '';
                 let valB = b[campoReal] || '';
                 
-                // Tratamento especial para datas
                 if (ordenacao.campo === 'data') {
                     valA = parseDataBR(valA).getTime();
                     valB = parseDataBR(valB).getTime();
                 }
                 
-                // Tratamento para números
                 if (!isNaN(valA) && !isNaN(valB)) {
                     valA = Number(valA);
                     valB = Number(valB);
@@ -892,7 +846,7 @@
         function atualizarEstatisticas() {
             const total = dadosFiltrados.length;
             const trabalhados = dadosFiltrados.filter(d => d.Situacao === 'normal').length;
-            const pendentes = dadosFiltrados.filter(d => !d.sincronizado).length;
+            const pendentes = 0; // Todos na planilha já estão sincronizados
             const positivos = dadosFiltrados.reduce((sum, d) => sum + (parseInt(d.Depositos_Positivos) || 0), 0);
             const agentesUnicos = new Set(dadosFiltrados.map(d => d.Agente)).size;
             
@@ -974,9 +928,6 @@
                 const tr = document.createElement('tr');
                 
                 const badgeClass = `badge-${item.Situacao || 'normal'}`;
-                const statusBadge = item.sincronizado 
-                    ? '<span class="badge badge-synced">✓ Sync</span>'
-                    : '<span class="badge badge-pending">⏳ Pendente</span>';
                 
                 tr.innerHTML = `
                     <td>${item.Data}</td>
@@ -988,9 +939,8 @@
                     <td>${item.Microarea}</td>
                     <td><span class="badge ${badgeClass}">${item.Situacao || 'normal'}</span></td>
                     <td>${item.Depositos_Positivos || 0}</td>
-                    <td>${statusBadge}</td>
                     <td>
-                        <button onclick="verDetalhes('${item.id || ''}')" style="padding: 4px 8px; border: none; background: var(--primary); color: white; border-radius: 4px; cursor: pointer;">
+                        <button onclick="verDetalhes(${item.id})" style="padding: 4px 8px; border: none; background: var(--primary); color: white; border-radius: 4px; cursor: pointer;">
                             👁️ Ver
                         </button>
                     </td>
@@ -1014,14 +964,12 @@
             
             container.classList.remove('hidden');
             
-            // Botão anterior
             const btnAnterior = document.createElement('button');
             btnAnterior.innerHTML = '←';
             btnAnterior.disabled = paginaAtual === 1;
             btnAnterior.onclick = () => mudarPagina(paginaAtual - 1);
             container.appendChild(btnAnterior);
             
-            // Números de página
             const maxBotoes = 5;
             let inicioPag = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
             let fimPag = Math.min(totalPaginas, inicioPag + maxBotoes - 1);
@@ -1038,14 +986,12 @@
                 container.appendChild(btn);
             }
             
-            // Botão próximo
             const btnProximo = document.createElement('button');
             btnProximo.innerHTML = '→';
             btnProximo.disabled = paginaAtual === totalPaginas;
             btnProximo.onclick = () => mudarPagina(paginaAtual + 1);
             container.appendChild(btnProximo);
             
-            // Info
             const info = document.createElement('span');
             info.className = 'pagination-info';
             info.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
@@ -1064,7 +1010,7 @@
         // ============================================
         
         function verDetalhes(id) {
-            const item = dadosFiltrados.find(d => (d.id || d.ID) === id);
+            const item = dadosFiltrados.find(d => d.id === id);
             if (!item) return;
             
             const modal = document.getElementById('modalDetalhes');
@@ -1219,13 +1165,11 @@
         function parseDataBR(dataStr) {
             if (!dataStr) return new Date(0);
             
-            // Tenta formato DD/MM/YYYY
             const parts = dataStr.split('/');
             if (parts.length === 3) {
                 return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
             }
             
-            // Fallback para ISO
             return new Date(dataStr);
         }
 
@@ -1235,7 +1179,6 @@
         }
 
         function showToast(msg, type = 'success') {
-            // Criar toast dinâmico
             const toast = document.createElement('div');
             toast.style.cssText = `
                 position: fixed;
