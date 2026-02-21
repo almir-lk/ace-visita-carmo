@@ -148,7 +148,6 @@
             border-color: var(--primary);
         }
 
-        /* TABELA DE DEPÓSITOS - 5 COLUNAS */
         .deposits-table {
             width: 100%;
             border-collapse: collapse;
@@ -214,7 +213,6 @@
             accent-color: var(--primary);
         }
 
-        /* Contagem automática destacada */
         .contagem-automatica {
             background: #eff6ff;
             border: 2px solid var(--primary);
@@ -256,7 +254,6 @@
             color: var(--primary);
         }
 
-        /* ESTATÍSTICAS DETALHADAS */
         .stats-section {
             margin-bottom: 20px;
         }
@@ -315,7 +312,6 @@
             font-size: 1.25rem;
         }
 
-        /* Resumo geral */
         .resumo-geral {
             background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
             color: white;
@@ -351,7 +347,6 @@
             font-weight: 700;
         }
 
-        /* Produtos usados */
         .produtos-card {
             background: #f0fdf4;
             border-left: 4px solid var(--success);
@@ -544,7 +539,6 @@
             .resumo-grid { grid-template-columns: 1fr; }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -643,19 +637,6 @@
                     <div style="font-size: 0.875rem; color: #a16207;" id="syncQueueCount">0 visitas pendentes</div>
                     <div style="font-size: 0.8rem; color: #a16207; margin-top: 4px;">
                         Serão sincronizadas ao finalizar o dia
-                    </div>
-                </div>
-
-                <!-- MORADOR -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">👤</div>
-                        <h2 class="card-title">Morador</h2>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Nome do Morador</label>
-                        <input type="text" id="nomeMorador" placeholder="Nome completo do morador">
                     </div>
                 </div>
 
@@ -1103,11 +1084,11 @@
         let diaFinalizado = false;
 
         // ============================================
-        // CONFIGURAÇÃO
+        // CONFIGURAÇÃO - SUBSTITUA PELA SUA URL DA API!
         // ============================================
 
         const CONFIG = {
-            SYNC_URL: 'https://script.google.com/macros/s/AKfycbwtTnGume9s63zz31huy_s1WrvIRblL_wz00fdIOypADqvsetFMejqCPPkIXE1kU7gU/exec', // SUBSTITUA PELA SUA URL!
+            SYNC_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
             SYNC_INTERVAL: 30
         };
 
@@ -1163,7 +1144,7 @@
         }
 
         // ============================================
-        // CONTROLE DO DIA (NOVO)
+        // CONTROLE DO DIA
         // ============================================
 
         function checkDiaFinalizado() {
@@ -1226,7 +1207,7 @@
         }
 
         // ============================================
-        // INICIAR DIA (MODIFICADO)
+        // INICIAR DIA
         // ============================================
 
         function iniciarDia() {
@@ -1338,7 +1319,6 @@
                 matricula: agentConfig.matricula,
                 equipe: agentConfig.equipe,
                 supervisor: agentConfig.supervisor || '',
-                nomeMorador: document.getElementById('nomeMorador').value.trim(),
                 logradouro, numero,
                 complemento: document.getElementById('complemento').value,
                 microarea, quarteirao,
@@ -1460,7 +1440,6 @@
                 params.append('Matricula', visit.matricula);
                 params.append('Equipe', visit.equipe);
                 params.append('Supervisor', visit.supervisor || '');
-                params.append('Nome_Morador', visit.nomeMorador || '');
                 params.append('Logradouro', visit.logradouro);
                 params.append('Numero', visit.numero);
                 params.append('Complemento', visit.complemento || '');
@@ -1521,7 +1500,7 @@
         function exportarCSV() {
             if (visits.length === 0) return;
 
-            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Nome_Morador','Logradouro','Numero','Complemento','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis','Depositos_Positivos'];
+            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Logradouro','Numero','Complemento','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis','Depositos_Positivos'];
             
             const csv = [
                 headers.join(';'),
@@ -1689,7 +1668,7 @@
         }
 
         function clearForm() {
-            ['nomeMorador', 'logradouro', 'numero', 'complemento', 'microarea', 'quarteirao'].forEach(id => {
+            ['logradouro', 'numero', 'complemento', 'microarea', 'quarteirao'].forEach(id => {
                 document.getElementById(id).value = '';
             });
             document.getElementById('tipoImovel').value = 'residencial';
