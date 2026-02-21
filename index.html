@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>ACE Visitas - Prefeitura Municipal de Carmo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #8b5cf6;
+            --orange: #f97316;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding-bottom: 100px;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .sync-dot.pending { background: var(--warning); animation: none; }
+        .sync-dot.error { background: var(--danger); animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .container {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: #dbeafe;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        label .required {
+            color: var(--danger);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* TABELA DE DEPÓSITOS - 5 COLUNAS */
+        .deposits-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .deposits-table th {
+            text-align: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            padding: 8px 2px;
+            border-bottom: 2px solid var(--border);
+            background: #f9fafb;
+        }
+
+        .deposits-table th:first-child {
+            text-align: left;
+            font-size: 0.75rem;
+            width: auto;
+        }
+
+        .deposits-table th {
+            width: 50px;
+        }
+
+        .deposits-table td {
+            padding: 10px 2px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .deposits-table td:first-child {
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .deposits-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .checkbox-wrapper label {
+            font-size: 0.6rem;
+            color: var(--text-light);
+            margin: 0;
+            font-weight: 400;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* Contagem automática destacada */
+        .contagem-automatica {
+            background: #eff6ff;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .contagem-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .contagem-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .contagem-item {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .contagem-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .contagem-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* ESTATÍSTICAS DETALHADAS */
+        .stats-section {
+            margin-bottom: 20px;
+        }
+
+        .stats-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stats-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-box.blue { background: #eff6ff; }
+        .stat-box.green { background: #f0fdf4; }
+        .stat-box.red { background: #fef2f2; }
+        .stat-box.yellow { background: #fefce8; }
+        .stat-box.purple { background: #faf5ff; }
+        .stat-box.orange { background: #fff7ed; }
+        .stat-box.cyan { background: #ecfeff; }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-value.small {
+            font-size: 1.25rem;
+        }
+
+        /* Resumo geral */
+        .resumo-geral {
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .resumo-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .resumo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .resumo-item {
+            text-align: center;
+        }
+
+        .resumo-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .resumo-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Produtos usados */
+        .produtos-card {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .produtos-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 8px;
+        }
+
+        .produto-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #bbf7d0;
+            font-size: 0.875rem;
+        }
+
+        .produto-item:last-child {
+            border-bottom: none;
+        }
+
+        .sync-queue {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .sync-queue.show { display: block; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .btn-export {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-export:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item:disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .nav-item span {
+            font-size: 1.25rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 60px;
+        }
+
+        .footer-dev {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .hidden { display: none !important; }
+
+        .blocked-message {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .tratamento-detalhe {
+            background: #f0fdf4;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 4px solid var(--success);
+        }
+
+        .dia-encerrado {
+            background: #fee2e2;
+            border: 2px solid var(--danger);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .dia-encerrado h3 {
+            color: var(--danger);
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 380px) {
+            .form-row { grid-template-columns: 1fr; }
+            .contagem-grid { grid-template-columns: repeat(2, 1fr); }
+            .resumo-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-top">
+            <div>
+                <h1>ACE Visitas</h1>
+                <div class="sync-status" id="syncStatus">
+                    <div class="sync-dot" id="syncDot"></div>
+                    <span id="syncText">Aguardando início...</span>
+                </div>
+            </div>
+            <div class="header-agent" id="headerAgent" style="display: none;">
+                <span id="headerAgentName">-</span>
+                <small id="headerAgentInfo">-</small>
+            </div>
+        </div>
+    </header>
+
+    <!-- ABA INÍCIO -->
+    <div id="tab-inicio" class="tab-content">
+        <div class="container">
+            <div id="inicioBloqueio" class="hidden">
+                <div class="dia-encerrado">
+                    <h3>🚫 Dia Encerrado</h3>
+                    <p>O dia de trabalho já foi finalizado.</p>
+                    <p><strong>Aguarde amanhã para iniciar um novo dia.</strong></p>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        Último agente: <span id="ultimoAgente">-</span>
+                    </p>
+                </div>
+            </div>
+
+            <div id="inicioConteudo">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">👤</div>
+                        <h2 class="card-title">Início do Dia</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome Completo <span class="required">*</span></label>
+                        <input type="text" id="configNome" placeholder="Nome do agente">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Matrícula <span class="required">*</span></label>
+                        <input type="text" id="configMatricula" placeholder="Número da matrícula">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Equipe <span class="required">*</span></label>
+                        <input type="text" id="configEquipe" placeholder="Número da equipe">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Supervisor</label>
+                        <input type="text" id="configSupervisor" placeholder="Nome do supervisor (opcional)">
+                    </div>
+
+                    <button class="btn-primary" onclick="iniciarDia()" id="btnIniciarDia">
+                        🚀 Iniciar Dia de Trabalho
+                    </button>
+
+                    <div id="configSuccess" class="hidden" style="background: #dcfce7; color: #166534; padding: 16px; border-radius: 8px; margin-top: 16px; text-align: center;">
+                        ✅ Dia iniciado! Redirecionando...
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <strong>Prefeitura Municipal de Carmo</strong>
+                Coordenação de Combate às Endemias
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA VISITAS -->
+    <div id="tab-visitas" class="tab-content hidden">
+        <div class="container">
+            <div id="visitasBloqueio" class="blocked-message hidden">
+                <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
+                <h3>Dia não iniciado</h3>
+                <p>Vá em "Início" e preencha os dados do agente.</p>
+            </div>
+
+            <div id="visitasEncerrado" class="dia-encerrado hidden">
+                <h3>🚫 Dia Encerrado</h3>
+                <p>O dia de trabalho foi finalizado.</p>
+                <p>Não é possível adicionar mais visitas.</p>
+            </div>
+
+            <div id="visitasConteudo">
+                <div class="sync-queue" id="syncQueue">
+                    <div style="font-weight: 600; color: #92400e; margin-bottom: 4px;">⏳ Visitas Salvas Localmente</div>
+                    <div style="font-size: 0.875rem; color: #a16207;" id="syncQueueCount">0 visitas pendentes</div>
+                    <div style="font-size: 0.8rem; color: #a16207; margin-top: 4px;">
+                        Serão sincronizadas ao finalizar o dia
+                    </div>
+                </div>
+
+                <!-- MORADOR -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">👤</div>
+                        <h2 class="card-title">Morador</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nome do Morador</label>
+                        <input type="text" id="nomeMorador" placeholder="Nome completo do morador">
+                    </div>
+                </div>
+
+                <!-- ENDEREÇO -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📍</div>
+                        <h2 class="card-title">Endereço</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Logradouro <span class="required">*</span></label>
+                        <input type="text" id="logradouro" placeholder="Rua, Avenida, etc.">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Número <span class="required">*</span></label>
+                            <input type="text" id="numero" placeholder="123">
+                        </div>
+                        <div class="form-group">
+                            <label>Complemento</label>
+                            <input type="text" id="complemento" placeholder="Apto">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Microárea <span class="required">*</span></label>
+                            <input type="text" id="microarea" placeholder="Ex: M01">
+                        </div>
+                        <div class="form-group">
+                            <label>Quarteirão <span class="required">*</span></label>
+                            <input type="text" id="quarteirao" placeholder="Ex: Q05">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IMÓVEL -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏠</div>
+                        <h2 class="card-title">Imóvel</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Imóvel</label>
+                        <select id="tipoImovel">
+                            <option value="residencial">Residencial</option>
+                            <option value="comercial">Comercial</option>
+                            <option value="terreno">Terreno Baldio</option>
+                            <option value="publico">Órgão Público</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Situação do Imóvel</label>
+                        <select id="situacaoImovel" onchange="handleSituacaoChange()">
+                            <option value="normal">Normal (Trabalhado)</option>
+                            <option value="fechado">Fechado</option>
+                            <option value="recusado">Recusa de Acesso</option>
+                            <option value="desabitado">Desabitado</option>
+                            <option value="demolido">Demolido</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- INSPEÇÃO DE DEPÓSITOS - 5 COLUNAS -->
+                <div class="card" id="cardDepositos">
+                    <div class="card-header">
+                        <div class="card-icon">💧</div>
+                        <h2 class="card-title">Inspeção de Depósitos</h2>
+                    </div>
+
+                    <table class="deposits-table">
+                        <thead>
+                            <tr>
+                                <th>Depósito</th>
+                                <th>Inspec</th>
+                                <th>Elimin</th>
+                                <th>Posit</th>
+                                <th>Prot</th>
+                                <th>Impr</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>💧 Caixa d'Água</td>
+                                <td><input type="checkbox" id="cx_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="cx_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🏊 Piscina</td>
+                                <td><input type="checkbox" id="piscina_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="piscina_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🚽 Vaso/Banheiro</td>
+                                <td><input type="checkbox" id="vaso_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="vaso_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🛁 Tanque</td>
+                                <td><input type="checkbox" id="tanque_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tanque_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🛢️ Tonel</td>
+                                <td><input type="checkbox" id="tonel_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="tonel_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🏺 Barrica</td>
+                                <td><input type="checkbox" id="barrica_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="barrica_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🪴 Vaso Planta</td>
+                                <td><input type="checkbox" id="pote_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pote_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🪣 Balde</td>
+                                <td><input type="checkbox" id="balde_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="balde_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🍾 Garrafa/Lata</td>
+                                <td><input type="checkbox" id="garrafa_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="garrafa_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🛞 Pneu</td>
+                                <td><input type="checkbox" id="pneu_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="pneu_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>🗑️ Lixo/Entulho</td>
+                                <td><input type="checkbox" id="lixo_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="lixo_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                            <tr>
+                                <td>❓ Outros</td>
+                                <td><input type="checkbox" id="outros_inspec" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_elim" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_posit" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_prot" onchange="calcularContagem()"></td>
+                                <td><input type="checkbox" id="outros_impr" onchange="calcularContagem()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- CONTAGEM AUTOMÁTICA -->
+                    <div class="contagem-automatica">
+                        <div class="contagem-title">📊 Contagem Automática de Depósitos</div>
+                        <div class="contagem-grid">
+                            <div class="contagem-item">
+                                <div class="contagem-label">Inspecionados</div>
+                                <div class="contagem-value" id="total_inspec">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Eliminados</div>
+                                <div class="contagem-value" id="total_elim" style="color: var(--success);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Positivos</div>
+                                <div class="contagem-value" id="total_posit" style="color: var(--danger);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Protegidos</div>
+                                <div class="contagem-value" id="total_prot" style="color: var(--warning);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Impraticáveis</div>
+                                <div class="contagem-value" id="total_impr" style="color: var(--purple);">0</div>
+                            </div>
+                            <div class="contagem-item">
+                                <div class="contagem-label">Total Geral</div>
+                                <div class="contagem-value" id="total_geral" style="color: var(--orange);">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRATAMENTO -->
+                <div class="card" id="cardTratamento">
+                    <div class="card-header">
+                        <div class="card-icon">🔬</div>
+                        <h2 class="card-title">Tratamento</h2>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Tratamento</label>
+                        <select id="tipoTratamento" onchange="toggleProduto()">
+                            <option value="nenhum">Nenhum</option>
+                            <option value="larvicida">Larvicida</option>
+                            <option value="adulticida">Adulticida</option>
+                            <option value="mecanico">Controle Mecânico</option>
+                            <option value="biologico">Controle Biológico</option>
+                        </select>
+                    </div>
+
+                    <div id="produtoDetalhe" class="tratamento-detalhe hidden">
+                        <div class="form-group">
+                            <label>Produto <span class="required">*</span></label>
+                            <select id="nomeProduto">
+                                <option value="">Selecione...</option>
+                                <optgroup label="Larvicidas">
+                                    <option value="BTI-Sache">BTI - Sachê</option>
+                                    <option value="BTI-Granulado">BTI - Granulado</option>
+                                    <option value="Diflubenzuron">Diflubenzuron</option>
+                                    <option value="Novaluron">Novaluron</option>
+                                    <option value="Pyriproxyfen">Pyriproxyfen</option>
+                                </optgroup>
+                                <optgroup label="Adulticidas">
+                                    <option value="Deltametrina">Deltametrina</option>
+                                    <option value="Cipermetrina">Cipermetrina</option>
+                                    <option value="Malation">Malation</option>
+                                    <option value="Lambdacialotrina">Lambdacialotrina</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-row" style="margin-bottom: 0;">
+                            <div class="form-group">
+                                <label>Quantidade <span class="required">*</span></label>
+                                <input type="number" id="quantidadeProduto" placeholder="0" min="0" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Unidade <span class="required">*</span></label>
+                                <select id="unidadeProduto">
+                                    <option value="gr">gramas</option>
+                                    <option value="ml">ml</option>
+                                    <option value="un">unidades</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="saveVisit()" id="btnSalvarVisita" style="margin-bottom: 20px;">
+                    💾 Salvar Visita
+                </button>
+            </div>
+
+            <div class="footer">
+                <strong>Prefeitura Municipal de Carmo</strong>
+                Coordenação de Combate às Endemias
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA DADOS (ESTATÍSTICAS COMPLETAS) -->
+    <div id="tab-dados" class="tab-content hidden">
+        <div class="container">
+            <div id="statsBloqueio" class="blocked-message hidden">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📊</div>
+                <h3>Sem dados</h3>
+                <p>Inicie o dia em "Início" e registre visitas.</p>
+            </div>
+
+            <div id="statsConteudo">
+                <!-- RESUMO GERAL -->
+                <div class="resumo-geral">
+                    <div class="resumo-title">📈 Resumo Geral do Dia</div>
+                    <div class="resumo-grid">
+                        <div class="resumo-item">
+                            <div class="resumo-label">Total Visitas</div>
+                            <div class="resumo-value" id="resumoTotal">0</div>
+                        </div>
+                        <div class="resumo-item">
+                            <div class="resumo-label">Tempo Médio</div>
+                            <div class="resumo-value" id="resumoTempo">0min</div>
+                        </div>
+                        <div class="resumo-item">
+                            <div class="resumo-label">Taxa Trabalho</div>
+                            <div class="resumo-value" id="resumoTaxa">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUTOS USADOS -->
+                <div id="produtosCard" class="produtos-card hidden">
+                    <div class="produtos-title">💊 Produtos Utilizados no Dia</div>
+                    <div id="listaProdutos"></div>
+                </div>
+
+                <!-- ESTATÍSTICAS DE VISITAS -->
+                <div class="stats-section">
+                    <div class="stats-title">🏠 Situação dos Imóveis</div>
+                    <div class="stats-grid">
+                        <div class="stat-box blue">
+                            <div class="stat-label">Trabalhados</div>
+                            <div class="stat-value" id="statTrabalhados">0</div>
+                        </div>
+                        <div class="stat-box green">
+                            <div class="stat-label">Visitas Realizadas</div>
+                            <div class="stat-value" id="statRealizadas">0</div>
+                        </div>
+                        <div class="stat-box gray">
+                            <div class="stat-label">Fechados</div>
+                            <div class="stat-value" id="statFechados">0</div>
+                        </div>
+                        <div class="stat-box orange">
+                            <div class="stat-label">Recusados</div>
+                            <div class="stat-value" id="statRecusados">0</div>
+                        </div>
+                        <div class="stat-box yellow">
+                            <div class="stat-label">Desabitados</div>
+                            <div class="stat-value" id="statDesabitados">0</div>
+                        </div>
+                        <div class="stat-box purple">
+                            <div class="stat-label">Demolidos</div>
+                            <div class="stat-value" id="statDemolidos">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTATÍSTICAS DE DEPÓSITOS -->
+                <div class="stats-section">
+                    <div class="stats-title">💧 Controle de Depósitos</div>
+                    <div class="stats-grid-3">
+                        <div class="stat-box cyan">
+                            <div class="stat-label">Inspecionados</div>
+                            <div class="stat-value" id="statInspecionados">0</div>
+                        </div>
+                        <div class="stat-box green">
+                            <div class="stat-label">Eliminados</div>
+                            <div class="stat-value" id="statEliminados">0</div>
+                        </div>
+                        <div class="stat-box red">
+                            <div class="stat-label">Positivos</div>
+                            <div class="stat-value" id="statPositivos">0</div>
+                        </div>
+                        <div class="stat-box yellow">
+                            <div class="stat-label">Protegidos</div>
+                            <div class="stat-value" id="statProtegidos">0</div>
+                        </div>
+                        <div class="stat-box purple">
+                            <div class="stat-label">Impraticáveis</div>
+                            <div class="stat-value" id="statImpraticaveis">0</div>
+                        </div>
+                        <div class="stat-box blue">
+                            <div class="stat-label">Total Geral</div>
+                            <div class="stat-value" id="statTotalDepositos">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ÍNDICES -->
+                <div class="stats-section">
+                    <div class="stats-title">📊 Índices de Produtividade</div>
+                    <div class="stats-grid">
+                        <div class="stat-box blue">
+                            <div class="stat-label">Depósitos/Visita</div>
+                            <div class="stat-value small" id="statDepPorVisita">0.0</div>
+                        </div>
+                        <div class="stat-box green">
+                            <div class="stat-label">Positivos/Inspec</div>
+                            <div class="stat-value small" id="statPositividade">0%</div>
+                        </div>
+                        <div class="stat-box cyan">
+                            <div class="stat-label">Sincronizadas</div>
+                            <div class="stat-value" id="statSync">0</div>
+                        </div>
+                        <div class="stat-box orange">
+                            <div class="stat-label">Pendentes</div>
+                            <div class="stat-value" id="statPending">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-export" onclick="finalizarDia()" id="btnFinalizarDia">
+                    📊 Finalizar Dia & Sincronizar Tudo
+                </button>
+
+                <!-- CRÉDITOS SOMENTE NA ABA DADOS -->
+                <div class="footer-dev">
+                    <strong>Prefeitura Municipal de Carmo</strong><br>
+                    Coordenação de Combate às Endemias<br>
+                    <span style="color: var(--primary);">Desenvolvido por almir.lk</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-inicio" onclick="showTab('inicio')">
+            <span>🏁</span>Início
+        </button>
+        <button class="nav-item" id="nav-visitas" onclick="showTab('visitas')">
+            <span>🏠</span>Visitas
+        </button>
+        <button class="nav-item" id="nav-dados" onclick="showTab('dados')">
+            <span>📊</span>Dados
+        </button>
+    </nav>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================
+        // VARIÁVEIS GLOBAIS
+        // ============================================
+
+        let visits = [];
+        let agentConfig = {};
+        let currentPosition = null;
+        let diaIniciado = false;
+        let isOnline = navigator.onLine;
+        let horaInicio = null;
+        let diaFinalizado = false;
+
+        // ============================================
+        // CONFIGURAÇÃO
+        // ============================================
+
+        const CONFIG = {
+            SYNC_URL: 'https://script.google.com/macros/s/SEU_ID_AQUI/exec', // SUBSTITUA PELA SUA URL!
+            SYNC_INTERVAL: 30
+        };
+
+        const DEPOSITOS = [
+            'cx', 'piscina', 'vaso', 'tanque', 'tonel', 'barrica', 
+            'pote', 'balde', 'garrafa', 'pneu', 'lixo', 'outros'
+        ];
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkDiaFinalizado();
+            checkDiaIniciado();
+            loadVisits();
+            initGPS();
+            updateUI();
+            updateStats();
+            
+            if (diaIniciado && !diaFinalizado) {
+                showTab('visitas');
+            }
+            
+            if (diaFinalizado) {
+                bloquearAplicativo();
+            }
+            
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateSyncStatus('online');
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateSyncStatus('offline');
+            });
+        });
+
+        function initGPS() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.watchPosition(
+                (pos) => {
+                    currentPosition = {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude,
+                        accuracy: pos.coords.accuracy
+                    };
+                },
+                (err) => console.log('GPS erro:', err),
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // ============================================
+        // CONTROLE DO DIA (NOVO)
+        // ============================================
+
+        function checkDiaFinalizado() {
+            const hoje = getTodayKey();
+            const finalizado = localStorage.getItem('ace_finalizado_' + hoje);
+            if (finalizado) {
+                diaFinalizado = true;
+                diaIniciado = true;
+                agentConfig = JSON.parse(localStorage.getItem('ace_config_' + hoje) || '{}');
+            }
+        }
+
+        function bloquearAplicativo() {
+            document.getElementById('nav-inicio').disabled = true;
+            document.getElementById('nav-visitas').disabled = true;
+            document.getElementById('btnIniciarDia').disabled = true;
+            document.getElementById('btnSalvarVisita').disabled = true;
+            document.getElementById('btnFinalizarDia').disabled = true;
+            
+            document.getElementById('inicioBloqueio').classList.remove('hidden');
+            document.getElementById('inicioConteudo').classList.add('hidden');
+            document.getElementById('visitasEncerrado').classList.remove('hidden');
+            document.getElementById('visitasConteudo').classList.add('hidden');
+            
+            document.getElementById('ultimoAgente').textContent = agentConfig.nome || '-';
+            
+            showToast('⚠️ Dia encerrado. Aguarde amanhã.', 'warning');
+            showTab('dados');
+        }
+
+        function checkDiaIniciado() {
+            const hoje = getTodayKey();
+            const config = localStorage.getItem('ace_config_' + hoje);
+            if (config) {
+                agentConfig = JSON.parse(config);
+                diaIniciado = true;
+                horaInicio = agentConfig.dataInicio;
+                document.getElementById('headerAgentName').textContent = agentConfig.nome;
+                document.getElementById('headerAgentInfo').textContent = `Eq. ${agentConfig.equipe} • ${agentConfig.matricula}`;
+                document.getElementById('headerAgent').style.display = 'block';
+            }
+        }
+
+        // ============================================
+        // NAVEGAÇÃO
+        // ============================================
+
+        function showTab(tab) {
+            if (diaFinalizado && tab !== 'dados') {
+                showToast('Dia encerrado. Somente visualização de dados.', 'error');
+                return;
+            }
+            
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`nav-${tab}`).classList.add('active');
+            if (tab === 'dados') updateStats();
+            if (tab === 'visitas') atualizarFilaSync();
+        }
+
+        // ============================================
+        // INICIAR DIA (MODIFICADO)
+        // ============================================
+
+        function iniciarDia() {
+            if (diaFinalizado) {
+                showToast('Dia já foi finalizado. Não é possível reabrir.', 'error');
+                return;
+            }
+
+            const nome = document.getElementById('configNome').value.trim();
+            const matricula = document.getElementById('configMatricula').value.trim();
+            const equipe = document.getElementById('configEquipe').value.trim();
+
+            if (!nome || !matricula || !equipe) {
+                showToast('Preencha todos os campos obrigatórios', 'error');
+                return;
+            }
+
+            agentConfig = {
+                nome, matricula, equipe,
+                supervisor: document.getElementById('configSupervisor').value.trim(),
+                dataInicio: new Date().toISOString()
+            };
+
+            localStorage.setItem('ace_config_' + getTodayKey(), JSON.stringify(agentConfig));
+            diaIniciado = true;
+            horaInicio = agentConfig.dataInicio;
+            
+            document.getElementById('headerAgentName').textContent = nome;
+            document.getElementById('headerAgentInfo').textContent = `Eq. ${equipe} • ${matricula}`;
+            document.getElementById('headerAgent').style.display = 'block';
+            document.getElementById('configSuccess').classList.remove('hidden');
+            
+            updateUI();
+            showToast('Dia iniciado! Redirecionando...', 'success');
+            
+            setTimeout(() => {
+                showTab('visitas');
+            }, 1000);
+        }
+
+        // ============================================
+        // SALVAR VISITA (SEM SINCRONIZAÇÃO AUTOMÁTICA)
+        // ============================================
+
+        async function saveVisit() {
+            if (!diaIniciado) {
+                showToast('Inicie o dia em Início primeiro!', 'error');
+                return;
+            }
+
+            if (diaFinalizado) {
+                showToast('Dia já finalizado. Não é possível adicionar visitas.', 'error');
+                return;
+            }
+
+            const logradouro = document.getElementById('logradouro').value.trim();
+            const numero = document.getElementById('numero').value.trim();
+            const microarea = document.getElementById('microarea').value.trim();
+            const quarteirao = document.getElementById('quarteirao').value.trim();
+
+            if (!logradouro || !numero || !microarea || !quarteirao) {
+                showToast('Preencha Logradouro, Número, Microárea e Quarteirão', 'error');
+                return;
+            }
+
+            const tratamento = document.getElementById('tipoTratamento').value;
+            let produtoInfo = {};
+
+            if (tratamento !== 'nenhum' && tratamento !== 'mecanico') {
+                const nomeProd = document.getElementById('nomeProduto').value;
+                const qtdProd = document.getElementById('quantidadeProduto').value;
+                if (!nomeProd || !qtdProd) {
+                    showToast('Informe o produto e quantidade', 'error');
+                    return;
+                }
+                produtoInfo = {
+                    nome: nomeProd,
+                    quantidade: parseFloat(qtdProd),
+                    unidade: document.getElementById('unidadeProduto').value
+                };
+            }
+
+            const depositosDetalhados = {};
+            DEPOSITOS.forEach(dep => {
+                depositosDetalhados[dep] = {
+                    inspec: document.getElementById(dep + '_inspec')?.checked || false,
+                    elim: document.getElementById(dep + '_elim')?.checked || false,
+                    posit: document.getElementById(dep + '_posit')?.checked || false,
+                    prot: document.getElementById(dep + '_prot')?.checked || false,
+                    impr: document.getElementById(dep + '_impr')?.checked || false
+                };
+            });
+
+            const totais = { inspec: 0, elim: 0, posit: 0, prot: 0, impr: 0 };
+            Object.values(depositosDetalhados).forEach(d => {
+                if (d.inspec) totais.inspec++;
+                if (d.elim) totais.elim++;
+                if (d.posit) totais.posit++;
+                if (d.prot) totais.prot++;
+                if (d.impr) totais.impr++;
+            });
+
+            const visit = {
+                id: Date.now(),
+                data: new Date().toLocaleDateString('pt-BR'),
+                hora: new Date().toLocaleTimeString('pt-BR'),
+                timestamp: Date.now(),
+                agente: agentConfig.nome,
+                matricula: agentConfig.matricula,
+                equipe: agentConfig.equipe,
+                supervisor: agentConfig.supervisor || '',
+                nomeMorador: document.getElementById('nomeMorador').value.trim(),
+                logradouro, numero,
+                complemento: document.getElementById('complemento').value,
+                microarea, quarteirao,
+                tipoImovel: document.getElementById('tipoImovel').value,
+                situacao: document.getElementById('situacaoImovel').value,
+                latitude: currentPosition?.lat || '',
+                longitude: currentPosition?.lng || '',
+                precisao: currentPosition?.accuracy || '',
+                tipoTratamento: tratamento,
+                produto: produtoInfo.nome || '',
+                qtdProduto: produtoInfo.quantidade || '',
+                unidade: produtoInfo.unidade || '',
+                depEliminados: totais.elim,
+                depTratados: totais.inspec,
+                depProtegidos: totais.prot,
+                depImpraticaveis: totais.impr,
+                depositosPositivos: totais.posit,
+                depositosDetalhados: depositosDetalhados,
+                sincronizado: false,
+                status: 'pending',
+                tentativas: 0
+            };
+
+            visits.push(visit);
+            salvarVisitsLocal();
+            clearForm();
+            
+            showToast('✅ Visita salva localmente!', 'success');
+            atualizarFilaSync();
+            updateStats();
+        }
+
+        // ============================================
+        // FINALIZAR DIA (VERSÃO CORRIGIDA)
+        // ============================================
+
+        async function finalizarDia() {
+            console.log('Iniciando finalização do dia...');
+            
+            if (!diaIniciado) {
+                showToast('Nenhum dia iniciado', 'error');
+                return;
+            }
+
+            if (diaFinalizado) {
+                showToast('Dia já foi finalizado', 'error');
+                return;
+            }
+
+            if (visits.length === 0) {
+                showToast('Nenhuma visita para exportar', 'error');
+                return;
+            }
+
+            const pendentes = visits.filter(v => !v.sincronizado).length;
+            const mensagem = pendentes > 0 
+                ? `${pendentes} visitas serão sincronizadas com o servidor.`
+                : 'Todas as visitas já estão sincronizadas.';
+
+            if (!confirm(`Deseja finalizar o dia?\n\n${mensagem}\n\n⚠️ Após finalizar, não será possível adicionar mais visitas hoje.`)) {
+                console.log('Usuário cancelou a finalização');
+                return;
+            }
+
+            showToast('Sincronizando todas as visitas...', 'success');
+            updateSyncStatus('syncing');
+
+            let sucessos = 0;
+            let falhas = 0;
+
+            // Tentar sincronizar apenas se estiver online e tiver URL configurada
+            if (isOnline && CONFIG.SYNC_URL && !CONFIG.SYNC_URL.includes('SEU_ID_AQUI')) {
+                for (const visit of visits) {
+                    if (!visit.sincronizado) {
+                        try {
+                            const sucesso = await sincronizarVisita(visit);
+                            if (sucesso) {
+                                sucessos++;
+                            } else {
+                                falhas++;
+                            }
+                        } catch (error) {
+                            console.error('Erro ao sincronizar visita:', error);
+                            falhas++;
+                        }
+                        await new Promise(r => setTimeout(r, 500));
+                    }
+                }
+            } else {
+                console.log('Sincronização pulada: offline ou URL não configurada');
+                falhas = pendentes;
+            }
+
+            const aindaPendentes = visits.filter(v => !v.sincronizado).length;
+            console.log(`Sincronização: ${sucessos} sucessos, ${falhas} falhas, ${aindaPendentes} pendentes`);
+
+            // Se ainda houver pendentes, perguntar se deseja forçar
+            if (aindaPendentes > 0) {
+                const forcar = confirm(`${aindaPendentes} visitas não sincronizaram.\n\nDeseja exportar para CSV e finalizar mesmo assim?`);
+                if (!forcar) {
+                    updateSyncStatus('error');
+                    showToast('Finalização cancelada', 'warning');
+                    return;
+                }
+            }
+
+            // Exportar CSV mesmo que tudo tenha sincronizado (backup local)
+            try {
+                exportarCSV();
+                console.log('CSV exportado com sucesso');
+            } catch (error) {
+                console.error('Erro ao exportar CSV:', error);
+                showToast('Erro ao exportar CSV, mas continuando...', 'warning');
+            }
+
+            // Marcar dia como finalizado
+            diaFinalizado = true;
+            localStorage.setItem('ace_finalizado_' + getTodayKey(), 'true');
+            
+            showToast(`✅ Dia finalizado! ${sucessos} OK, ${falhas} falhas.`, 'success');
+            
+            setTimeout(() => {
+                bloquearAplicativo();
+            }, 2000);
+        }
+
+        // ============================================
+        // SINCRONIZAR VISITA (VERSÃO COM LOGS)
+        // ============================================
+
+        async function sincronizarVisita(visit) {
+            console.log('Sincronizando visita:', visit.id);
+            
+            if (!isOnline) {
+                console.log('Sem conexão, marcando como offline');
+                visit.status = 'offline';
+                visit.ultimoErro = 'Sem conexão';
+                salvarVisitsLocal();
+                return false;
+            }
+
+            if (!CONFIG.SYNC_URL || CONFIG.SYNC_URL.includes('SEU_ID_AQUI')) {
+                console.log('URL de sincronização não configurada');
+                visit.status = 'error';
+                visit.ultimoErro = 'URL não configurada';
+                salvarVisitsLocal();
+                return false;
+            }
+
+            try {
+                const params = new URLSearchParams();
+                params.append('Data', visit.data);
+                params.append('Hora', visit.hora);
+                params.append('Agente', visit.agente);
+                params.append('Matricula', visit.matricula);
+                params.append('Equipe', visit.equipe);
+                params.append('Supervisor', visit.supervisor || '');
+                params.append('Nome_Morador', visit.nomeMorador || '');
+                params.append('Logradouro', visit.logradouro);
+                params.append('Numero', visit.numero);
+                params.append('Complemento', visit.complemento || '');
+                params.append('Microarea', visit.microarea);
+                params.append('Quarteirao', visit.quarteirao);
+                params.append('Tipo_Imovel', visit.tipoImovel);
+                params.append('Situacao', visit.situacao);
+                params.append('Latitude', visit.latitude || '');
+                params.append('Longitude', visit.longitude || '');
+                params.append('Precisao', visit.precisao || '');
+                params.append('Tipo_Tratamento', visit.tipoTratamento);
+                params.append('Produto', visit.produto || '');
+                params.append('Qtd_Produto', visit.qtdProduto || '0');
+                params.append('Unidade', visit.unidade || '');
+                params.append('Dep_Eliminados', String(visit.depEliminados || '0'));
+                params.append('Dep_Tratados', String(visit.depTratados || '0'));
+                params.append('Dep_Protegidos', String(visit.depProtegidos || '0'));
+                params.append('Dep_Impraticaveis', String(visit.depImpraticaveis || '0'));
+                params.append('Depositos_Positivos', String(visit.depositosPositivos || '0'));
+
+                console.log('Enviando para:', CONFIG.SYNC_URL);
+                
+                const response = await fetch(CONFIG.SYNC_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: params.toString()
+                });
+
+                console.log('Resposta HTTP:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Resposta do servidor:', result);
+
+                if (result.success) {
+                    visit.sincronizado = true;
+                    visit.status = 'synced';
+                    visit.dataSync = new Date().toISOString();
+                    salvarVisitsLocal();
+                    return true;
+                } else {
+                    throw new Error(result.message || 'Erro servidor');
+                }
+
+            } catch (error) {
+                console.error('Erro na sincronização:', error);
+                visit.tentativas++;
+                visit.status = 'error';
+                visit.ultimoErro = error.message;
+                salvarVisitsLocal();
+                return false;
+            }
+        }
+
+        // ============================================
+        // FUNÇÕES AUXILIARES
+        // ============================================
+
+        function exportarCSV() {
+            if (visits.length === 0) return;
+
+            const headers = ['Data','Hora','Agente','Matricula','Equipe','Supervisor','Nome_Morador','Logradouro','Numero','Complemento','Microarea','Quarteirao','Tipo_Imovel','Situacao','Latitude','Longitude','Precisao','Tipo_Tratamento','Produto','Qtd_Produto','Unidade','Dep_Eliminados','Dep_Tratados','Dep_Protegidos','Dep_Impraticaveis','Depositos_Positivos'];
+            
+            const csv = [
+                headers.join(';'),
+                ...visits.map(v => headers.map(h => {
+                    let val = v[h] || v[h.charAt(0).toLowerCase() + h.slice(1)] || '';
+                    return `"${String(val).replace(/"/g, '""')}"`;
+                }).join(';'))
+            ].join('\n');
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ACE_Carmo_${agentConfig.nome}_${getTodayKey()}_BACKUP.csv`;
+            link.click();
+        }
+
+        function salvarVisitsLocal() {
+            localStorage.setItem('ace_visits_' + getTodayKey(), JSON.stringify(visits));
+        }
+
+        function loadVisits() {
+            const saved = localStorage.getItem('ace_visits_' + getTodayKey());
+            if (saved) visits = JSON.parse(saved);
+        }
+
+        function getTodayKey() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function atualizarFilaSync() {
+            const pendentes = visits.filter(v => !v.sincronizado).length;
+            const filaDiv = document.getElementById('syncQueue');
+            const countDiv = document.getElementById('syncQueueCount');
+
+            if (pendentes > 0) {
+                filaDiv.classList.add('show');
+                countDiv.textContent = `${pendentes} visita(s) pendente(s)`;
+            } else if (visits.length > 0) {
+                filaDiv.classList.add('show');
+                countDiv.textContent = 'Todas as visitas salvas';
+            } else {
+                filaDiv.classList.remove('show');
+            }
+        }
+
+        function updateSyncStatus(status) {
+            const dot = document.getElementById('syncDot');
+            const text = document.getElementById('syncText');
+            
+            dot.className = 'sync-dot';
+            
+            switch(status) {
+                case 'synced':
+                    dot.style.background = 'var(--success)';
+                    text.textContent = 'Sincronizado';
+                    break;
+                case 'syncing':
+                    dot.style.background = 'var(--info)';
+                    text.textContent = 'Sincronizando...';
+                    break;
+                case 'offline':
+                    dot.style.background = 'var(--warning)';
+                    text.textContent = 'Sem internet';
+                    break;
+                case 'error':
+                    dot.style.background = 'var(--danger)';
+                    text.textContent = 'Erro';
+                    break;
+                default:
+                    dot.style.background = '#9ca3af';
+                    text.textContent = diaIniciado ? 'Pronto' : 'Aguardando...';
+            }
+        }
+
+        function updateUI() {
+            const bloqueado = !diaIniciado;
+            document.getElementById('visitasConteudo').classList.toggle('hidden', bloqueado);
+            document.getElementById('visitasBloqueio').classList.toggle('hidden', !bloqueado);
+            document.getElementById('statsConteudo').classList.toggle('hidden', bloqueado);
+            document.getElementById('statsBloqueio').classList.toggle('hidden', !bloqueado);
+        }
+
+        function updateStats() {
+            if (visits.length === 0) {
+                document.getElementById('resumoTotal').textContent = '0';
+                document.getElementById('resumoTempo').textContent = '0min';
+                document.getElementById('resumoTaxa').textContent = '0%';
+                return;
+            }
+
+            const total = visits.length;
+            const trabalhados = visits.filter(v => v.situacao === 'normal').length;
+            const fechados = visits.filter(v => v.situacao === 'fechado').length;
+            const recusados = visits.filter(v => v.situacao === 'recusado').length;
+            const desabitados = visits.filter(v => v.situacao === 'desabitado').length;
+            const demolidos = visits.filter(v => v.situacao === 'demolido').length;
+            const realizadas = visits.filter(v => v.situacao !== 'fechado' && v.situacao !== 'recusado').length;
+
+            let totalInspec = 0, totalElim = 0, totalPosit = 0, totalProt = 0, totalImpr = 0;
+            visits.forEach(v => {
+                totalInspec += v.depTratados || 0;
+                totalElim += v.depEliminados || 0;
+                totalPosit += v.depositosPositivos || 0;
+                totalProt += v.depProtegidos || 0;
+                totalImpr += v.depImpraticaveis || 0;
+            });
+
+            const syncCount = visits.filter(v => v.sincronizado).length;
+            const pendingCount = visits.filter(v => !v.sincronizado).length;
+
+            let tempoMedio = 0;
+            if (horaInicio && visits.length > 0) {
+                const inicio = new Date(horaInicio).getTime();
+                const agora = Date.now();
+                const diffMinutos = Math.floor((agora - inicio) / 60000);
+                tempoMedio = Math.floor(diffMinutos / visits.length);
+            }
+
+            const taxaTrabalho = total > 0 ? Math.round((trabalhados / total) * 100) : 0;
+            const depPorVisita = total > 0 ? (totalInspec / total).toFixed(1) : '0.0';
+            const taxaPositividade = totalInspec > 0 ? Math.round((totalPosit / totalInspec) * 100) : 0;
+
+            document.getElementById('resumoTotal').textContent = total;
+            document.getElementById('resumoTempo').textContent = tempoMedio + 'min';
+            document.getElementById('resumoTaxa').textContent = taxaTrabalho + '%';
+
+            document.getElementById('statTrabalhados').textContent = trabalhados;
+            document.getElementById('statRealizadas').textContent = realizadas;
+            document.getElementById('statFechados').textContent = fechados;
+            document.getElementById('statRecusados').textContent = recusados;
+            document.getElementById('statDesabitados').textContent = desabitados;
+            document.getElementById('statDemolidos').textContent = demolidos;
+
+            document.getElementById('statInspecionados').textContent = totalInspec;
+            document.getElementById('statEliminados').textContent = totalElim;
+            document.getElementById('statPositivos').textContent = totalPosit;
+            document.getElementById('statProtegidos').textContent = totalProt;
+            document.getElementById('statImpraticaveis').textContent = totalImpr;
+            document.getElementById('statTotalDepositos').textContent = totalInspec + totalElim + totalProt + totalImpr;
+
+            document.getElementById('statDepPorVisita').textContent = depPorVisita;
+            document.getElementById('statPositividade').textContent = taxaPositividade + '%';
+            document.getElementById('statSync').textContent = syncCount;
+            document.getElementById('statPending').textContent = pendingCount;
+
+            const produtos = {};
+            visits.forEach(v => {
+                if (v.produto) {
+                    const key = `${v.produto} (${v.unidade})`;
+                    produtos[key] = (produtos[key] || 0) + (v.qtdProduto || 0);
+                }
+            });
+
+            const produtosDiv = document.getElementById('listaProdutos');
+            const produtosCard = document.getElementById('produtosCard');
+            
+            if (Object.keys(produtos).length > 0) {
+                produtosDiv.innerHTML = Object.entries(produtos)
+                    .map(([nome, qtd]) => `<div class="produto-item"><span>${nome}</span><strong>${qtd.toFixed(2)}</strong></div>`)
+                    .join('');
+                produtosCard.classList.remove('hidden');
+            } else {
+                produtosCard.classList.add('hidden');
+            }
+        }
+
+        function clearForm() {
+            ['nomeMorador', 'logradouro', 'numero', 'complemento', 'microarea', 'quarteirao'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('tipoImovel').value = 'residencial';
+            document.getElementById('situacaoImovel').value = 'normal';
+            document.getElementById('tipoTratamento').value = 'nenhum';
+            
+            DEPOSITOS.forEach(dep => {
+                ['inspec', 'elim', 'posit', 'prot', 'impr'].forEach(tipo => {
+                    const el = document.getElementById(dep + '_' + tipo);
+                    if (el) el.checked = false;
+                });
+            });
+            
+            calcularContagem();
+            toggleProduto();
+        }
+
+        function toggleProduto() {
+            const tipo = document.getElementById('tipoTratamento').value;
+            document.getElementById('produtoDetalhe').classList.toggle('hidden', 
+                tipo === 'nenhum' || tipo === 'mecanico');
+        }
+
+        function handleSituacaoChange() {
+            const situacao = document.getElementById('situacaoImovel').value;
+            const isNormal = situacao === 'normal';
+            document.getElementById('cardDepositos').style.display = isNormal ? 'block' : 'none';
+            document.getElementById('cardTratamento').style.display = isNormal ? 'block' : 'none';
+        }
+
+        function calcularContagem() {
+            let contagem = { inspec: 0, elim: 0, posit: 0, prot: 0, impr: 0 };
+
+            DEPOSITOS.forEach(dep => {
+                if (document.getElementById(dep + '_inspec')?.checked) contagem.inspec++;
+                if (document.getElementById(dep + '_elim')?.checked) contagem.elim++;
+                if (document.getElementById(dep + '_posit')?.checked) contagem.posit++;
+                if (document.getElementById(dep + '_prot')?.checked) contagem.prot++;
+                if (document.getElementById(dep + '_impr')?.checked) contagem.impr++;
+            });
+
+            document.getElementById('total_inspec').textContent = contagem.inspec;
+            document.getElementById('total_elim').textContent = contagem.elim;
+            document.getElementById('total_posit').textContent = contagem.posit;
+            document.getElementById('total_prot').textContent = contagem.prot;
+            document.getElementById('total_impr').textContent = contagem.impr;
+            document.getElementById('total_geral').textContent = contagem.inspec + contagem.elim + contagem.posit + contagem.prot + contagem.impr;
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.background = type === 'error' ? '#dc2626' : type === 'warning' ? '#f59e0b' : '#1f2937';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        window.onbeforeunload = (e) => {
+            const pendentes = visits.filter(v => !v.sincronizado).length;
+            if (pendentes > 0 && !diaFinalizado) {
+                e.preventDefault();
+                e.returnValue = `${pendentes} visitas não sincronizadas. Deseja sair?`;
+            }
+        };
+    </script>
+</body>
+</html>
