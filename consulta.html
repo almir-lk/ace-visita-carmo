@@ -1,1205 +1,447 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#10b981">
-    <title>ACE Consulta - Prefeitura Municipal de Carmo</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        :root {
-            --primary: #2563eb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --purple: #8b5cf6;
-            --orange: #f97316;
-            --bg: #f3f4f6;
-            --card: #ffffff;
-            --text: #1f2937;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            padding-bottom: 80px;
-        }
-
-        .header {
-            background: var(--success);
-            color: white;
-            padding: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header h1 {
-            font-size: 1.25rem;
-            margin-bottom: 4px;
-        }
-
-        .header p {
-            font-size: 0.875rem;
-            opacity: 0.9;
-        }
-
-        .container {
-            padding: 16px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .filters-card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .filters-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .filter-group label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-light);
-        }
-
-        .filter-group input,
-        .filter-group select {
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-        }
-
-        .filter-group input:focus,
-        .filter-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .filter-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-item {
-            background: var(--card);
-            border-radius: 10px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .stat-item.primary { border-top: 3px solid var(--primary); }
-        .stat-item.success { border-top: 3px solid var(--success); }
-        .stat-item.warning { border-top: 3px solid var(--warning); }
-        .stat-item.danger { border-top: 3px solid var(--danger); }
-        .stat-item.info { border-top: 3px solid var(--info); }
-
-        .stat-number {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-
-        .chart-container {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .chart-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .chart-label {
-            width: 100px;
-            font-size: 0.875rem;
-        }
-
-        .chart-progress {
-            flex: 1;
-            height: 24px;
-            background: var(--bg);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0 10px;
-        }
-
-        .chart-fill {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
-
-        .chart-value {
-            width: 50px;
-            text-align: right;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        .data-card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-
-        .data-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .data-title {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .data-count {
-            font-size: 0.875rem;
-            color: var(--text-light);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-            min-width: 800px;
-        }
-
-        th {
-            background: #f9fafb;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-light);
-            border-bottom: 2px solid var(--border);
-            white-space: nowrap;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        th:hover {
-            background: #f3f4f6;
-        }
-
-        th.sort-asc::after {
-            content: ' ↑';
-        }
-
-        th.sort-desc::after {
-            content: ' ↓';
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-
-        tr:hover {
-            background: #f9fafb;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .badge-normal { background: #dcfce7; color: #166534; }
-        .badge-fechado { background: #fee2e2; color: #991b1b; }
-        .badge-recusado { background: #ffedd5; color: #9a3412; }
-        .badge-desabitado { background: #fef3c7; color: #92400e; }
-        .badge-demolido { background: #f3e8ff; color: #6b21a8; }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .pagination button {
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination button.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .pagination-info {
-            font-size: 0.875rem;
-            color: var(--text-light);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-light);
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-light);
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .detail-item {
-            padding: 12px;
-            background: #f9fafb;
-            border-radius: 8px;
-        }
-
-        .detail-label {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            margin-bottom: 4px;
-        }
-
-        .detail-value {
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        @media (max-width: 768px) {
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-    </style>
-</head>
-<body>
-
-    <header class="header">
-        <h1>📊 ACE Consulta</h1>
-        <p>Prefeitura Municipal de Carmo - Coordenação de Combate às Endemias</p>
-    </header>
-
-    <div class="container">
+// ============================================
+// CONFIGURAÇÃO - SUBSTITUA PELA SUA URL!
+// ============================================
+
+const CONFIG = {
+    API_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
+    ITENS_POR_PAGINA: 50
+};
+
+// ============================================
+// VARIÁVEIS GLOBAIS
+// ============================================
+
+let todosOsDados = [];
+let dadosFiltrados = [];
+let paginaAtual = 1;
+let ordenacao = { campo: 'Data', direcao: 'desc' }; // Usar nome da coluna direto
+
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 App de consulta iniciado');
+    
+    // Definir datas padrão (últimos 30 dias)
+    const hoje = new Date();
+    const trintaDiasAtras = new Date(hoje.getTime() - (30 * 24 * 60 * 60 * 1000));
+    
+    document.getElementById('filtroDataFim').valueAsDate = hoje;
+    document.getElementById('filtroDataInicio').valueAsDate = trintaDiasAtras;
+    
+    // Carregar dados automaticamente
+    carregarDados();
+});
+
+// ============================================
+// CARREGAMENTO DE DADOS
+// ============================================
+
+async function carregarDados() {
+    console.log('📥 Carregando dados...');
+    mostrarLoading(true);
+    
+    try {
+        // Usar JSONP para evitar CORS
+        const url = CONFIG.API_URL + '?action=getData&callback=handleData';
         
-        <!-- FILTROS -->
-        <div class="filters-card">
-            <div class="filters-title">🔍 Filtros de Pesquisa</div>
-            
-            <div class="filters-grid">
-                <div class="filter-group">
-                    <label>Data Inicial</label>
-                    <input type="date" id="filtroDataInicio">
-                </div>
-                
-                <div class="filter-group">
-                    <label>Data Final</label>
-                    <input type="date" id="filtroDataFim">
-                </div>
-                
-                <div class="filter-group">
-                    <label>Agente</label>
-                    <select id="filtroAgente">
-                        <option value="">Todos</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label>Equipe</label>
-                    <select id="filtroEquipe">
-                        <option value="">Todas</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label>Microárea</label>
-                    <input type="text" id="filtroMicroarea" placeholder="Ex: M01">
-                </div>
-                
-                <div class="filter-group">
-                    <label>Quarteirão</label>
-                    <input type="text" id="filtroQuarteirao" placeholder="Ex: Q05">
-                </div>
-                
-                <div class="filter-group">
-                    <label>Situação do Imóvel</label>
-                    <select id="filtroSituacao">
-                        <option value="">Todas</option>
-                        <option value="normal">Normal (Trabalhado)</option>
-                        <option value="fechado">Fechado</option>
-                        <option value="recusado">Recusado</option>
-                        <option value="desabitado">Desabitado</option>
-                        <option value="demolido">Demolido</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label>Logradouro</label>
-                    <input type="text" id="filtroLogradouro" placeholder="Nome da rua">
-                </div>
-            </div>
-            
-            <div class="filter-actions">
-                <button class="btn btn-primary" onclick="aplicarFiltros()">
-                    🔍 Buscar
-                </button>
-                <button class="btn btn-secondary" onclick="limparFiltros()">
-                    🧹 Limpar
-                </button>
-                <button class="btn btn-success" onclick="exportarResultados()">
-                    📥 Exportar CSV
-                </button>
-            </div>
-        </div>
-
-        <!-- ESTATÍSTICAS -->
-        <div class="stats-bar" id="statsBar">
-            <div class="stat-item primary">
-                <div class="stat-number" id="statTotal">0</div>
-                <div class="stat-label">Total Visitas</div>
-            </div>
-            <div class="stat-item success">
-                <div class="stat-number" id="statTrabalhados">0</div>
-                <div class="stat-label">Trabalhados</div>
-            </div>
-            <div class="stat-item warning">
-                <div class="stat-number" id="statPendentes">0</div>
-                <div class="stat-label">Pendentes</div>
-            </div>
-            <div class="stat-item danger">
-                <div class="stat-number" id="statPositivos">0</div>
-                <div class="stat-label">Dep. Positivos</div>
-            </div>
-            <div class="stat-item info">
-                <div class="stat-number" id="statAgentes">0</div>
-                <div class="stat-label">Agentes</div>
-            </div>
-        </div>
-
-        <!-- GRÁFICO DE SITUAÇÕES -->
-        <div class="chart-container" id="chartContainer">
-            <div class="filters-title">📈 Distribuição por Situação</div>
-            <div id="chartContent"></div>
-        </div>
-
-        <!-- TABELA DE DADOS -->
-        <div class="data-card">
-            <div class="data-header">
-                <div>
-                    <div class="data-title">📋 Registros de Visitas</div>
-                    <div class="data-count" id="dataCount">Mostrando 0 de 0 registros</div>
-                </div>
-            </div>
-            
-            <div id="loadingState" class="loading hidden">
-                <div class="loading-spinner"></div>
-                <p>Carregando dados...</p>
-            </div>
-            
-            <div id="emptyState" class="empty-state hidden">
-                <div class="empty-state-icon">📭</div>
-                <p>Nenhum registro encontrado</p>
-                <p style="font-size: 0.875rem; margin-top: 8px;">Ajuste os filtros e tente novamente</p>
-            </div>
-            
-            <div id="tableContainer">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th onclick="ordenarPor('data')">Data</th>
-                            <th onclick="ordenarPor('hora')">Hora</th>
-                            <th onclick="ordenarPor('agente')">Agente</th>
-                            <th onclick="ordenarPor('equipe')">Equipe</th>
-                            <th onclick="ordenarPor('logradouro')">Logradouro</th>
-                            <th onclick="ordenarPor('numero')">Nº</th>
-                            <th onclick="ordenarPor('microarea')">Microárea</th>
-                            <th onclick="ordenarPor('situacao')">Situação</th>
-                            <th onclick="ordenarPor('depositosPositivos')">Positivos</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="pagination" id="pagination">
-                <!-- Paginação gerada via JS -->
-            </div>
-        </div>
-
-    </div>
-
-    <!-- MODAL DETALHES -->
-    <div id="modalDetalhes" class="modal-overlay hidden" onclick="fecharModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3>📋 Detalhes da Visita</h3>
-                <button class="modal-close" onclick="fecharModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Conteúdo dinâmico -->
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ============================================
-        // CONFIGURAÇÃO - SUBSTITUA PELA SUA URL!
-        // ============================================
+        console.log('URL da requisição:', url);
         
-        const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
-            ITENS_POR_PAGINA: 50
+        // Criar script tag para JSONP
+        const script = document.createElement('script');
+        script.src = url;
+        
+        // Timeout de segurança
+        const timeoutId = setTimeout(() => {
+            console.error('⏱️ Timeout ao carregar dados');
+            limparDados();
+            showToast('Timeout ao carregar. Tente novamente.', 'error');
+            mostrarLoading(false);
+        }, 10000);
+        
+        // Handler global para JSONP
+        window.handleData = function(result) {
+            clearTimeout(timeoutId);
+            console.log('✅ Dados recebidos via JSONP:', result);
+            
+            if (result && result.success && Array.isArray(result.data)) {
+                todosOsDados = result.data;
+                console.log('📊 Total de registros:', todosOsDados.length);
+                
+                popularFiltrosDinamicos();
+                aplicarFiltros();
+            } else {
+                console.error('❌ Resposta inválida:', result);
+                limparDados();
+                showToast('Erro: ' + (result.message || 'Dados inválidos'), 'error');
+            }
+            
+            mostrarLoading(false);
+            
+            // Limpar script
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+            delete window.handleData;
         };
-
-        // ============================================
-        // VARIÁVEIS GLOBAIS
-        // ============================================
         
-        let todosOsDados = [];
-        let dadosFiltrados = [];
-        let paginaAtual = 1;
-        let ordenacao = { campo: 'data', direcao: 'desc' };
-        
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const hoje = new Date();
-            const seteDiasAtras = new Date(hoje.getTime() - (7 * 24 * 60 * 60 * 1000));
+        // Handler de erro
+        script.onerror = function() {
+            clearTimeout(timeoutId);
+            console.error('❌ Erro ao carregar script');
+            limparDados();
+            showToast('Erro de conexão com a API', 'error');
+            mostrarLoading(false);
             
-            document.getElementById('filtroDataFim').valueAsDate = hoje;
-            document.getElementById('filtroDataInicio').valueAsDate = seteDiasAtras;
-            
-            carregarDados();
-        });
-
-        // ============================================
-        // CARREGAMENTO DE DADOS
-        // ============================================
-        
-        async function carregarDados() {
-            mostrarLoading(true);
-            
-            try {
-                const response = await fetch(CONFIG.API_URL + '?action=getData', {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) throw new Error('Erro na API');
-                
-                const result = await response.json();
-                
-                if (result.success && result.data) {
-                    todosOsDados = result.data;
-                } else {
-                    throw new Error('Dados inválidos');
-                }
-                
-            } catch (error) {
-                console.error('Erro ao carregar:', error);
-                showToast('Erro ao carregar dados. Usando dados locais.', 'error');
-                todosOsDados = [];
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
             }
-            
+            delete window.handleData;
+        };
+        
+        document.head.appendChild(script);
+        
+    } catch (error) {
+        console.error('❌ Erro carregarDados:', error);
+        limparDados();
+        showToast('Erro: ' + error.message, 'error');
+        mostrarLoading(false);
+    }
+}
+
+// Fallback: carregar via fetch com no-cors (só funciona se API permitir)
+async function carregarDadosFetch() {
+    try {
+        const response = await fetch(CONFIG.API_URL + '?action=getData', {
+            method: 'GET',
+            mode: 'cors', // Tentar CORS normal primeiro
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            todosOsDados = result.data;
             popularFiltrosDinamicos();
             aplicarFiltros();
-            mostrarLoading(false);
+        } else {
+            throw new Error(result.message || 'Dados inválidos');
         }
-
-        function popularFiltrosDinamicos() {
-            const agentes = [...new Set(todosOsDados.map(d => d.Agente).filter(Boolean))].sort();
-            const equipes = [...new Set(todosOsDados.map(d => d.Equipe).filter(Boolean))].sort();
-            
-            const selectAgente = document.getElementById('filtroAgente');
-            const selectEquipe = document.getElementById('filtroEquipe');
-            
-            agentes.forEach(agente => {
-                const option = document.createElement('option');
-                option.value = agente;
-                option.textContent = agente;
-                selectAgente.appendChild(option);
-            });
-            
-            equipes.forEach(equipe => {
-                const option = document.createElement('option');
-                option.value = equipe;
-                option.textContent = equipe;
-                selectEquipe.appendChild(option);
-            });
-        }
-
-        // ============================================
-        // FILTROS
-        // ============================================
         
-        function aplicarFiltros() {
-            const filtros = {
-                dataInicio: document.getElementById('filtroDataInicio').value,
-                dataFim: document.getElementById('filtroDataFim').value,
-                agente: document.getElementById('filtroAgente').value,
-                equipe: document.getElementById('filtroEquipe').value,
-                microarea: document.getElementById('filtroMicroarea').value.toLowerCase(),
-                quarteirao: document.getElementById('filtroQuarteirao').value.toLowerCase(),
-                situacao: document.getElementById('filtroSituacao').value,
-                logradouro: document.getElementById('filtroLogradouro').value.toLowerCase()
-            };
-            
-            dadosFiltrados = todosOsDados.filter(item => {
-                if (filtros.dataInicio) {
-                    const dataItem = parseDataBR(item.Data);
-                    const dataInicio = new Date(filtros.dataInicio);
-                    if (dataItem < dataInicio) return false;
-                }
-                
-                if (filtros.dataFim) {
-                    const dataItem = parseDataBR(item.Data);
-                    const dataFim = new Date(filtros.dataFim);
-                    dataFim.setHours(23, 59, 59);
-                    if (dataItem > dataFim) return false;
-                }
-                
-                if (filtros.agente && item.Agente !== filtros.agente) return false;
-                if (filtros.equipe && item.Equipe !== filtros.equipe) return false;
-                if (filtros.situacao && item.Situacao !== filtros.situacao) return false;
-                
-                if (filtros.microarea && !item.Microarea?.toLowerCase().includes(filtros.microarea)) return false;
-                if (filtros.quarteirao && !item.Quarteirao?.toLowerCase().includes(filtros.quarteirao)) return false;
-                if (filtros.logradouro && !item.Logradouro?.toLowerCase().includes(filtros.logradouro)) return false;
-                
-                return true;
-            });
-            
-            ordenarDados();
-            paginaAtual = 1;
-            
-            atualizarEstatisticas();
-            atualizarGrafico();
-            renderizarTabela();
-            renderizarPaginacao();
-        }
+    } catch (error) {
+        console.error('Fetch falhou, tentando JSONP:', error);
+        // Se falhar, o JSONP já foi iniciado acima
+    }
+}
 
-        function limparFiltros() {
-            document.getElementById('filtroDataInicio').value = '';
-            document.getElementById('filtroDataFim').value = '';
-            document.getElementById('filtroAgente').value = '';
-            document.getElementById('filtroEquipe').value = '';
-            document.getElementById('filtroMicroarea').value = '';
-            document.getElementById('filtroQuarteirao').value = '';
-            document.getElementById('filtroSituacao').value = '';
-            document.getElementById('filtroLogradouro').value = '';
-            
-            aplicarFiltros();
-        }
+function limparDados() {
+    todosOsDados = [];
+    dadosFiltrados = [];
+    popularFiltrosDinamicos();
+    aplicarFiltros();
+}
 
-        // ============================================
-        // ORDENAÇÃO
-        // ============================================
+function popularFiltrosDinamicos() {
+    const selectAgente = document.getElementById('filtroAgente');
+    const selectEquipe = document.getElementById('filtroEquipe');
+    
+    // Limpar opções existentes (exceto primeira)
+    while (selectAgente.options.length > 1) selectAgente.remove(1);
+    while (selectEquipe.options.length > 1) selectEquipe.remove(1);
+    
+    if (todosOsDados.length === 0) return;
+    
+    const agentes = [...new Set(todosOsDados.map(d => d.Agente).filter(Boolean))].sort();
+    const equipes = [...new Set(todosOsDados.map(d => d.Equipe).filter(Boolean))].sort();
+    
+    console.log('Agentes encontrados:', agentes.length);
+    console.log('Equipes encontradas:', equipes.length);
+    
+    agentes.forEach(agente => {
+        const option = document.createElement('option');
+        option.value = agente;
+        option.textContent = agente;
+        selectAgente.appendChild(option);
+    });
+    
+    equipes.forEach(equipe => {
+        const option = document.createElement('option');
+        option.value = equipe;
+        option.textContent = equipe;
+        selectEquipe.appendChild(option);
+    });
+}
+
+// ============================================
+// FILTROS
+// ============================================
+
+function aplicarFiltros() {
+    console.log('🔍 Aplicando filtros...');
+    
+    const filtros = {
+        dataInicio: document.getElementById('filtroDataInicio').value,
+        dataFim: document.getElementById('filtroDataFim').value,
+        agente: document.getElementById('filtroAgente').value,
+        equipe: document.getElementById('filtroEquipe').value,
+        microarea: document.getElementById('filtroMicroarea').value.toLowerCase().trim(),
+        quarteirao: document.getElementById('filtroQuarteirao').value.toLowerCase().trim(),
+        situacao: document.getElementById('filtroSituacao').value,
+        logradouro: document.getElementById('filtroLogradouro').value.toLowerCase().trim()
+    };
+    
+    console.log('Filtros:', filtros);
+    
+    dadosFiltrados = todosOsDados.filter(item => {
+        // Verificar se item existe
+        if (!item) return false;
         
-        function ordenarPor(campo) {
-            if (ordenacao.campo === campo) {
-                ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
-            } else {
-                ordenacao.campo = campo;
-                ordenacao.direcao = 'asc';
-            }
-            
-            document.querySelectorAll('th').forEach(th => {
-                th.classList.remove('sort-asc', 'sort-desc');
-            });
-            
-            const thAtivo = document.querySelector(`th[onclick="ordenarPor('${campo}')"]`);
-            if (thAtivo) {
-                thAtivo.classList.add(`sort-${ordenacao.direcao}`);
-            }
-            
-            ordenarDados();
-            renderizarTabela();
+        // Filtro de data
+        if (filtros.dataInicio && item.Data) {
+            const dataItem = parseDataBR(item.Data);
+            const dataInicio = new Date(filtros.dataInicio);
+            if (dataItem < dataInicio) return false;
         }
-
-        function ordenarDados() {
-            const campoMap = {
-                'data': 'Data',
-                'hora': 'Hora',
-                'agente': 'Agente',
-                'equipe': 'Equipe',
-                'logradouro': 'Logradouro',
-                'numero': 'Numero',
-                'microarea': 'Microarea',
-                'situacao': 'Situacao',
-                'depositosPositivos': 'Depositos_Positivos'
-            };
-            
-            const campoReal = campoMap[ordenacao.campo] || ordenacao.campo;
-            
-            dadosFiltrados.sort((a, b) => {
-                let valA = a[campoReal] || '';
-                let valB = b[campoReal] || '';
-                
-                if (ordenacao.campo === 'data') {
-                    valA = parseDataBR(valA).getTime();
-                    valB = parseDataBR(valB).getTime();
-                }
-                
-                if (!isNaN(valA) && !isNaN(valB)) {
-                    valA = Number(valA);
-                    valB = Number(valB);
-                }
-                
-                if (valA < valB) return ordenacao.direcao === 'asc' ? -1 : 1;
-                if (valA > valB) return ordenacao.direcao === 'asc' ? 1 : -1;
-                return 0;
-            });
-        }
-
-        // ============================================
-        // ESTATÍSTICAS E GRÁFICOS
-        // ============================================
         
-        function atualizarEstatisticas() {
-            const total = dadosFiltrados.length;
-            const trabalhados = dadosFiltrados.filter(d => d.Situacao === 'normal').length;
-            const pendentes = 0; // Todos na planilha já estão sincronizados
-            const positivos = dadosFiltrados.reduce((sum, d) => sum + (parseInt(d.Depositos_Positivos) || 0), 0);
-            const agentesUnicos = new Set(dadosFiltrados.map(d => d.Agente)).size;
-            
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statTrabalhados').textContent = trabalhados;
-            document.getElementById('statPendentes').textContent = pendentes;
-            document.getElementById('statPositivos').textContent = positivos;
-            document.getElementById('statAgentes').textContent = agentesUnicos;
-            
-            document.getElementById('dataCount').textContent = 
-                `Mostrando ${Math.min(total, CONFIG.ITENS_POR_PAGINA)} de ${total} registros`;
+        if (filtros.dataFim && item.Data) {
+            const dataItem = parseDataBR(item.Data);
+            const dataFim = new Date(filtros.dataFim);
+            dataFim.setHours(23, 59, 59);
+            if (dataItem > dataFim) return false;
         }
-
-        function atualizarGrafico() {
-            const situacoes = {};
-            dadosFiltrados.forEach(d => {
-                const sit = d.Situacao || 'desconhecido';
-                situacoes[sit] = (situacoes[sit] || 0) + 1;
-            });
-            
-            const total = dadosFiltrados.length;
-            const container = document.getElementById('chartContent');
-            container.innerHTML = '';
-            
-            const cores = {
-                'normal': 'var(--success)',
-                'fechado': 'var(--danger)',
-                'recusado': 'var(--orange)',
-                'desabitado': 'var(--warning)',
-                'demolido': 'var(--purple)'
-            };
-            
-            const labels = {
-                'normal': 'Trabalhados',
-                'fechado': 'Fechados',
-                'recusado': 'Recusados',
-                'desabitado': 'Desabitados',
-                'demolido': 'Demolidos'
-            };
-            
-            Object.entries(situacoes).forEach(([sit, qtd]) => {
-                const percentual = total > 0 ? (qtd / total * 100).toFixed(1) : 0;
-                
-                const bar = document.createElement('div');
-                bar.className = 'chart-bar';
-                bar.innerHTML = `
-                    <div class="chart-label">${labels[sit] || sit}</div>
-                    <div class="chart-progress">
-                        <div class="chart-fill" style="width: ${percentual}%; background: ${cores[sit] || 'var(--primary)'}"></div>
-                    </div>
-                    <div class="chart-value">${qtd}</div>
-                `;
-                container.appendChild(bar);
-            });
-        }
-
-        // ============================================
-        // TABELA E PAGINAÇÃO
-        // ============================================
         
-        function renderizarTabela() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            if (dadosFiltrados.length === 0) {
-                document.getElementById('emptyState').classList.remove('hidden');
-                document.getElementById('tableContainer').classList.add('hidden');
-                return;
-            }
-            
-            document.getElementById('emptyState').classList.add('hidden');
-            document.getElementById('tableContainer').classList.remove('hidden');
-            
-            const inicio = (paginaAtual - 1) * CONFIG.ITENS_POR_PAGINA;
-            const fim = inicio + CONFIG.ITENS_POR_PAGINA;
-            const paginaDados = dadosFiltrados.slice(inicio, fim);
-            
-            paginaDados.forEach(item => {
-                const tr = document.createElement('tr');
-                
-                const badgeClass = `badge-${item.Situacao || 'normal'}`;
-                
-                tr.innerHTML = `
-                    <td>${item.Data}</td>
-                    <td>${item.Hora}</td>
-                    <td>${item.Agente}</td>
-                    <td>${item.Equipe}</td>
-                    <td>${item.Logradouro}</td>
-                    <td>${item.Numero}</td>
-                    <td>${item.Microarea}</td>
-                    <td><span class="badge ${badgeClass}">${item.Situacao || 'normal'}</span></td>
-                    <td>${item.Depositos_Positivos || 0}</td>
-                    <td>
-                        <button onclick="verDetalhes(${item.id})" style="padding: 4px 8px; border: none; background: var(--primary); color: white; border-radius: 4px; cursor: pointer;">
-                            👁️ Ver
-                        </button>
-                    </td>
-                `;
-                
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderizarPaginacao() {
-            const total = dadosFiltrados.length;
-            const totalPaginas = Math.ceil(total / CONFIG.ITENS_POR_PAGINA);
-            
-            const container = document.getElementById('pagination');
-            container.innerHTML = '';
-            
-            if (totalPaginas <= 1) {
-                container.classList.add('hidden');
-                return;
-            }
-            
-            container.classList.remove('hidden');
-            
-            const btnAnterior = document.createElement('button');
-            btnAnterior.innerHTML = '←';
-            btnAnterior.disabled = paginaAtual === 1;
-            btnAnterior.onclick = () => mudarPagina(paginaAtual - 1);
-            container.appendChild(btnAnterior);
-            
-            const maxBotoes = 5;
-            let inicioPag = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
-            let fimPag = Math.min(totalPaginas, inicioPag + maxBotoes - 1);
-            
-            if (fimPag - inicioPag < maxBotoes) {
-                inicioPag = Math.max(1, fimPag - maxBotoes + 1);
-            }
-            
-            for (let i = inicioPag; i <= fimPag; i++) {
-                const btn = document.createElement('button');
-                btn.textContent = i;
-                btn.className = i === paginaAtual ? 'active' : '';
-                btn.onclick = () => mudarPagina(i);
-                container.appendChild(btn);
-            }
-            
-            const btnProximo = document.createElement('button');
-            btnProximo.innerHTML = '→';
-            btnProximo.disabled = paginaAtual === totalPaginas;
-            btnProximo.onclick = () => mudarPagina(paginaAtual + 1);
-            container.appendChild(btnProximo);
-            
-            const info = document.createElement('span');
-            info.className = 'pagination-info';
-            info.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
-            container.appendChild(info);
-        }
-
-        function mudarPagina(novaPagina) {
-            paginaAtual = novaPagina;
-            renderizarTabela();
-            renderizarPaginacao();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // ============================================
-        // MODAL DETALHES
-        // ============================================
+        // Filtros de texto exato
+        if (filtros.agente && item.Agente !== filtros.agente) return false;
+        if (filtros.equipe && item.Equipe !== filtros.equipe) return false;
+        if (filtros.situacao && item.Situacao !== filtros.situacao) return false;
         
-        function verDetalhes(id) {
-            const item = dadosFiltrados.find(d => d.id === id);
-            if (!item) return;
-            
-            const modal = document.getElementById('modalDetalhes');
-            const body = document.getElementById('modalBody');
-            
-            body.innerHTML = `
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Data</div>
-                        <div class="detail-value">${item.Data}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Hora</div>
-                        <div class="detail-value">${item.Hora}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Agente</div>
-                        <div class="detail-value">${item.Agente}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Matrícula</div>
-                        <div class="detail-value">${item.Matricula}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Equipe</div>
-                        <div class="detail-value">${item.Equipe}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Supervisor</div>
-                        <div class="detail-value">${item.Supervisor || '-'}</div>
-                    </div>
-                    <div class="detail-item" style="grid-column: span 2;">
-                        <div class="detail-label">Endereço</div>
-                        <div class="detail-value">${item.Logradouro}, ${item.Numero} ${item.Complemento ? '- ' + item.Complemento : ''}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Microárea</div>
-                        <div class="detail-value">${item.Microarea}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Quarteirão</div>
-                        <div class="detail-value">${item.Quarteirao}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Tipo de Imóvel</div>
-                        <div class="detail-value">${item.Tipo_Imovel}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Situação</div>
-                        <div class="detail-value"><span class="badge badge-${item.Situacao}">${item.Situacao}</span></div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Latitude</div>
-                        <div class="detail-value">${item.Latitude || '-'}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Longitude</div>
-                        <div class="detail-value">${item.Longitude || '-'}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Tratamento</div>
-                        <div class="detail-value">${item.Tipo_Tratamento}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Produto</div>
-                        <div class="detail-value">${item.Produto || '-'} ${item.Qtd_Produto ? `(${item.Qtd_Produto} ${item.Unidade})` : ''}</div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px; padding: 16px; background: #f0f9ff; border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 12px; color: var(--primary);">📊 Controle de Depósitos</div>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <div class="detail-label">Inspecionados</div>
-                            <div class="detail-value">${item.Dep_Tratados || 0}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Eliminados</div>
-                            <div class="detail-value" style="color: var(--success);">${item.Dep_Eliminados || 0}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Positivos</div>
-                            <div class="detail-value" style="color: var(--danger);">${item.Depositos_Positivos || 0}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Protegidos</div>
-                            <div class="detail-value" style="color: var(--warning);">${item.Dep_Protegidos || 0}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Impraticáveis</div>
-                            <div class="detail-value" style="color: var(--purple);">${item.Dep_Impraticaveis || 0}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 16px; font-size: 0.875rem; color: var(--text-light); text-align: right;">
-                    Sincronizado em: ${item.Data_Sincronizacao || '-'}
-                </div>
-            `;
-            
-            modal.classList.remove('hidden');
+        // Filtros de texto parcial (com segurança)
+        if (filtros.microarea) {
+            const microareaItem = (item.Microarea || '').toLowerCase();
+            if (!microareaItem.includes(filtros.microarea)) return false;
         }
-
-        function fecharModal(event) {
-            if (!event || event.target.id === 'modalDetalhes') {
-                document.getElementById('modalDetalhes').classList.add('hidden');
-            }
-        }
-
-        // ============================================
-        // EXPORTAÇÃO
-        // ============================================
         
-        function exportarResultados() {
-            if (dadosFiltrados.length === 0) {
-                showToast('Nenhum dado para exportar', 'error');
-                return;
-            }
-            
-            const headers = [
-                'Data', 'Hora', 'Agente', 'Matricula', 'Equipe', 'Supervisor',
-                'Logradouro', 'Numero', 'Complemento', 'Microarea', 'Quarteirao',
-                'Tipo_Imovel', 'Situacao', 'Latitude', 'Longitude', 'Precisao',
-                'Tipo_Tratamento', 'Produto', 'Qtd_Produto', 'Unidade',
-                'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 
-                'Dep_Impraticaveis', 'Depositos_Positivos', 'Data_Sincronizacao'
-            ];
-            
-            const csv = [
-                headers.join(';'),
-                ...dadosFiltrados.map(item => headers.map(h => {
-                    const val = item[h] || '';
-                    return `"${String(val).replace(/"/g, '""')}"`;
-                }).join(';'))
-            ].join('\n');
-            
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            
-            const dataAtual = new Date().toISOString().split('T')[0];
-            link.download = `ACE_Consulta_${dataAtual}_${dadosFiltrados.length}_registros.csv`;
-            link.click();
-            
-            showToast(`✅ ${dadosFiltrados.length} registros exportados!`, 'success');
+        if (filtros.quarteirao) {
+            const quarteiraoItem = (item.Quarteirao || '').toLowerCase();
+            if (!quarteiraoItem.includes(filtros.quarteirao)) return false;
         }
-
-        // ============================================
-        // UTILITÁRIOS
-        // ============================================
         
-        function parseDataBR(dataStr) {
-            if (!dataStr) return new Date(0);
-            
-            const parts = dataStr.split('/');
-            if (parts.length === 3) {
-                return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-            }
-            
-            return new Date(dataStr);
+        if (filtros.logradouro) {
+            const logradouroItem = (item.Logradouro || '').toLowerCase();
+            if (!logradouroItem.includes(filtros.logradouro)) return false;
         }
+        
+        return true;
+    });
+    
+    console.log('Registros após filtro:', dadosFiltrados.length);
+    
+    ordenarDados();
+    paginaAtual = 1;
+    
+    atualizarEstatisticas();
+    atualizarGrafico();
+    renderizarTabela();
+    renderizarPaginacao();
+}
 
-        function mostrarLoading(mostrar) {
-            document.getElementById('loadingState').classList.toggle('hidden', !mostrar);
-            document.getElementById('tableContainer').classList.toggle('hidden', mostrar);
-        }
+function limparFiltros() {
+    document.getElementById('filtroDataInicio').value = '';
+    document.getElementById('filtroDataFim').value = '';
+    document.getElementById('filtroAgente').value = '';
+    document.getElementById('filtroEquipe').value = '';
+    document.getElementById('filtroMicroarea').value = '';
+    document.getElementById('filtroQuarteirao').value = '';
+    document.getElementById('filtroSituacao').value = '';
+    document.getElementById('filtroLogradouro').value = '';
+    
+    aplicarFiltros();
+}
 
-        function showToast(msg, type = 'success') {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 100px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: ${type === 'error' ? '#dc2626' : type === 'warning' ? '#f59e0b' : '#1f2937'};
-                color: white;
-                padding: 12px 24px;
-                border-radius: 8px;
-                font-size: 0.9rem;
-                z-index: 2000;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            `;
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+// ============================================
+// ORDENAÇÃO
+// ============================================
+
+function ordenarPor(campo) {
+    // Mapear nomes de exibição para nomes das colunas
+    const campoMap = {
+        'data': 'Data',
+        'hora': 'Hora',
+        'agente': 'Agente',
+        'equipe': 'Equipe',
+        'logradouro': 'Logradouro',
+        'numero': 'Numero',
+        'microarea': 'Microarea',
+        'situacao': 'Situacao',
+        'depositosPositivos': 'Depositos_Positivos'
+    };
+    
+    const campoReal = campoMap[campo] || campo;
+    
+    if (ordenacao.campo === campoReal) {
+        ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+    } else {
+        ordenacao.campo = campoReal;
+        ordenacao.direcao = 'asc';
+    }
+    
+    document.querySelectorAll('th').forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+    });
+    
+    const thAtivo = document.querySelector(`th[onclick="ordenarPor('${campo}')"]`);
+    if (thAtivo) {
+        thAtivo.classList.add(`sort-${ordenacao.direcao}`);
+    }
+    
+    ordenarDados();
+    renderizarTabela();
+}
+
+function ordenarDados() {
+    dadosFiltrados.sort((a, b) => {
+        let valA = a[ordenacao.campo] || '';
+        let valB = b[ordenacao.campo] || '';
+        
+        // Tratamento especial para datas
+        if (ordenacao.campo === 'Data') {
+            valA = parseDataBR(valA).getTime();
+            valB = parseDataBR(valB).getTime();
         }
-    </script>
-</body>
-</html>
+        
+        // Tratamento para números
+        if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
+            valA = Number(valA);
+            valB = Number(valB);
+        }
+        
+        // Converter para string para comparação segura
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+        
+        if (valA < valB) return ordenacao.direcao === 'asc' ? -1 : 1;
+        if (valA > valB) return ordenacao.direcao === 'asc' ? 1 : -1;
+        return 0;
+    });
+}
+
+// ============================================
+// ESTATÍSTICAS E GRÁFICOS
+// ============================================
+
+function atualizarEstatisticas() {
+    const total = dadosFiltrados.length;
+    const trabalhados = dadosFiltrados.filter(d => d.Situacao === 'normal').length;
+    const pendentes = 0; // Na planilha todos estão sincronizados
+    const positivos = dadosFiltrados.reduce((sum, d) => {
+        const val = parseInt(d.Depositos_Positivos);
+        return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+    const agentesUnicos = new Set(dadosFiltrados.map(d => d.Agente).filter(Boolean)).size;
+    
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statTrabalhados').textContent = trabalhados;
+    document.getElementById('statPendentes').textContent = pendentes;
+    document.getElementById('statPositivos').textContent = positivos;
+    document.getElementById('statAgentes').textContent = agentesUnicos;
+    
+    const inicio = (paginaAtual - 1) * CONFIG.ITENS_POR_PAGINA + 1;
+    const fim = Math.min(paginaAtual * CONFIG.ITENS_POR_PAGINA, total);
+    
+    document.getElementById('dataCount').textContent = 
+        total > 0 ? `Mostrando ${inicio}-${fim} de ${total} registros` : 'Nenhum registro';
+}
+
+function atualizarGrafico() {
+    const situacoes = {};
+    dadosFiltrados.forEach(d => {
+        const sit = d.Situacao || 'desconhecido';
+        situacoes[sit] = (situacoes[sit] || 0) + 1;
+    });
+    
+    const total = dadosFiltrados.length;
+    const container = document.getElementById('chartContent');
+    container.innerHTML = '';
+    
+    if (total === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #9ca3af;">Sem dados para exibir</p>';
+        return;
+    }
+    
+    const cores = {
+        'normal': '#10b981',
+        'fechado': '#ef4444',
+        'recusado': '#f97316',
+        'desabitado': '#f59e0b',
+        'demolido': '#8b5cf6',
+        'desconhecido': '#6b7280'
+    };
+    
+    const labels = {
+        'normal': 'Trabalhados',
+        'fechado': 'Fechados',
+        'recusado': 'Recusados',
+        'desabitado': 'Desabitados',
+        'demolido': 'Demolidos',
+        'desconhecido': 'Desconhecido'
+    };
+    
+    Object.entries(situacoes).forEach(([sit, qtd]) => {
+        const percentual = total > 0 ? (qtd / total * 100).toFixed(1) : 0;
+        
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        bar.innerHTML = `
+            <div class="chart-label">${labels[sit] || sit}</div>
+            <div class="chart-progress">
+                <div class="chart-fill" style="width: ${percentual}%; background: ${cores[sit] || '#2563eb'}"></div>
+            </div>
+            <div class="chart-value">${qtd} (${percentual}%)</div>
+        `;
+        container.appendChild(bar);
+    });
+}
+
+// ============================================
+// TABELA E PAGINAÇÃO
+// ============================================
+
+function renderizarTabela() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    
+    if (dadosFiltrados.length === 0) {
+        document.getElementById('emptyState').classList.remove('hidden');
+        document.getElementById('tableContainer').classList.add('hidden');
+        return;
+    }
+    
+    document.getElementById('emptyState').classList.add('hidden');
+    document.getElementById('tableContainer').classList.remove('hidden');
+    
+    const inicio = (paginaAtual - 1) * CONFIG.ITENS_POR_PAGINA;
+    const fim = inicio + CONFIG.ITENS_POR_PAGINA;
+    const paginaDados = dadosFiltrados.slice(inicio, fim);
+    
+    paginaDados.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        const badgeClass = `badge-${item.Situacao || 'normal'}`;
+        
+        tr.innerHTML = `
+            <td>${item.Data || '-'}</td>
+            <td>${item.Hora || '-'}</td>
+            <td>${item.Agente || '-'}</td>
+            <td>${item.Equipe || '-'}</td>
+            <td>${item.Logradouro || '-'}</td>
+            <td>${item.Numero || '-'}</td>
+            <td>${item.Microarea || '-'}</td>
+            <td><span class="badge ${badgeClass}">${item.Situacao || 'normal'}</span></td>
+            <td>${item.Depositos_Positivos || '0'}</td>
+            <td>
+                <button onclick="verDetalhes(${item.id})" style="padding: 4px 8px; border: none; background
