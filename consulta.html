@@ -614,6 +614,16 @@
             font-size: 0.85rem;
         }
 
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #dc2626;
+        }
+
+        .error-state button {
+            margin-top: 15px;
+        }
+
         @media (max-width: 768px) {
             .filters-grid {
                 grid-template-columns: 1fr;
@@ -737,9 +747,15 @@
                 <div class="data-count" id="dataCount">Nenhum registro</div>
             </div>
 
-            <div id="loadingState" class="loading-state hidden">
+            <div id="loadingState" class="loading-state">
                 <div class="spinner"></div>
-                <p>Carregando dados...</p>
+                <p>Carregando dados da planilha...</p>
+            </div>
+
+            <div id="errorState" class="error-state hidden">
+                <p>❌ Erro ao carregar dados</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;" id="errorMessage"></p>
+                <button class="btn btn-primary" onclick="carregarDados()">🔄 Tentar Novamente</button>
             </div>
 
             <div id="emptyState" class="empty-state hidden">
@@ -786,11 +802,16 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO - SUBSTITUA PELA SUA URL!
+        // CONFIGURAÇÃO - PLANILHA GOOGLE SHEETS
         // ============================================
 
         const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
+            // ID da planilha (extraído da URL)
+            SHEET_ID: '1g_mGT3Ci8aCHJn4qYnMVPl4PvsUApfEBEqXxKZTPbw8',
+            // Nome da aba/pasta
+            SHEET_NAME: 'Visitas',
+            // Chave de API do Google Sheets (você precisa criar uma em console.cloud.google.com)
+            API_KEY: 'SUA_API_KEY_AQUI', // Substitua pela sua chave de API
             ITENS_POR_PAGINA: 50
         };
 
@@ -822,79 +843,77 @@
         });
 
         // ============================================
-        // CARREGAMENTO DE DADOS
+        // CARREGAMENTO DE DADOS DO GOOGLE SHEETS
         // ============================================
 
         async function carregarDados() {
-            console.log('📥 Carregando dados...');
+            console.log('📥 Carregando dados da planilha...');
             mostrarLoading(true);
+            esconderErro();
             
             try {
-                // Usar JSONP para evitar CORS
-                const url = CONFIG.API_URL + '?action=getData&callback=handleData';
+                // Método 1: Usar Google Sheets API v4 (requer API Key)
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
                 
-                console.log('URL da requisição:', url);
+                const response = await fetch(url);
                 
-                // Criar script tag para JSONP
-                const script = document.createElement('script');
-                script.src = url;
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
                 
-                // Timeout de segurança
-                const timeoutId = setTimeout(() => {
-                    console.error('⏱️ Timeout ao carregar dados');
-                    limparDados();
-                    showToast('Timeout ao carregar. Tente novamente.', 'error');
-                    mostrarLoading(false);
-                }, 10000);
+                const data = await response.json();
                 
-                // Handler global para JSONP
-                window.handleData = function(result) {
-                    clearTimeout(timeoutId);
-                    console.log('✅ Dados recebidos via JSONP:', result);
+                if (data.values && data.values.length > 0) {
+                    // Converter dados da planilha (array de arrays) para array de objetos
+                    const headers = data.values[0];
+                    const rows = data.values.slice(1);
                     
-                    if (result && result.success && Array.isArray(result.data)) {
-                        todosOsDados = result.data;
-                        console.log('📊 Total de registros:', todosOsDados.length);
-                        
-                        popularFiltrosDinamicos();
-                        aplicarFiltros();
-                    } else {
-                        console.error('❌ Resposta inválida:', result);
-                        limparDados();
-                        showToast('Erro: ' + (result.message || 'Dados inválidos'), 'error');
-                    }
+                    todosOsDados = rows.map((row, index) => {
+                        const item = { id: index + 1 }; // ID artificial baseado na linha
+                        headers.forEach((header, i) => {
+                            item[header] = row[i] || '';
+                        });
+                        return item;
+                    });
                     
-                    mostrarLoading(false);
+                    console.log('✅ Dados carregados:', todosOsDados.length, 'registros');
                     
-                    // Limpar script
-                    if (script.parentNode) {
-                        script.parentNode.removeChild(script);
-                    }
-                    delete window.handleData;
-                };
-                
-                // Handler de erro
-                script.onerror = function() {
-                    clearTimeout(timeoutId);
-                    console.error('❌ Erro ao carregar script');
-                    limparDados();
-                    showToast('Erro de conexão com a API', 'error');
-                    mostrarLoading(false);
-                    
-                    if (script.parentNode) {
-                        script.parentNode.removeChild(script);
-                    }
-                    delete window.handleData;
-                };
-                
-                document.head.appendChild(script);
+                    popularFiltrosDinamicos();
+                    aplicarFiltros();
+                } else {
+                    throw new Error('Nenhum dado encontrado na planilha');
+                }
                 
             } catch (error) {
-                console.error('❌ Erro carregarDados:', error);
-                limparDados();
-                showToast('Erro: ' + error.message, 'error');
+                console.error('❌ Erro ao carregar dados:', error);
+                mostrarErro(error.message);
+                
+                // Se falhar com a API, tentar método alternativo (se houver)
+                if (error.message.includes('403') || error.message.includes('API key')) {
+                    mostrarErro('Erro de autenticação. Verifique se a planilha está pública ou se a API Key está configurada corretamente.');
+                }
+            } finally {
                 mostrarLoading(false);
             }
+        }
+
+        function mostrarLoading(mostrar) {
+            document.getElementById('loadingState').classList.toggle('hidden', !mostrar);
+            document.getElementById('tableContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        function mostrarErro(mensagem) {
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = mensagem;
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('tableContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+        }
+
+        function esconderErro() {
+            document.getElementById('errorState').classList.add('hidden');
         }
 
         function limparDados() {
@@ -956,7 +975,6 @@
             console.log('Filtros:', filtros);
             
             dadosFiltrados = todosOsDados.filter(item => {
-                // Verificar se item existe
                 if (!item) return false;
                 
                 // Filtro de data
@@ -978,7 +996,7 @@
                 if (filtros.equipe && item.Equipe !== filtros.equipe) return false;
                 if (filtros.situacao && item.Situacao !== filtros.situacao) return false;
                 
-                // Filtros de texto parcial (com segurança)
+                // Filtros de texto parcial
                 if (filtros.microarea) {
                     const microareaItem = (item.Microarea || '').toLowerCase();
                     if (!microareaItem.includes(filtros.microarea)) return false;
@@ -1026,7 +1044,6 @@
         // ============================================
 
         function ordenarPor(campo) {
-            // Mapear nomes de exibição para nomes das colunas
             const campoMap = {
                 'data': 'Data',
                 'hora': 'Hora',
@@ -1066,19 +1083,16 @@
                 let valA = a[ordenacao.campo] || '';
                 let valB = b[ordenacao.campo] || '';
                 
-                // Tratamento especial para datas
                 if (ordenacao.campo === 'Data') {
                     valA = parseDataBR(valA).getTime();
                     valB = parseDataBR(valB).getTime();
                 }
                 
-                // Tratamento para números
                 if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
                     valA = Number(valA);
                     valB = Number(valB);
                 }
                 
-                // Converter para string para comparação segura
                 valA = String(valA).toLowerCase();
                 valB = String(valB).toLowerCase();
                 
@@ -1095,7 +1109,7 @@
         function atualizarEstatisticas() {
             const total = dadosFiltrados.length;
             const trabalhados = dadosFiltrados.filter(d => d.Situacao === 'normal').length;
-            const pendentes = 0; // Na planilha todos estão sincronizados
+            const pendentes = 0;
             const positivos = dadosFiltrados.reduce((sum, d) => {
                 const val = parseInt(d.Depositos_Positivos);
                 return sum + (isNaN(val) ? 0 : val);
@@ -1190,7 +1204,6 @@
             
             paginaDados.forEach(item => {
                 const tr = document.createElement('tr');
-                
                 const badgeClass = `badge-${item.Situacao || 'normal'}`;
                 
                 tr.innerHTML = `
@@ -1228,14 +1241,12 @@
             
             container.classList.remove('hidden');
             
-            // Botão anterior
             const btnAnterior = document.createElement('button');
             btnAnterior.innerHTML = '←';
             btnAnterior.disabled = paginaAtual === 1;
             btnAnterior.onclick = () => mudarPagina(paginaAtual - 1);
             container.appendChild(btnAnterior);
             
-            // Números de página
             const maxBotoes = 5;
             let inicioPag = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
             let fimPag = Math.min(totalPaginas, inicioPag + maxBotoes - 1);
@@ -1252,14 +1263,12 @@
                 container.appendChild(btn);
             }
             
-            // Botão próximo
             const btnProximo = document.createElement('button');
             btnProximo.innerHTML = '→';
             btnProximo.disabled = paginaAtual === totalPaginas;
             btnProximo.onclick = () => mudarPagina(paginaAtual + 1);
             container.appendChild(btnProximo);
             
-            // Info
             const info = document.createElement('span');
             info.className = 'pagination-info';
             info.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
@@ -1414,7 +1423,7 @@
             
             const headers = [
                 'Data', 'Hora', 'Agente', 'Matricula', 'Equipe', 'Supervisor',
-                'Logradouro', 'Numero', 'Complemento', 'Microarea', 'Quarteirao',
+                'Logradouro', 'Numero', 'Complemento', 'Nome_Morador', 'Microarea', 'Quarteirao',
                 'Tipo_Imovel', 'Situacao', 'Latitude', 'Longitude', 'Precisao',
                 'Tipo_Tratamento', 'Produto', 'Qtd_Produto', 'Unidade',
                 'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 
@@ -1461,11 +1470,6 @@
             if (!isNaN(iso.getTime())) return iso;
             
             return new Date(0);
-        }
-
-        function mostrarLoading(mostrar) {
-            document.getElementById('loadingState').classList.toggle('hidden', !mostrar);
-            document.getElementById('tableContainer').classList.toggle('hidden', mostrar);
         }
 
         function showToast(msg, type = 'success') {
