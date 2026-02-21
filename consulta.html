@@ -456,6 +456,16 @@
             display: none !important;
         }
 
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #dc2626;
+        }
+
+        .error-state button {
+            margin-top: 15px;
+        }
+
         /* Modal Styles */
         .modal {
             position: fixed;
@@ -612,16 +622,6 @@
             text-align: right;
             color: #64748b;
             font-size: 0.85rem;
-        }
-
-        .error-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #dc2626;
-        }
-
-        .error-state button {
-            margin-top: 15px;
         }
 
         @media (max-width: 768px) {
@@ -802,16 +802,11 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO - PLANILHA GOOGLE SHEETS
+        // CONFIGURAÇÃO - URL DA SUA API
         // ============================================
 
         const CONFIG = {
-            // ID da planilha (extraído da URL)
-            SHEET_ID: '1g_mGT3Ci8aCHJn4qYnMVPl4PvsUApfEBEqXxKZTPbw8',
-            // Nome da aba/pasta
-            SHEET_NAME: 'Visitas',
-            // Chave de API do Google Sheets (você precisa criar uma em console.cloud.google.com)
-            API_KEY: 'SUA_API_KEY_AQUI', // Substitua pela sua chave de API
+            API_URL: 'https://script.google.com/macros/s/AKfycbw3Nmc0mxM0xfvwKdml-chFLtuEHftuTy2wgKLdMvy5QCDz8_bZnadVaWhTXbVcI6-a/exec',
             ITENS_POR_PAGINA: 50
         };
 
@@ -843,58 +838,113 @@
         });
 
         // ============================================
-        // CARREGAMENTO DE DADOS DO GOOGLE SHEETS
+        // CARREGAMENTO DE DADOS
         // ============================================
 
         async function carregarDados() {
-            console.log('📥 Carregando dados da planilha...');
+            console.log('📥 Carregando dados...');
             mostrarLoading(true);
             esconderErro();
             
             try {
-                // Método 1: Usar Google Sheets API v4 (requer API Key)
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
+                // Método 1: Tentar fetch com CORS primeiro
+                const url = CONFIG.API_URL + '?action=getData';
                 
-                const response = await fetch(url);
+                console.log('Tentando fetch:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error('HTTP ' + response.status);
                 }
                 
-                const data = await response.json();
+                const result = await response.json();
                 
-                if (data.values && data.values.length > 0) {
-                    // Converter dados da planilha (array de arrays) para array de objetos
-                    const headers = data.values[0];
-                    const rows = data.values.slice(1);
+                if (result.success && Array.isArray(result.data)) {
+                    todosOsDados = result.data;
+                    console.log('✅ Dados recebidos via fetch:', todosOsDados.length);
                     
-                    todosOsDados = rows.map((row, index) => {
-                        const item = { id: index + 1 }; // ID artificial baseado na linha
-                        headers.forEach((header, i) => {
-                            item[header] = row[i] || '';
-                        });
-                        return item;
-                    });
-                    
-                    console.log('✅ Dados carregados:', todosOsDados.length, 'registros');
+                    popularFiltrosDinamicos();
+                    aplicarFiltros();
+                    mostrarLoading(false);
+                } else {
+                    throw new Error(result.message || 'Dados inválidos');
+                }
+                
+            } catch (error) {
+                console.log('Fetch falhou, tentando JSONP:', error);
+                // Se fetch falhar, tenta JSONP
+                carregarDadosJSONP();
+            }
+        }
+
+        function carregarDadosJSONP() {
+            console.log('📥 Tentando JSONP...');
+            
+            const url = CONFIG.API_URL + '?action=getData&callback=handleData';
+            console.log('URL JSONP:', url);
+            
+            // Criar script tag para JSONP
+            const script = document.createElement('script');
+            script.src = url;
+            
+            // Timeout de segurança
+            const timeoutId = setTimeout(() => {
+                console.error('⏱️ Timeout ao carregar dados');
+                mostrarErro('Timeout ao carregar dados. Verifique sua conexão.');
+                mostrarLoading(false);
+                
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+                delete window.handleData;
+            }, 15000);
+            
+            // Handler global para JSONP
+            window.handleData = function(result) {
+                clearTimeout(timeoutId);
+                console.log('✅ Dados recebidos via JSONP:', result);
+                
+                if (result && result.success && Array.isArray(result.data)) {
+                    todosOsDados = result.data;
+                    console.log('📊 Total de registros:', todosOsDados.length);
                     
                     popularFiltrosDinamicos();
                     aplicarFiltros();
                 } else {
-                    throw new Error('Nenhum dado encontrado na planilha');
+                    console.error('❌ Resposta inválida:', result);
+                    mostrarErro('Erro: ' + (result.message || 'Dados inválidos'));
                 }
                 
-            } catch (error) {
-                console.error('❌ Erro ao carregar dados:', error);
-                mostrarErro(error.message);
-                
-                // Se falhar com a API, tentar método alternativo (se houver)
-                if (error.message.includes('403') || error.message.includes('API key')) {
-                    mostrarErro('Erro de autenticação. Verifique se a planilha está pública ou se a API Key está configurada corretamente.');
-                }
-            } finally {
                 mostrarLoading(false);
-            }
+                
+                // Limpar script
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+                delete window.handleData;
+            };
+            
+            // Handler de erro
+            script.onerror = function() {
+                clearTimeout(timeoutId);
+                console.error('❌ Erro ao carregar script');
+                mostrarErro('Erro de conexão com a API. Verifique se a API está publicada.');
+                mostrarLoading(false);
+                
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+                delete window.handleData;
+            };
+            
+            document.head.appendChild(script);
         }
 
         function mostrarLoading(mostrar) {
@@ -1331,6 +1381,10 @@
                             ${formatValue(item.Logradouro)}, ${formatValue(item.Numero)} 
                             ${item.Complemento ? '- ' + item.Complemento : ''}
                         </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Nome do Morador</div>
+                        <div class="detail-value">${formatValue(item.Nome_Morador)}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Microárea</div>
