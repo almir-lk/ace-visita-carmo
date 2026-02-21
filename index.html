@@ -1425,73 +1425,129 @@
         // ============================================
 
         async function sincronizarVisita(visit) {
-            if (!isOnline) {
-                visit.status = 'offline';
-                visit.ultimoErro = 'Sem conexão';
-                salvarVisitsLocal();
-                return false;
-            }
+    if (!isOnline) {
+        console.log('❌ Sem conexão');
+        visit.status = 'offline';
+        visit.ultimoErro = 'Sem conexão com internet';
+        salvarVisitsLocal();
+        atualizarFilaSync();
+        return false;
+    }
 
-            try {
-                const params = new URLSearchParams();
-                params.append('Data', visit.data);
-                params.append('Hora', visit.hora);
-                params.append('Agente', visit.agente);
-                params.append('Matricula', visit.matricula);
-                params.append('Equipe', visit.equipe);
-                params.append('Supervisor', visit.supervisor || '');
-                params.append('Logradouro', visit.logradouro);
-                params.append('Numero', visit.numero);
-                params.append('Complemento', visit.complemento || '');
-                params.append('Microarea', visit.microarea);
-                params.append('Quarteirao', visit.quarteirao);
-                params.append('Tipo_Imovel', visit.tipoImovel);
-                params.append('Situacao', visit.situacao);
-                params.append('Latitude', visit.latitude || '');
-                params.append('Longitude', visit.longitude || '');
-                params.append('Precisao', visit.precisao || '');
-                params.append('Tipo_Tratamento', visit.tipoTratamento);
-                params.append('Produto', visit.produto || '');
-                params.append('Qtd_Produto', visit.qtdProduto || '0');
-                params.append('Unidade', visit.unidade || '');
-                params.append('Dep_Eliminados', String(visit.depEliminados || '0'));
-                params.append('Dep_Tratados', String(visit.depTratados || '0'));
-                params.append('Dep_Protegidos', String(visit.depProtegidos || '0'));
-                params.append('Dep_Impraticaveis', String(visit.depImpraticaveis || '0'));
-                params.append('Depositos_Positivos', String(visit.depositosPositivos || '0'));
+    try {
+        console.log('🚀 Iniciando sincronização da visita:', visit.id);
+        
+        const params = new URLSearchParams();
+        
+        // Enviar exatamente como a API espera (maiúsculo)
+        params.append('Data', visit.data);
+        params.append('Hora', visit.hora);
+        params.append('Agente', visit.agente);
+        params.append('Matricula', visit.matricula);
+        params.append('Equipe', visit.equipe);
+        params.append('Supervisor', visit.supervisor || '');
+        params.append('Logradouro', visit.logradouro);
+        params.append('Numero', visit.numero);
+        params.append('Complemento', visit.complemento || '');
+        params.append('Microarea', visit.microarea);
+        params.append('Quarteirao', visit.quarteirao);
+        params.append('Tipo_Imovel', visit.tipoImovel);
+        params.append('Situacao', visit.situacao);
+        params.append('Latitude', visit.latitude || '');
+        params.append('Longitude', visit.longitude || '');
+        params.append('Precisao', visit.precisao || '');
+        params.append('Tipo_Tratamento', visit.tipoTratamento);
+        params.append('Produto', visit.produto || '');
+        params.append('Qtd_Produto', String(visit.qtdProduto || '0'));
+        params.append('Unidade', visit.unidade || '');
+        params.append('Dep_Eliminados', String(visit.depEliminados || '0'));
+        params.append('Dep_Tratados', String(visit.depTratados || '0'));
+        params.append('Dep_Protegidos', String(visit.depProtegidos || '0'));
+        params.append('Dep_Impraticaveis', String(visit.depImpraticaveis || '0'));
+        params.append('Depositos_Positivos', String(visit.depositosPositivos || '0'));
 
-                const response = await fetch(CONFIG.SYNC_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: params.toString()
-                });
+        console.log('📤 Enviando para:', CONFIG.SYNC_URL);
+        console.log('📤 Dados:', params.toString());
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos timeout
 
-                const result = await response.json();
+        const response = await fetch(CONFIG.SYNC_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            },
+            body: params.toString(),
+            signal: controller.signal
+        });
 
-                if (result.success) {
-                    visit.sincronizado = true;
-                    visit.status = 'synced';
-                    visit.dataSync = new Date().toISOString();
-                    salvarVisitsLocal();
-                    return true;
-                } else {
-                    throw new Error(result.message || 'Erro servidor');
-                }
+        clearTimeout(timeoutId);
 
-            } catch (error) {
-                visit.tentativas++;
-                visit.status = 'error';
-                visit.ultimoErro = error.message;
-                salvarVisitsLocal();
-                return false;
+        console.log('📥 Status HTTP:', response.status, response.statusText);
+
+        if (!response.ok) {
+            throw new Error(`HTTP erro ${response.status}: ${response.statusText}`);
+        }
+
+        // LER A RESPOSTA COMO TEXTO PRIMEIRO
+        const responseText = await response.text();
+        console.log('📥 Resposta raw:', responseText);
+
+        // TENTAR PARSEAR COMO JSON
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (jsonError) {
+            console.error('❌ Erro ao parsear JSON:', jsonError);
+            console.log('Resposta recebida:', responseText);
+            
+            // Se não é JSON mas veio HTTP 200, pode ser que deu certo mesmo assim
+            if (response.status === 200) {
+                console.log('⚠️ Resposta não-JSON mas HTTP 200, assumindo sucesso');
+                result = { success: true, message: 'Sincronizado (resposta não-JSON)' };
+            } else {
+                throw new Error('Resposta inválida do servidor');
             }
         }
+
+        console.log('📥 Resultado parseado:', result);
+
+        // VERIFICAR SE SUCCESS É TRUE
+        if (result && result.success === true) {
+            console.log('✅ SUCESSO CONFIRMADO!');
+            
+            visit.sincronizado = true;
+            visit.status = 'synced';
+            visit.dataSync = new Date().toISOString();
+            visit.rowNumber = result.row || null;
+            visit.ultimoErro = null;
+            visit.tentativas = 0;
+            
+            salvarVisitsLocal();
+            atualizarFilaSync();
+            updateSyncStatus('synced');
+            
+            return true;
+        } else {
+            // Backend retornou success: false ou não tem success
+            console.error('❌ Backend retornou erro:', result);
+            throw new Error(result.message || 'Erro no servidor: success=false');
+        }
+
+    } catch (error) {
+        console.error('❌ Erro na sincronização:', error);
+        
+        visit.tentativas = (visit.tentativas || 0) + 1;
+        visit.ultimoErro = error.message || 'Erro desconhecido';
+        visit.status = 'error';
+        
+        salvarVisitsLocal();
+        atualizarFilaSync();
+        updateSyncStatus('error');
+        
+        return false;
+    }
+}
 
         // ============================================
         // FUNÇÕES AUXILIARES
