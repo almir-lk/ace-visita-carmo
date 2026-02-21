@@ -1,735 +1,1516 @@
-// ============================================
-// CONFIGURAÇÃO - SUBSTITUA PELA SUA URL!
-// ============================================
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACE - Sistema de Consulta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-const CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
-    ITENS_POR_PAGINA: 50
-};
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-// ============================================
-// VARIÁVEIS GLOBAIS
-// ============================================
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
 
-let todosOsDados = [];
-let dadosFiltrados = [];
-let paginaAtual = 1;
-let ordenacao = { campo: 'Data', direcao: 'desc' }; // Usar nome da coluna direto
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
-// ============================================
-// INICIALIZAÇÃO
-// ============================================
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 App de consulta iniciado');
-    
-    // Definir datas padrão (últimos 30 dias)
-    const hoje = new Date();
-    const trintaDiasAtras = new Date(hoje.getTime() - (30 * 24 * 60 * 60 * 1000));
-    
-    document.getElementById('filtroDataFim').valueAsDate = hoje;
-    document.getElementById('filtroDataInicio').valueAsDate = trintaDiasAtras;
-    
-    // Carregar dados automaticamente
-    carregarDados();
-});
+        .subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
 
-// ============================================
-// CARREGAMENTO DE DADOS
-// ============================================
+        .filters-section {
+            background: #f8fafc;
+            padding: 25px;
+            border-bottom: 1px solid #e2e8f0;
+        }
 
-async function carregarDados() {
-    console.log('📥 Carregando dados...');
-    mostrarLoading(true);
-    
-    try {
-        // Usar JSONP para evitar CORS
-        const url = CONFIG.API_URL + '?action=getData&callback=handleData';
-        
-        console.log('URL da requisição:', url);
-        
-        // Criar script tag para JSONP
-        const script = document.createElement('script');
-        script.src = url;
-        
-        // Timeout de segurança
-        const timeoutId = setTimeout(() => {
-            console.error('⏱️ Timeout ao carregar dados');
-            limparDados();
-            showToast('Timeout ao carregar. Tente novamente.', 'error');
-            mostrarLoading(false);
-        }, 10000);
-        
-        // Handler global para JSONP
-        window.handleData = function(result) {
-            clearTimeout(timeoutId);
-            console.log('✅ Dados recebidos via JSONP:', result);
-            
-            if (result && result.success && Array.isArray(result.data)) {
-                todosOsDados = result.data;
-                console.log('📊 Total de registros:', todosOsDados.length);
-                
-                popularFiltrosDinamicos();
-                aplicarFiltros();
-            } else {
-                console.error('❌ Resposta inválida:', result);
-                limparDados();
-                showToast('Erro: ' + (result.message || 'Dados inválidos'), 'error');
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 25px;
+            background: white;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e40af;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .chart-section {
+            padding: 25px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .chart-bar {
+            margin-bottom: 15px;
+        }
+
+        .chart-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .chart-progress {
+            height: 24px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .chart-value {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .table-section {
+            padding: 25px;
+            background: white;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .data-count {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: #1e293b;
+            color: white;
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            background: #334155;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tbody tr:nth-child(even):hover {
+            background: #f1f5f9;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .badge-normal {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-fechado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-recusado {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .badge-desabitado {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-demolido {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-desconhecido {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-view {
+            padding: 6px 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .btn-view:hover {
+            background: #1d4ed8;
+            transform: scale(1.05);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 8px 14px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .pagination button.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .deposits-section {
+            margin-top: 25px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #bae6fd;
+        }
+
+        .deposits-title {
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+
+        .deposits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .deposit-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .deposit-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .deposit-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            text-align: right;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
             }
             
-            mostrarLoading(false);
-            
-            // Limpar script
-            if (script.parentNode) {
-                script.parentNode.removeChild(script);
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
             }
-            delete window.handleData;
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                max-height: 95vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 ACE - Sistema de Consulta</h1>
+            <p class="subtitle">Agente de Combate às Endemias - Consulta de Visitas</p>
+        </header>
+
+        <section class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Data Início</label>
+                    <input type="date" id="filtroDataInicio">
+                </div>
+                <div class="filter-group">
+                    <label>Data Fim</label>
+                    <input type="date" id="filtroDataFim">
+                </div>
+                <div class="filter-group">
+                    <label>Agente</label>
+                    <select id="filtroAgente">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Equipe</label>
+                    <select id="filtroEquipe">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Microárea</label>
+                    <input type="text" id="filtroMicroarea" placeholder="Buscar microárea...">
+                </div>
+                <div class="filter-group">
+                    <label>Quarteirão</label>
+                    <input type="text" id="filtroQuarteirao" placeholder="Buscar quarteirão...">
+                </div>
+                <div class="filter-group">
+                    <label>Situação</label>
+                    <select id="filtroSituacao">
+                        <option value="">Todas</option>
+                        <option value="normal">Normal</option>
+                        <option value="fechado">Fechado</option>
+                        <option value="recusado">Recusado</option>
+                        <option value="desabitado">Desabitado</option>
+                        <option value="demolido">Demolido</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Logradouro</label>
+                    <input type="text" id="filtroLogradouro" placeholder="Buscar endereço...">
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="aplicarFiltros()">
+                    🔍 Aplicar Filtros
+                </button>
+                <button class="btn btn-secondary" onclick="limparFiltros()">
+                    🔄 Limpar
+                </button>
+                <button class="btn btn-success" onclick="exportarResultados()">
+                    📥 Exportar CSV
+                </button>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">Total Visitas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTrabalhados">0</div>
+                <div class="stat-label">Trabalhados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statPendentes">0</div>
+                <div class="stat-label">Pendentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statPositivos">0</div>
+                <div class="stat-label">Depósitos Positivos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statAgentes">0</div>
+                <div class="stat-label">Agentes Ativos</div>
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <div class="chart-title">📊 Distribuição por Situação</div>
+            <div class="chart-container" id="chartContent">
+                <p style="text-align: center; color: #9ca3af;">Carregando dados...</p>
+            </div>
+        </section>
+
+        <section class="table-section">
+            <div class="table-header">
+                <div class="table-title">📋 Registros Encontrados</div>
+                <div class="data-count" id="dataCount">Nenhum registro</div>
+            </div>
+
+            <div id="loadingState" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>Carregando dados...</p>
+            </div>
+
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-state-icon">📭</div>
+                <h3>Nenhum registro encontrado</h3>
+                <p>Ajuste os filtros e tente novamente</p>
+            </div>
+
+            <div id="tableContainer" class="table-container hidden">
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="ordenarPor('data')">Data</th>
+                            <th onclick="ordenarPor('hora')">Hora</th>
+                            <th onclick="ordenarPor('agente')">Agente</th>
+                            <th onclick="ordenarPor('equipe')">Equipe</th>
+                            <th onclick="ordenarPor('logradouro')">Logradouro</th>
+                            <th onclick="ordenarPor('numero')">Nº</th>
+                            <th onclick="ordenarPor('microarea')">Microárea</th>
+                            <th onclick="ordenarPor('situacao')">Situação</th>
+                            <th onclick="ordenarPor('depositosPositivos')">Dep. Pos.</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <div id="pagination" class="pagination hidden"></div>
+        </section>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div id="modalDetalhes" class="modal hidden" onclick="fecharModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📋 Detalhes da Visita</div>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURAÇÃO - SUBSTITUA PELA SUA URL!
+        // ============================================
+
+        const CONFIG = {
+            API_URL: 'https://script.google.com/macros/s/AKfycbxUgS-1L8rNPfmjl0fjb2Cd2H4R5MB-AB0NIETodz1OrKdSjMquLDVA-dvOYthJXZRR/exec',
+            ITENS_POR_PAGINA: 50
         };
-        
-        // Handler de erro
-        script.onerror = function() {
-            clearTimeout(timeoutId);
-            console.error('❌ Erro ao carregar script');
-            limparDados();
-            showToast('Erro de conexão com a API', 'error');
-            mostrarLoading(false);
-            
-            if (script.parentNode) {
-                script.parentNode.removeChild(script);
-            }
-            delete window.handleData;
-        };
-        
-        document.head.appendChild(script);
-        
-    } catch (error) {
-        console.error('❌ Erro carregarDados:', error);
-        limparDados();
-        showToast('Erro: ' + error.message, 'error');
-        mostrarLoading(false);
-    }
-}
 
-// Fallback: carregar via fetch com no-cors (só funciona se API permitir)
-async function carregarDadosFetch() {
-    try {
-        const response = await fetch(CONFIG.API_URL + '?action=getData', {
-            method: 'GET',
-            mode: 'cors', // Tentar CORS normal primeiro
-            headers: {
-                'Accept': 'application/json'
-            }
+        // ============================================
+        // VARIÁVEIS GLOBAIS
+        // ============================================
+
+        let todosOsDados = [];
+        let dadosFiltrados = [];
+        let paginaAtual = 1;
+        let ordenacao = { campo: 'Data', direcao: 'desc' };
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 App de consulta iniciado');
+            
+            // Definir datas padrão (últimos 30 dias)
+            const hoje = new Date();
+            const trintaDiasAtras = new Date(hoje.getTime() - (30 * 24 * 60 * 60 * 1000));
+            
+            document.getElementById('filtroDataFim').valueAsDate = hoje;
+            document.getElementById('filtroDataInicio').valueAsDate = trintaDiasAtras;
+            
+            // Carregar dados automaticamente
+            carregarDados();
         });
-        
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        
-        const result = await response.json();
-        
-        if (result.success && result.data) {
-            todosOsDados = result.data;
+
+        // ============================================
+        // CARREGAMENTO DE DADOS
+        // ============================================
+
+        async function carregarDados() {
+            console.log('📥 Carregando dados...');
+            mostrarLoading(true);
+            
+            try {
+                // Usar JSONP para evitar CORS
+                const url = CONFIG.API_URL + '?action=getData&callback=handleData';
+                
+                console.log('URL da requisição:', url);
+                
+                // Criar script tag para JSONP
+                const script = document.createElement('script');
+                script.src = url;
+                
+                // Timeout de segurança
+                const timeoutId = setTimeout(() => {
+                    console.error('⏱️ Timeout ao carregar dados');
+                    limparDados();
+                    showToast('Timeout ao carregar. Tente novamente.', 'error');
+                    mostrarLoading(false);
+                }, 10000);
+                
+                // Handler global para JSONP
+                window.handleData = function(result) {
+                    clearTimeout(timeoutId);
+                    console.log('✅ Dados recebidos via JSONP:', result);
+                    
+                    if (result && result.success && Array.isArray(result.data)) {
+                        todosOsDados = result.data;
+                        console.log('📊 Total de registros:', todosOsDados.length);
+                        
+                        popularFiltrosDinamicos();
+                        aplicarFiltros();
+                    } else {
+                        console.error('❌ Resposta inválida:', result);
+                        limparDados();
+                        showToast('Erro: ' + (result.message || 'Dados inválidos'), 'error');
+                    }
+                    
+                    mostrarLoading(false);
+                    
+                    // Limpar script
+                    if (script.parentNode) {
+                        script.parentNode.removeChild(script);
+                    }
+                    delete window.handleData;
+                };
+                
+                // Handler de erro
+                script.onerror = function() {
+                    clearTimeout(timeoutId);
+                    console.error('❌ Erro ao carregar script');
+                    limparDados();
+                    showToast('Erro de conexão com a API', 'error');
+                    mostrarLoading(false);
+                    
+                    if (script.parentNode) {
+                        script.parentNode.removeChild(script);
+                    }
+                    delete window.handleData;
+                };
+                
+                document.head.appendChild(script);
+                
+            } catch (error) {
+                console.error('❌ Erro carregarDados:', error);
+                limparDados();
+                showToast('Erro: ' + error.message, 'error');
+                mostrarLoading(false);
+            }
+        }
+
+        function limparDados() {
+            todosOsDados = [];
+            dadosFiltrados = [];
             popularFiltrosDinamicos();
             aplicarFiltros();
-        } else {
-            throw new Error(result.message || 'Dados inválidos');
         }
-        
-    } catch (error) {
-        console.error('Fetch falhou, tentando JSONP:', error);
-        // Se falhar, o JSONP já foi iniciado acima
-    }
-}
 
-function limparDados() {
-    todosOsDados = [];
-    dadosFiltrados = [];
-    popularFiltrosDinamicos();
-    aplicarFiltros();
-}
-
-function popularFiltrosDinamicos() {
-    const selectAgente = document.getElementById('filtroAgente');
-    const selectEquipe = document.getElementById('filtroEquipe');
-    
-    // Limpar opções existentes (exceto primeira)
-    while (selectAgente.options.length > 1) selectAgente.remove(1);
-    while (selectEquipe.options.length > 1) selectEquipe.remove(1);
-    
-    if (todosOsDados.length === 0) return;
-    
-    const agentes = [...new Set(todosOsDados.map(d => d.Agente).filter(Boolean))].sort();
-    const equipes = [...new Set(todosOsDados.map(d => d.Equipe).filter(Boolean))].sort();
-    
-    console.log('Agentes encontrados:', agentes.length);
-    console.log('Equipes encontradas:', equipes.length);
-    
-    agentes.forEach(agente => {
-        const option = document.createElement('option');
-        option.value = agente;
-        option.textContent = agente;
-        selectAgente.appendChild(option);
-    });
-    
-    equipes.forEach(equipe => {
-        const option = document.createElement('option');
-        option.value = equipe;
-        option.textContent = equipe;
-        selectEquipe.appendChild(option);
-    });
-}
-
-// ============================================
-// FILTROS
-// ============================================
-
-function aplicarFiltros() {
-    console.log('🔍 Aplicando filtros...');
-    
-    const filtros = {
-        dataInicio: document.getElementById('filtroDataInicio').value,
-        dataFim: document.getElementById('filtroDataFim').value,
-        agente: document.getElementById('filtroAgente').value,
-        equipe: document.getElementById('filtroEquipe').value,
-        microarea: document.getElementById('filtroMicroarea').value.toLowerCase().trim(),
-        quarteirao: document.getElementById('filtroQuarteirao').value.toLowerCase().trim(),
-        situacao: document.getElementById('filtroSituacao').value,
-        logradouro: document.getElementById('filtroLogradouro').value.toLowerCase().trim()
-    };
-    
-    console.log('Filtros:', filtros);
-    
-    dadosFiltrados = todosOsDados.filter(item => {
-        // Verificar se item existe
-        if (!item) return false;
-        
-        // Filtro de data
-        if (filtros.dataInicio && item.Data) {
-            const dataItem = parseDataBR(item.Data);
-            const dataInicio = new Date(filtros.dataInicio);
-            if (dataItem < dataInicio) return false;
+        function popularFiltrosDinamicos() {
+            const selectAgente = document.getElementById('filtroAgente');
+            const selectEquipe = document.getElementById('filtroEquipe');
+            
+            // Limpar opções existentes (exceto primeira)
+            while (selectAgente.options.length > 1) selectAgente.remove(1);
+            while (selectEquipe.options.length > 1) selectEquipe.remove(1);
+            
+            if (todosOsDados.length === 0) return;
+            
+            const agentes = [...new Set(todosOsDados.map(d => d.Agente).filter(Boolean))].sort();
+            const equipes = [...new Set(todosOsDados.map(d => d.Equipe).filter(Boolean))].sort();
+            
+            console.log('Agentes encontrados:', agentes.length);
+            console.log('Equipes encontradas:', equipes.length);
+            
+            agentes.forEach(agente => {
+                const option = document.createElement('option');
+                option.value = agente;
+                option.textContent = agente;
+                selectAgente.appendChild(option);
+            });
+            
+            equipes.forEach(equipe => {
+                const option = document.createElement('option');
+                option.value = equipe;
+                option.textContent = equipe;
+                selectEquipe.appendChild(option);
+            });
         }
-        
-        if (filtros.dataFim && item.Data) {
-            const dataItem = parseDataBR(item.Data);
-            const dataFim = new Date(filtros.dataFim);
-            dataFim.setHours(23, 59, 59);
-            if (dataItem > dataFim) return false;
+
+        // ============================================
+        // FILTROS
+        // ============================================
+
+        function aplicarFiltros() {
+            console.log('🔍 Aplicando filtros...');
+            
+            const filtros = {
+                dataInicio: document.getElementById('filtroDataInicio').value,
+                dataFim: document.getElementById('filtroDataFim').value,
+                agente: document.getElementById('filtroAgente').value,
+                equipe: document.getElementById('filtroEquipe').value,
+                microarea: document.getElementById('filtroMicroarea').value.toLowerCase().trim(),
+                quarteirao: document.getElementById('filtroQuarteirao').value.toLowerCase().trim(),
+                situacao: document.getElementById('filtroSituacao').value,
+                logradouro: document.getElementById('filtroLogradouro').value.toLowerCase().trim()
+            };
+            
+            console.log('Filtros:', filtros);
+            
+            dadosFiltrados = todosOsDados.filter(item => {
+                // Verificar se item existe
+                if (!item) return false;
+                
+                // Filtro de data
+                if (filtros.dataInicio && item.Data) {
+                    const dataItem = parseDataBR(item.Data);
+                    const dataInicio = new Date(filtros.dataInicio);
+                    if (dataItem < dataInicio) return false;
+                }
+                
+                if (filtros.dataFim && item.Data) {
+                    const dataItem = parseDataBR(item.Data);
+                    const dataFim = new Date(filtros.dataFim);
+                    dataFim.setHours(23, 59, 59);
+                    if (dataItem > dataFim) return false;
+                }
+                
+                // Filtros de texto exato
+                if (filtros.agente && item.Agente !== filtros.agente) return false;
+                if (filtros.equipe && item.Equipe !== filtros.equipe) return false;
+                if (filtros.situacao && item.Situacao !== filtros.situacao) return false;
+                
+                // Filtros de texto parcial (com segurança)
+                if (filtros.microarea) {
+                    const microareaItem = (item.Microarea || '').toLowerCase();
+                    if (!microareaItem.includes(filtros.microarea)) return false;
+                }
+                
+                if (filtros.quarteirao) {
+                    const quarteiraoItem = (item.Quarteirao || '').toLowerCase();
+                    if (!quarteiraoItem.includes(filtros.quarteirao)) return false;
+                }
+                
+                if (filtros.logradouro) {
+                    const logradouroItem = (item.Logradouro || '').toLowerCase();
+                    if (!logradouroItem.includes(filtros.logradouro)) return false;
+                }
+                
+                return true;
+            });
+            
+            console.log('Registros após filtro:', dadosFiltrados.length);
+            
+            ordenarDados();
+            paginaAtual = 1;
+            
+            atualizarEstatisticas();
+            atualizarGrafico();
+            renderizarTabela();
+            renderizarPaginacao();
         }
-        
-        // Filtros de texto exato
-        if (filtros.agente && item.Agente !== filtros.agente) return false;
-        if (filtros.equipe && item.Equipe !== filtros.equipe) return false;
-        if (filtros.situacao && item.Situacao !== filtros.situacao) return false;
-        
-        // Filtros de texto parcial (com segurança)
-        if (filtros.microarea) {
-            const microareaItem = (item.Microarea || '').toLowerCase();
-            if (!microareaItem.includes(filtros.microarea)) return false;
+
+        function limparFiltros() {
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            document.getElementById('filtroAgente').value = '';
+            document.getElementById('filtroEquipe').value = '';
+            document.getElementById('filtroMicroarea').value = '';
+            document.getElementById('filtroQuarteirao').value = '';
+            document.getElementById('filtroSituacao').value = '';
+            document.getElementById('filtroLogradouro').value = '';
+            
+            aplicarFiltros();
         }
-        
-        if (filtros.quarteirao) {
-            const quarteiraoItem = (item.Quarteirao || '').toLowerCase();
-            if (!quarteiraoItem.includes(filtros.quarteirao)) return false;
+
+        // ============================================
+        // ORDENAÇÃO
+        // ============================================
+
+        function ordenarPor(campo) {
+            // Mapear nomes de exibição para nomes das colunas
+            const campoMap = {
+                'data': 'Data',
+                'hora': 'Hora',
+                'agente': 'Agente',
+                'equipe': 'Equipe',
+                'logradouro': 'Logradouro',
+                'numero': 'Numero',
+                'microarea': 'Microarea',
+                'situacao': 'Situacao',
+                'depositosPositivos': 'Depositos_Positivos'
+            };
+            
+            const campoReal = campoMap[campo] || campo;
+            
+            if (ordenacao.campo === campoReal) {
+                ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+            } else {
+                ordenacao.campo = campoReal;
+                ordenacao.direcao = 'asc';
+            }
+            
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            
+            const thAtivo = document.querySelector(`th[onclick="ordenarPor('${campo}')"]`);
+            if (thAtivo) {
+                thAtivo.classList.add(`sort-${ordenacao.direcao}`);
+            }
+            
+            ordenarDados();
+            renderizarTabela();
         }
-        
-        if (filtros.logradouro) {
-            const logradouroItem = (item.Logradouro || '').toLowerCase();
-            if (!logradouroItem.includes(filtros.logradouro)) return false;
+
+        function ordenarDados() {
+            dadosFiltrados.sort((a, b) => {
+                let valA = a[ordenacao.campo] || '';
+                let valB = b[ordenacao.campo] || '';
+                
+                // Tratamento especial para datas
+                if (ordenacao.campo === 'Data') {
+                    valA = parseDataBR(valA).getTime();
+                    valB = parseDataBR(valB).getTime();
+                }
+                
+                // Tratamento para números
+                if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
+                    valA = Number(valA);
+                    valB = Number(valB);
+                }
+                
+                // Converter para string para comparação segura
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+                
+                if (valA < valB) return ordenacao.direcao === 'asc' ? -1 : 1;
+                if (valA > valB) return ordenacao.direcao === 'asc' ? 1 : -1;
+                return 0;
+            });
         }
-        
-        return true;
-    });
-    
-    console.log('Registros após filtro:', dadosFiltrados.length);
-    
-    ordenarDados();
-    paginaAtual = 1;
-    
-    atualizarEstatisticas();
-    atualizarGrafico();
-    renderizarTabela();
-    renderizarPaginacao();
-}
 
-function limparFiltros() {
-    document.getElementById('filtroDataInicio').value = '';
-    document.getElementById('filtroDataFim').value = '';
-    document.getElementById('filtroAgente').value = '';
-    document.getElementById('filtroEquipe').value = '';
-    document.getElementById('filtroMicroarea').value = '';
-    document.getElementById('filtroQuarteirao').value = '';
-    document.getElementById('filtroSituacao').value = '';
-    document.getElementById('filtroLogradouro').value = '';
-    
-    aplicarFiltros();
-}
+        // ============================================
+        // ESTATÍSTICAS E GRÁFICOS
+        // ============================================
 
-// ============================================
-// ORDENAÇÃO
-// ============================================
-
-function ordenarPor(campo) {
-    // Mapear nomes de exibição para nomes das colunas
-    const campoMap = {
-        'data': 'Data',
-        'hora': 'Hora',
-        'agente': 'Agente',
-        'equipe': 'Equipe',
-        'logradouro': 'Logradouro',
-        'numero': 'Numero',
-        'microarea': 'Microarea',
-        'situacao': 'Situacao',
-        'depositosPositivos': 'Depositos_Positivos'
-    };
-    
-    const campoReal = campoMap[campo] || campo;
-    
-    if (ordenacao.campo === campoReal) {
-        ordenacao.direcao = ordenacao.direcao === 'asc' ? 'desc' : 'asc';
-    } else {
-        ordenacao.campo = campoReal;
-        ordenacao.direcao = 'asc';
-    }
-    
-    document.querySelectorAll('th').forEach(th => {
-        th.classList.remove('sort-asc', 'sort-desc');
-    });
-    
-    const thAtivo = document.querySelector(`th[onclick="ordenarPor('${campo}')"]`);
-    if (thAtivo) {
-        thAtivo.classList.add(`sort-${ordenacao.direcao}`);
-    }
-    
-    ordenarDados();
-    renderizarTabela();
-}
-
-function ordenarDados() {
-    dadosFiltrados.sort((a, b) => {
-        let valA = a[ordenacao.campo] || '';
-        let valB = b[ordenacao.campo] || '';
-        
-        // Tratamento especial para datas
-        if (ordenacao.campo === 'Data') {
-            valA = parseDataBR(valA).getTime();
-            valB = parseDataBR(valB).getTime();
+        function atualizarEstatisticas() {
+            const total = dadosFiltrados.length;
+            const trabalhados = dadosFiltrados.filter(d => d.Situacao === 'normal').length;
+            const pendentes = 0; // Na planilha todos estão sincronizados
+            const positivos = dadosFiltrados.reduce((sum, d) => {
+                const val = parseInt(d.Depositos_Positivos);
+                return sum + (isNaN(val) ? 0 : val);
+            }, 0);
+            const agentesUnicos = new Set(dadosFiltrados.map(d => d.Agente).filter(Boolean)).size;
+            
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statTrabalhados').textContent = trabalhados;
+            document.getElementById('statPendentes').textContent = pendentes;
+            document.getElementById('statPositivos').textContent = positivos;
+            document.getElementById('statAgentes').textContent = agentesUnicos;
+            
+            const inicio = (paginaAtual - 1) * CONFIG.ITENS_POR_PAGINA + 1;
+            const fim = Math.min(paginaAtual * CONFIG.ITENS_POR_PAGINA, total);
+            
+            document.getElementById('dataCount').textContent = 
+                total > 0 ? `Mostrando ${inicio}-${fim} de ${total} registros` : 'Nenhum registro';
         }
-        
-        // Tratamento para números
-        if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
-            valA = Number(valA);
-            valB = Number(valB);
+
+        function atualizarGrafico() {
+            const situacoes = {};
+            dadosFiltrados.forEach(d => {
+                const sit = d.Situacao || 'desconhecido';
+                situacoes[sit] = (situacoes[sit] || 0) + 1;
+            });
+            
+            const total = dadosFiltrados.length;
+            const container = document.getElementById('chartContent');
+            container.innerHTML = '';
+            
+            if (total === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #9ca3af;">Sem dados para exibir</p>';
+                return;
+            }
+            
+            const cores = {
+                'normal': '#10b981',
+                'fechado': '#ef4444',
+                'recusado': '#f97316',
+                'desabitado': '#f59e0b',
+                'demolido': '#8b5cf6',
+                'desconhecido': '#6b7280'
+            };
+            
+            const labels = {
+                'normal': 'Trabalhados',
+                'fechado': 'Fechados',
+                'recusado': 'Recusados',
+                'desabitado': 'Desabitados',
+                'demolido': 'Demolidos',
+                'desconhecido': 'Desconhecido'
+            };
+            
+            Object.entries(situacoes).forEach(([sit, qtd]) => {
+                const percentual = total > 0 ? (qtd / total * 100).toFixed(1) : 0;
+                
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.innerHTML = `
+                    <div class="chart-label">
+                        <span>${labels[sit] || sit}</span>
+                        <span>${qtd} (${percentual}%)</span>
+                    </div>
+                    <div class="chart-progress">
+                        <div class="chart-fill" style="width: ${percentual}%; background: ${cores[sit] || '#2563eb'}"></div>
+                    </div>
+                `;
+                container.appendChild(bar);
+            });
         }
-        
-        // Converter para string para comparação segura
-        valA = String(valA).toLowerCase();
-        valB = String(valB).toLowerCase();
-        
-        if (valA < valB) return ordenacao.direcao === 'asc' ? -1 : 1;
-        if (valA > valB) return ordenacao.direcao === 'asc' ? 1 : -1;
-        return 0;
-    });
-}
 
-// ============================================
-// ESTATÍSTICAS E GRÁFICOS
-// ============================================
+        // ============================================
+        // TABELA E PAGINAÇÃO
+        // ============================================
 
-function atualizarEstatisticas() {
-    const total = dadosFiltrados.length;
-    const trabalhados = dadosFiltrados.filter(d => d.Situacao === 'normal').length;
-    const pendentes = 0; // Na planilha todos estão sincronizados
-    const positivos = dadosFiltrados.reduce((sum, d) => {
-        const val = parseInt(d.Depositos_Positivos);
-        return sum + (isNaN(val) ? 0 : val);
-    }, 0);
-    const agentesUnicos = new Set(dadosFiltrados.map(d => d.Agente).filter(Boolean)).size;
-    
-    document.getElementById('statTotal').textContent = total;
-    document.getElementById('statTrabalhados').textContent = trabalhados;
-    document.getElementById('statPendentes').textContent = pendentes;
-    document.getElementById('statPositivos').textContent = positivos;
-    document.getElementById('statAgentes').textContent = agentesUnicos;
-    
-    const inicio = (paginaAtual - 1) * CONFIG.ITENS_POR_PAGINA + 1;
-    const fim = Math.min(paginaAtual * CONFIG.ITENS_POR_PAGINA, total);
-    
-    document.getElementById('dataCount').textContent = 
-        total > 0 ? `Mostrando ${inicio}-${fim} de ${total} registros` : 'Nenhum registro';
-}
+        function renderizarTabela() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            if (dadosFiltrados.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('tableContainer').classList.add('hidden');
+                return;
+            }
+            
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('tableContainer').classList.remove('hidden');
+            
+            const inicio = (paginaAtual - 1) * CONFIG.ITENS_POR_PAGINA;
+            const fim = inicio + CONFIG.ITENS_POR_PAGINA;
+            const paginaDados = dadosFiltrados.slice(inicio, fim);
+            
+            paginaDados.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                const badgeClass = `badge-${item.Situacao || 'normal'}`;
+                
+                tr.innerHTML = `
+                    <td>${item.Data || '-'}</td>
+                    <td>${item.Hora || '-'}</td>
+                    <td>${item.Agente || '-'}</td>
+                    <td>${item.Equipe || '-'}</td>
+                    <td>${item.Logradouro || '-'}</td>
+                    <td>${item.Numero || '-'}</td>
+                    <td>${item.Microarea || '-'}</td>
+                    <td><span class="badge ${badgeClass}">${item.Situacao || 'normal'}</span></td>
+                    <td>${item.Depositos_Positivos || '0'}</td>
+                    <td>
+                        <button class="btn-view" onclick="verDetalhes(${item.id})">
+                            👁️ Ver
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
 
-function atualizarGrafico() {
-    const situacoes = {};
-    dadosFiltrados.forEach(d => {
-        const sit = d.Situacao || 'desconhecido';
-        situacoes[sit] = (situacoes[sit] || 0) + 1;
-    });
-    
-    const total = dadosFiltrados.length;
-    const container = document.getElementById('chartContent');
-    container.innerHTML = '';
-    
-    if (total === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #9ca3af;">Sem dados para exibir</p>';
-        return;
-    }
-    
-    const cores = {
-        'normal': '#10b981',
-        'fechado': '#ef4444',
-        'recusado': '#f97316',
-        'desabitado': '#f59e0b',
-        'demolido': '#8b5cf6',
-        'desconhecido': '#6b7280'
-    };
-    
-    const labels = {
-        'normal': 'Trabalhados',
-        'fechado': 'Fechados',
-        'recusado': 'Recusados',
-        'desabitado': 'Desabitados',
-        'demolido': 'Demolidos',
-        'desconhecido': 'Desconhecido'
-    };
-    
-    Object.entries(situacoes).forEach(([sit, qtd]) => {
-        const percentual = total > 0 ? (qtd / total * 100).toFixed(1) : 0;
-        
-        const bar = document.createElement('div');
-        bar.className = 'chart-bar';
-        bar.innerHTML = `
-            <div class="chart-label">${labels[sit] || sit}</div>
-            <div class="chart-progress">
-                <div class="chart-fill" style="width: ${percentual}%; background: ${cores[sit] || '#2563eb'}"></div>
-            </div>
-            <div class="chart-value">${qtd} (${percentual}%)</div>
+        function renderizarPaginacao() {
+            const total = dadosFiltrados.length;
+            const totalPaginas = Math.ceil(total / CONFIG.ITENS_POR_PAGINA);
+            
+            const container = document.getElementById('pagination');
+            container.innerHTML = '';
+            
+            if (totalPaginas <= 1) {
+                container.classList.add('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            
+            // Botão anterior
+            const btnAnterior = document.createElement('button');
+            btnAnterior.innerHTML = '←';
+            btnAnterior.disabled = paginaAtual === 1;
+            btnAnterior.onclick = () => mudarPagina(paginaAtual - 1);
+            container.appendChild(btnAnterior);
+            
+            // Números de página
+            const maxBotoes = 5;
+            let inicioPag = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
+            let fimPag = Math.min(totalPaginas, inicioPag + maxBotoes - 1);
+            
+            if (fimPag - inicioPag < maxBotoes) {
+                inicioPag = Math.max(1, fimPag - maxBotoes + 1);
+            }
+            
+            for (let i = inicioPag; i <= fimPag; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = i === paginaAtual ? 'active' : '';
+                btn.onclick = () => mudarPagina(i);
+                container.appendChild(btn);
+            }
+            
+            // Botão próximo
+            const btnProximo = document.createElement('button');
+            btnProximo.innerHTML = '→';
+            btnProximo.disabled = paginaAtual === totalPaginas;
+            btnProximo.onclick = () => mudarPagina(paginaAtual + 1);
+            container.appendChild(btnProximo);
+            
+            // Info
+            const info = document.createElement('span');
+            info.className = 'pagination-info';
+            info.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+            container.appendChild(info);
+        }
+
+        function mudarPagina(novaPagina) {
+            paginaAtual = novaPagina;
+            renderizarTabela();
+            renderizarPaginacao();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================
+        // MODAL DETALHES
+        // ============================================
+
+        function verDetalhes(id) {
+            const item = dadosFiltrados.find(d => d.id === id);
+            if (!item) {
+                console.error('Item não encontrado:', id);
+                return;
+            }
+            
+            const modal = document.getElementById('modalDetalhes');
+            const body = document.getElementById('modalBody');
+            const footer = document.getElementById('modalFooter');
+            
+            const formatValue = (val) => val || '-';
+            
+            body.innerHTML = `
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Data</div>
+                        <div class="detail-value">${formatValue(item.Data)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Hora</div>
+                        <div class="detail-value">${formatValue(item.Hora)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Agente</div>
+                        <div class="detail-value">${formatValue(item.Agente)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Matrícula</div>
+                        <div class="detail-value">${formatValue(item.Matricula)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Equipe</div>
+                        <div class="detail-value">${formatValue(item.Equipe)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Supervisor</div>
+                        <div class="detail-value">${formatValue(item.Supervisor)}</div>
+                    </div>
+                    <div class="detail-item" style="grid-column: span 2;">
+                        <div class="detail-label">Endereço</div>
+                        <div class="detail-value">
+                            ${formatValue(item.Logradouro)}, ${formatValue(item.Numero)} 
+                            ${item.Complemento ? '- ' + item.Complemento : ''}
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Microárea</div>
+                        <div class="detail-value">${formatValue(item.Microarea)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Quarteirão</div>
+                        <div class="detail-value">${formatValue(item.Quarteirao)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tipo de Imóvel</div>
+                        <div class="detail-value">${formatValue(item.Tipo_Imovel)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Situação</div>
+                        <div class="detail-value">
+                            <span class="badge badge-${item.Situacao || 'normal'}">${item.Situacao || 'normal'}</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Latitude</div>
+                        <div class="detail-value">${formatValue(item.Latitude)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Longitude</div>
+                        <div class="detail-value">${formatValue(item.Longitude)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tratamento</div>
+                        <div class="detail-value">${formatValue(item.Tipo_Tratamento)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Produto</div>
+                        <div class="detail-value">
+                            ${formatValue(item.Produto)} 
+                            ${item.Qtd_Produto ? `(${item.Qtd_Produto} ${item.Unidade || ''})` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="deposits-section">
+                    <div class="deposits-title">📊 Controle de Depósitos</div>
+                    <div class="deposits-grid">
+                        <div class="deposit-item">
+                            <div class="deposit-value" style="color: #3b82f6;">${item.Dep_Tratados || '0'}</div>
+                            <div class="deposit-label">Inspecionados</div>
+                        </div>
+                        <div class="deposit-item">
+                            <div class="deposit-value" style="color: #10b981;">${item.Dep_Eliminados || '0'}</div>
+                            <div class="deposit-label">Eliminados</div>
+                        </div>
+                        <div class="deposit-item">
+                            <div class="deposit-value" style="color: #ef4444;">${item.Depositos_Positivos || '0'}</div>
+                            <div class="deposit-label">Positivos</div>
+                        </div>
+                        <div class="deposit-item">
+                            <div class="deposit-value" style="color: #f59e0b;">${item.Dep_Protegidos || '0'}</div>
+                            <div class="deposit-label">Protegidos</div>
+                        </div>
+                        <div class="deposit-item">
+                            <div class="deposit-value" style="color: #8b5cf6;">${item.Dep_Impraticaveis || '0'}</div>
+                            <div class="deposit-label">Impraticáveis</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            footer.innerHTML = `
+                ID: ${item.id} | Sincronizado em: ${formatValue(item.Data_Sincronizacao)}
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function fecharModal(event) {
+            if (!event || event.target.id === 'modalDetalhes' || event.target.classList.contains('modal-close')) {
+                document.getElementById('modalDetalhes').classList.add('hidden');
+            }
+        }
+
+        // ============================================
+        // EXPORTAÇÃO
+        // ============================================
+
+        function exportarResultados() {
+            if (dadosFiltrados.length === 0) {
+                showToast('Nenhum dado para exportar', 'error');
+                return;
+            }
+            
+            const headers = [
+                'Data', 'Hora', 'Agente', 'Matricula', 'Equipe', 'Supervisor',
+                'Logradouro', 'Numero', 'Complemento', 'Microarea', 'Quarteirao',
+                'Tipo_Imovel', 'Situacao', 'Latitude', 'Longitude', 'Precisao',
+                'Tipo_Tratamento', 'Produto', 'Qtd_Produto', 'Unidade',
+                'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 
+                'Dep_Impraticaveis', 'Depositos_Positivos', 'Data_Sincronizacao'
+            ];
+            
+            const csv = [
+                headers.join(';'),
+                ...dadosFiltrados.map(item => headers.map(h => {
+                    const val = item[h] !== undefined ? item[h] : '';
+                    return '"' + String(val).replace(/"/g, '""') + '"';
+                }).join(';'))
+            ].join('\n');
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            
+            const dataAtual = new Date().toISOString().split('T')[0];
+            link.download = `ACE_Consulta_${dataAtual}_${dadosFiltrados.length}_registros.csv`;
+            link.click();
+            
+            showToast(`✅ ${dadosFiltrados.length} registros exportados!`, 'success');
+        }
+
+        // ============================================
+        // UTILITÁRIOS
+        // ============================================
+
+        function parseDataBR(dataStr) {
+            if (!dataStr) return new Date(0);
+            
+            // Formato DD/MM/YYYY
+            const parts = dataStr.split('/');
+            if (parts.length === 3) {
+                const dia = parseInt(parts[0]);
+                const mes = parseInt(parts[1]) - 1;
+                const ano = parseInt(parts[2]);
+                return new Date(ano, mes, dia);
+            }
+            
+            // Tentar parse ISO
+            const iso = new Date(dataStr);
+            if (!isNaN(iso.getTime())) return iso;
+            
+            return new Date(0);
+        }
+
+        function mostrarLoading(mostrar) {
+            document.getElementById('loadingState').classList.toggle('hidden', !mostrar);
+            document.getElementById('tableContainer').classList.toggle('hidden', mostrar);
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#dc2626' : type === 'warning' ? '#f59e0b' : '#10b981'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                z-index: 2000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                max-width: 90%;
+                text-align: center;
+                animation: slideUp 0.3s ease;
+            `;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Adicionar animação CSS para toast
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    transform: translateX(-50%) translateY(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
         `;
-        container.appendChild(bar);
-    });
-}
-
-// ============================================
-// TABELA E PAGINAÇÃO
-// ============================================
-
-function renderizarTabela() {
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
-    
-    if (dadosFiltrados.length === 0) {
-        document.getElementById('emptyState').classList.remove('hidden');
-        document.getElementById('tableContainer').classList.add('hidden');
-        return;
-    }
-    
-    document.getElementById('emptyState').classList.add('hidden');
-    document.getElementById('tableContainer').classList.remove('hidden');
-    
-    const inicio = (paginaAtual - 1) * CONFIG.ITENS_POR_PAGINA;
-    const fim = inicio + CONFIG.ITENS_POR_PAGINA;
-    const paginaDados = dadosFiltrados.slice(inicio, fim);
-    
-    paginaDados.forEach(item => {
-        const tr = document.createElement('tr');
-        
-        const badgeClass = `badge-${item.Situacao || 'normal'}`;
-        
-        tr.innerHTML = `
-            <td>${item.Data || '-'}</td>
-            <td>${item.Hora || '-'}</td>
-            <td>${item.Agente || '-'}</td>
-            <td>${item.Equipe || '-'}</td>
-            <td>${item.Logradouro || '-'}</td>
-            <td>${item.Numero || '-'}</td>
-            <td>${item.Microarea || '-'}</td>
-            <td><span class="badge ${badgeClass}">${item.Situacao || 'normal'}</span></td>
-            <td>${item.Depositos_Positivos || '0'}</td>
-            <td>
-                <button onclick="verDetalhes(${item.id})" style="padding: 4px 8px; border: none; background: #2563eb; color: white; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
-                    👁️ Ver
-                </button>
-            </td>
-        `;
-        
-        tbody.appendChild(tr);
-    });
-}
-
-function renderizarPaginacao() {
-    const total = dadosFiltrados.length;
-    const totalPaginas = Math.ceil(total / CONFIG.ITENS_POR_PAGINA);
-    
-    const container = document.getElementById('pagination');
-    container.innerHTML = '';
-    
-    if (totalPaginas <= 1) {
-        container.classList.add('hidden');
-        return;
-    }
-    
-    container.classList.remove('hidden');
-    
-    // Botão anterior
-    const btnAnterior = document.createElement('button');
-    btnAnterior.innerHTML = '←';
-    btnAnterior.disabled = paginaAtual === 1;
-    btnAnterior.onclick = () => mudarPagina(paginaAtual - 1);
-    container.appendChild(btnAnterior);
-    
-    // Números de página
-    const maxBotoes = 5;
-    let inicioPag = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
-    let fimPag = Math.min(totalPaginas, inicioPag + maxBotoes - 1);
-    
-    if (fimPag - inicioPag < maxBotoes) {
-        inicioPag = Math.max(1, fimPag - maxBotoes + 1);
-    }
-    
-    for (let i = inicioPag; i <= fimPag; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        btn.className = i === paginaAtual ? 'active' : '';
-        btn.onclick = () => mudarPagina(i);
-        container.appendChild(btn);
-    }
-    
-    // Botão próximo
-    const btnProximo = document.createElement('button');
-    btnProximo.innerHTML = '→';
-    btnProximo.disabled = paginaAtual === totalPaginas;
-    btnProximo.onclick = () => mudarPagina(paginaAtual + 1);
-    container.appendChild(btnProximo);
-    
-    // Info
-    const info = document.createElement('span');
-    info.className = 'pagination-info';
-    info.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
-    container.appendChild(info);
-}
-
-function mudarPagina(novaPagina) {
-    paginaAtual = novaPagina;
-    renderizarTabela();
-    renderizarPaginacao();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ============================================
-// MODAL DETALHES
-// ============================================
-
-function verDetalhes(id) {
-    const item = dadosFiltrados.find(d => d.id === id);
-    if (!item) {
-        console.error('Item não encontrado:', id);
-        return;
-    }
-    
-    const modal = document.getElementById('modalDetalhes');
-    const body = document.getElementById('modalBody');
-    
-    const formatValue = (val) => val || '-';
-    
-    body.innerHTML = `
-        <div class="detail-grid">
-            <div class="detail-item">
-                <div class="detail-label">Data</div>
-                <div class="detail-value">${formatValue(item.Data)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Hora</div>
-                <div class="detail-value">${formatValue(item.Hora)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Agente</div>
-                <div class="detail-value">${formatValue(item.Agente)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Matrícula</div>
-                <div class="detail-value">${formatValue(item.Matricula)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Equipe</div>
-                <div class="detail-value">${formatValue(item.Equipe)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Supervisor</div>
-                <div class="detail-value">${formatValue(item.Supervisor)}</div>
-            </div>
-            <div class="detail-item" style="grid-column: span 2;">
-                <div class="detail-label">Endereço</div>
-                <div class="detail-value">
-                    ${formatValue(item.Logradouro)}, ${formatValue(item.Numero)} 
-                    ${item.Complemento ? '- ' + item.Complemento : ''}
-                </div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Microárea</div>
-                <div class="detail-value">${formatValue(item.Microarea)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Quarteirão</div>
-                <div class="detail-value">${formatValue(item.Quarteirao)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Tipo de Imóvel</div>
-                <div class="detail-value">${formatValue(item.Tipo_Imovel)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Situação</div>
-                <div class="detail-value">
-                    <span class="badge badge-${item.Situacao || 'normal'}">${item.Situacao || 'normal'}</span>
-                </div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Latitude</div>
-                <div class="detail-value">${formatValue(item.Latitude)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Longitude</div>
-                <div class="detail-value">${formatValue(item.Longitude)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Tratamento</div>
-                <div class="detail-value">${formatValue(item.Tipo_Tratamento)}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Produto</div>
-                <div class="detail-value">
-                    ${formatValue(item.Produto)} 
-                    ${item.Qtd_Produto ? `(${item.Qtd_Produto} ${item.Unidade || ''})` : ''}
-                </div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 20px; padding: 16px; background: #f0f9ff; border-radius: 8px;">
-            <div style="font-weight: 600; margin-bottom: 12px; color: #2563eb;">📊 Controle de Depósitos</div>
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <div class="detail-label">Inspecionados</div>
-                    <div class="detail-value">${item.Dep_Tratados || '0'}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Eliminados</div>
-                    <div class="detail-value" style="color: #10b981;">${item.Dep_Eliminados || '0'}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Positivos</div>
-                    <div class="detail-value" style="color: #ef4444;">${item.Depositos_Positivos || '0'}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Protegidos</div>
-                    <div class="detail-value" style="color: #f59e0b;">${item.Dep_Protegidos || '0'}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Impraticáveis</div>
-                    <div class="detail-value" style="color: #8b5cf6;">${item.Dep_Impraticaveis || '0'}</div>
-                </div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 16px; font-size: 0.875rem; color: #6b7280; text-align: right;">
-            ID: ${item.id} | Sincronizado em: ${formatValue(item.Data_Sincronizacao)}
-        </div>
-    `;
-    
-    modal.classList.remove('hidden');
-}
-
-function fecharModal(event) {
-    if (!event || event.target.id === 'modalDetalhes') {
-        document.getElementById('modalDetalhes').classList.add('hidden');
-    }
-}
-
-// ============================================
-// EXPORTAÇÃO
-// ============================================
-
-function exportarResultados() {
-    if (dadosFiltrados.length === 0) {
-        showToast('Nenhum dado para exportar', 'error');
-        return;
-    }
-    
-    const headers = [
-        'Data', 'Hora', 'Agente', 'Matricula', 'Equipe', 'Supervisor',
-        'Logradouro', 'Numero', 'Complemento', 'Microarea', 'Quarteirao',
-        'Tipo_Imovel', 'Situacao', 'Latitude', 'Longitude', 'Precisao',
-        'Tipo_Tratamento', 'Produto', 'Qtd_Produto', 'Unidade',
-        'Dep_Eliminados', 'Dep_Tratados', 'Dep_Protegidos', 
-        'Dep_Impraticaveis', 'Depositos_Positivos', 'Data_Sincronizacao'
-    ];
-    
-    const csv = [
-        headers.join(';'),
-        ...dadosFiltrados.map(item => headers.map(h => {
-            const val = item[h] !== undefined ? item[h] : '';
-            return '"' + String(val).replace(/"/g, '""') + '"';
-        }).join(';'))
-    ].join('\n');
-    
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    
-    const dataAtual = new Date().toISOString().split('T')[0];
-    link.download = `ACE_Consulta_${dataAtual}_${dadosFiltrados.length}_registros.csv`;
-    link.click();
-    
-    showToast(`✅ ${dadosFiltrados.length} registros exportados!`, 'success');
-}
-
-// ============================================
-// UTILITÁRIOS
-// ============================================
-
-function parseDataBR(dataStr) {
-    if (!dataStr) return new Date(0);
-    
-    // Formato DD/MM/YYYY
-    const parts = dataStr.split('/');
-    if (parts.length === 3) {
-        const dia = parseInt(parts[0]);
-        const mes = parseInt(parts[1]) - 1;
-        const ano = parseInt(parts[2]);
-        return new Date(ano, mes, dia);
-    }
-    
-    // Tentar parse ISO
-    const iso = new Date(dataStr);
-    if (!isNaN(iso.getTime())) return iso;
-    
-    return new Date(0);
-}
-
-function mostrarLoading(mostrar) {
-    document.getElementById('loadingState').classList.toggle('hidden', !mostrar);
-    document.getElementById('tableContainer').classList.toggle('hidden', mostrar);
-}
-
-function showToast(msg, type = 'success') {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${type === 'error' ? '#dc2626' : type === 'warning' ? '#f59e0b' : '#10b981'};
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        z-index: 2000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        max-width: 90%;
-        text-align: center;
-    `;
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
